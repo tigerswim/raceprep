@@ -1,0 +1,13 @@
+# Netlify redirects for Single Page Application (SPA) routing
+
+# API redirects to Netlify functions (must be first)
+/api/strava/connect    /.netlify/functions/strava-connect    200
+/api/strava/activities /.netlify/functions/strava-activities 200
+/api/strava/refresh    /.netlify/functions/strava-refresh    200
+/api/runsignup/search  /.netlify/functions/runsignup-search  200
+
+# Handle authentication callbacks
+/auth/*  /index.html  200
+
+# Handle all other routes by serving index.html (SPA fallback - must be last)
+/*    /index.html   200

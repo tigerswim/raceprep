@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1e3a8a" />
+    <meta
+      name="description"
+      content="SageNet - The only infrastructure partner built for multi-site retail. Scale both your connectivity and digital experiences with 25+ years of proven expertise."
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>SageNet - Infrastructure Meets Customer Experience</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_MEASUREMENT_ID%"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      // Only initialize if measurement ID is provided
+      if ('%REACT_APP_GA_MEASUREMENT_ID%' !== '%REACT_APP_GA_MEASUREMENT_ID%') {
+        gtag('config', '%REACT_APP_GA_MEASUREMENT_ID%', {
+          send_page_view: false // We'll handle page views manually in React
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

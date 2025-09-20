@@ -1,0 +1,13 @@
+[build]
+  publish = "build"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "18"
+  # Disable Next.js plugin for Create React App
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"

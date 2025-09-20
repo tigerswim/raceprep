@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "RacePrep",
+    "slug": "raceprep",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "raceprep",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "description": "The only triathlon app that understands your race as a complete event, not three separate sports.",
+    "primaryColor": "#3b82f6",
+    "backgroundColor": "#0f172a",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kineticbrandpartners.raceprep"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.kineticbrandpartners.raceprep"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png",
+      "meta": {
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0f172a"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#3b82f6"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

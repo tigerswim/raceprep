@@ -1,430 +1,229 @@
-// src/components/PersonalSite.tsx
+import React from 'react';
+import { Mail, Linkedin, Award, TrendingUp, Users, Target } from 'lucide-react';
 
-'use client';
-
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-const PersonalSite = () => {
-  const [activeSection, setActiveSection] = useState('home');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Create stable refs using useRef for each section
-  const homeRef = useRef<HTMLElement>(null);
-  const aboutRef = useRef<HTMLElement>(null);
-  const servicesRef = useRef<HTMLElement>(null);
-  const experienceRef = useRef<HTMLElement>(null);
-  const contactRef = useRef<HTMLElement>(null);
-
-  // Set up intersection observer for scroll animations
-  useEffect(() => {
-    const observerOptions = {
-      threshold: 0.2,
-      rootMargin: '-20px 0px',
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const sectionId = entry.target.getAttribute('data-section');
-        if (sectionId && entry.isIntersecting) {
-          setActiveSection(sectionId);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all sections
-    const refs = [homeRef, aboutRef, servicesRef, experienceRef, contactRef];
-    refs.forEach((ref) => {
-      if (ref.current) {
-        observer.observe(ref.current);
-      }
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  const navigationItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'services', label: 'Services' },
-    { id: 'about', label: 'About' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'contact', label: 'Contact' }
-  ];
-
-  const toggleMobileMenu = useCallback(() => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  }, [mobileMenuOpen]);
-
-  const scrollToSection = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setActiveSection(sectionId);
-    setMobileMenuOpen(false);
-  }, []);
-
-  const Header = () => (
-    <header className="site-header">
-      <div className="container">
-        <nav className="nav-bar">
-          <a href="#home" className="logo" onClick={() => scrollToSection('home')}>
-            Kinetic Brand Partners
-          </a>
-          
-          <button 
-            className="mobile-menu-toggle"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle navigation menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
-          
-          <ul className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
-            {navigationItems.map(item => (
-              <li key={item.id}>
-                <a 
-                  href={`#${item.id}`}
-                  className={activeSection === item.id ? 'active' : ''}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(item.id);
-                  }}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-    </header>
-  );
-
-  const HeroSection = () => (
-    <section 
-      id="home" 
-      ref={homeRef}
-      data-section="home"
-      className="hero"
-    >
-      <div className="container">
-        <h1>{"Transform Your Marketing From Tactical to Strategic Advantage"}</h1>
-        <p className="subhead">{
-          "I help established companies ($50M-$750M) break through growth plateaus by transforming their marketing organizations from reactive tactics to strategic growth engines. With 15+ years of brand management, including P&L ownership and award-winning campaign experience, I bring both the art and science needed to scale your business."}
-        </p>
-        
-        <div className="cta-group">
-          <a 
-            href="#contact" 
-            className="btn btn-primary"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('contact');
-            }}
-          >
-            {"Get Your Marketing Assessment"}
-          </a>
-          <a 
-            href="#services" 
-            className="btn btn-secondary"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('services');
-            }}
-          >
-            {"View Services"}
-          </a>
-        </div>
-        
-        <div className="metrics">
-          <div className="metric">
-            <strong>{"4B+"}</strong>
-            {"Campaign Impressions"}
-          </div>
-          <div className="metric">
-            <strong>{"25+"}</strong>
-            {"Team Members Led"}
-          </div>
-          <div className="metric">
-            <strong>{"15+"}</strong>
-            {"Years P&L Experience"}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
-  const ServicesSection = () => (
-    <section 
-      id="services" 
-      ref={servicesRef}
-      data-section="services"
-      style={{ padding: '4rem 0', background: '#f7f9fc' }}
-    >
-      <div className="container">
-        <div className="spotlight">
-          <h2>Strategic Marketing Services</h2>
-          <p>{"Comprehensive solutions to transform your marketing organization and accelerate growth"}</p>
-        </div>
-        
-        <div className="values">
-          <article>
-            <h3>Brand Transformation &amp; Positioning</h3>
-            <p>{
-              "Modernize your brand to break through commodity competition and command premium positioning. From comprehensive brand audits to complete visual and messaging transformations that drive business results."}
-            </p>
-            <ul className="pillars">
-              <li>Brand architecture development</li>
-              <li>Competitive positioning strategy</li>
-              <li>Message framework creation</li>
-              <li>Visual identity transformation</li>
-            </ul>
-          </article>
-          
-          <article style={{ borderLeftColor: 'var(--accent-green)' }}>
-            <h3>{"Marketing Organization Development"}</h3>
-            <p>{
-              "Build marketing capabilities that scale with your business. Transform from ad-hoc campaigns to strategic, data-driven operations with clear processes, metrics, and team structures."}
-            </p>
-            <ul className="pillars">
-              <li>{"Marketing maturity assessment"}</li>
-              <li>{"Team structure optimization"}</li>
-              <li>{"Process & workflow design"}</li>
-              <li>{"Performance measurement systems"}</li>
-            </ul>
-          </article>
-          
-          <article>
-            <h3>{"Digital Marketing Transformation"}</h3>
-            <p>{
-              "Move beyond traditional approaches to modern, omnichannel marketing that meets customers where they are. Integrate digital capabilities while maintaining your brand's authentic voice."}
-            </p>
-            <ul className="pillars">
-              <li>{"Digital strategy development"}</li>
-              <li>{"Marketing technology stack"}</li>
-              <li>{"Omnichannel campaign design"}</li>
-              <li>{"Performance optimization"}</li>
-            </ul>
-          </article>
-          
-          <article>
-            <h3>{"Revenue Growth Acceleration"}</h3>
-            <p>{
-              "Apply proven methodologies to break through growth plateaus. Combine strategic vision with tactical execution to deliver measurable revenue impact and sustainable growth."}
-            </p>
-            <ul className="pillars">
-              <li>{"Growth strategy development"}</li>
-              <li>{"Market opportunity analysis"}</li>
-              <li>{"Go-to-market optimization"}</li>
-              <li>{"Revenue attribution modeling"}</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
-
-const AboutSection = () => (
-    <section 
-      id="about" 
-      ref={aboutRef}
-      data-section="about"
-      style={{ padding: '4rem 0' }}
-    >
-      <div className="container">
-        <div className="spotlight">
-          <h2>The Marketing Leader Your Business Needs</h2>
-        </div>
-        
-        <div className="about-content">
-          <div className="headshot-container">
-            <img 
-              src="/Photos/Professional headshot.png" 
-              alt="Professional headshot"
-              style={{
-                width: 'auto',
-                height: '300px',
-                objectFit: 'cover',
-                borderRadius: '12px',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                maxWidth: '100%'
-              }}
-            />
-          </div>
-          <div className="about-intro">
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--primary-dark)' }}>
-              Strategic Marketing Leadership with Proven Results
-            </h3>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-              With 15+ years of P&L ownership and cross-functional leadership experience, I bring a complete business perspective to every marketing challenge. I've scaled teams from startup environments to Fortune 500 enterprises, managing budgets from thousands to millions.
-            </p>
-            <div className="credentials" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-              <span style={{ 
-                padding: '0.5rem 1rem', 
-                background: 'rgba(156,175,136,0.1)', 
-                borderRadius: '20px', 
-                fontSize: '0.9rem',
-                fontWeight: '600'
-              }}>
-                MBA, UVA Darden
-              </span>
-              <span style={{ 
-                padding: '0.5rem 1rem', 
-                background: 'rgba(212,117,107,0.1)', 
-                borderRadius: '20px', 
-                fontSize: '0.9rem',
-                fontWeight: '600'
-              }}>
-                Clio Sports Awards
-              </span>
-              <span style={{ 
-                padding: '0.5rem 1rem', 
-                background: 'rgba(156,175,136,0.1)', 
-                borderRadius: '20px', 
-                fontSize: '0.9rem',
-                fontWeight: '600'
-              }}>
-                $1.5B+ Portfolio
-              </span>
+const PersonalSite: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Dan Hoeller</h1>
+              <p className="text-xl text-blue-600 font-medium mb-3">
+                Chief Marketing Officer | Senior VP Marketing | P&amp;L Owner
+              </p>
+              <p className="text-gray-600 max-w-2xl">
+                Passionate marketing leader blending strategic vision with human-centered perspective. 
+                Building brands with grit, insight, and the kind of connection that goes beyond data points.
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <a 
+                href="mailto:danhoeller@gmail.com" 
+                className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Mail size={20} />
+                Contact Me
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/danhoeller" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                <Linkedin size={20} />
+                LinkedIn
+              </a>
             </div>
           </div>
         </div>
-        
-        <div className="values">
-          <article>
-            <h3>{"Holistic Business Perspective"}</h3>
-            <p>{
-              "Unlike traditional marketing consultants, I bring a complete business perspective to every challenge. With 15+ years of P&L ownership and cross-functional leadership experience, I understand how marketing drives business results, not just marketing metrics."}
-            </p>
-          </article>
-          
-          <article>
-            <h3>Proven Versatility</h3>
-            <p>{
-              "I'm equally at home setting strategic direction and rolling up my sleeves for tactical execution. Whether you need marketing as the hub of growth or as a strategic support function, I adapt my approach to what your business needs most."}
-            </p>
-            <p>
-              <em>{"Great marketing isn't about choosing between creativity and analytics — it's about knowing when to lean into each and how to make them work together seamlessly."}</em>
-            </p>
-          </article>
-          
-          <article>
-            <h3>{"Enterprise Experience, Entrepreneurial Agility"}</h3>
-            <p>{
-              "I've scaled marketing teams from startup environments to Fortune 500 enterprises, managing budgets from thousands to millions. This unique combination allows me to bring enterprise-level strategic thinking with the agility and resourcefulness your growing business demands."}
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
+      </header>
 
-  const ExperienceSection = () => (
-    <section 
-      id="experience" 
-      ref={experienceRef}
-      data-section="experience"
-      style={{ padding: '4rem 0', background: '#f7f9fc' }}
-    >
-      <div className="container">
-        <div className="spotlight">
-          <h2>Track Record of Transformational Results</h2>
-        </div>
-        
-        <div className="values">
-          <article>
-            <h3>Leadership Background</h3>
-            <ul className="timeline">
-              <li><strong>SVP Marketing, Central Garden & Pet:</strong> Led 25-person team managing $1.5B+ brand portfolio</li>
-              <li><strong>Brand Manager, Johnson & Johnson:</strong> P&L ownership of $80M+ product lines</li>
-              <li><strong>MBA, University of Virginia Darden:</strong> Top-tier strategic business foundation</li>
-              <li><strong>Clio Sports Awards:</strong> Silver & Bronze for breakthrough campaign creativity</li>
-            </ul>
-          </article>
-          
-          <article>
-            <h3>Transformation Case Study</h3>
-            <h4>Brand Revitalization: +98.8% EBIT Growth</h4>
-            <p><strong>Challenge:</strong> Established lawn care brand facing commoditization and declining margins.</p>
-            <p><strong>Strategy:</strong> Complete brand transformation including positioning, innovation pipeline, and omnichannel marketing.</p>
-            <p><strong>Results:</strong> 98.8% EBIT growth in first year, followed by additional 12% growth while expanding market share.</p>
-          </article>
-          
-          <article>
-            <h3>Campaign Excellence</h3>
-            <h4>#FlipTheTurf: 4B Impressions, Award-Winning Impact</h4>
-            <p><strong>Challenge:</strong> Break through in crowded sports marketing landscape.</p>
-            <p><strong>Innovation:</strong> Created authentic storytelling campaign connecting brand values with cultural moments.</p>
-            <p><strong>Results:</strong> 3.95B media impressions, 2 Clio Sports Awards, significant brand awareness lift.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
-
-  const ContactSection = () => (
-    <section 
-      id="contact" 
-      ref={contactRef}
-      data-section="contact"
-      style={{ padding: '4rem 0' }}
-    >
-      <div className="container">
-        <div className="spotlight">
-          <h2>{"Ready to Transform Your Marketing Strategy?"}</h2>
-          <p>{"Let's start with a comprehensive assessment of your marketing organization and growth opportunities"}</p>
-        </div>
-        
-        <div className="values">
-          <article style={{ textAlign: 'center' }}>
-            <h3>{"Comprehensive Marketing Assessment"}</h3>
-            <p>{
-              "Get clarity on your marketing maturity, brand positioning, and growth opportunities. In our initial consultation, we'll evaluate your current marketing effectiveness and identify the highest-impact transformation opportunities."}
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* About Section */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">About Me</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              In nearly 20 years of marketing, I&apos;ve learned that the best brands are built with grit, insight, 
+              and genuine human connection. Whether it&apos;s baby shampoo or yes, even hemorrhoid pads at Johnson &amp; Johnson, 
+              true success means understanding what people care about.
             </p>
-            <a href="mailto:letstalk@kineticbrandpartners.com" className="btn btn-primary">
-              {"Schedule Assessment"}
-            </a>
-          </article>
-          
-          <article style={{ textAlign: 'center' }}>
-            <h3>{"Let's Connect"}</h3>
-            <p><strong>{"Email:"}</strong> {"letstalk@kineticbrandpartners.com"}</p>
-            <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', color: '#666' }}>
-              <strong>{"Based in Atlanta, GA"}</strong> {"| Working with clients nationwide"}
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              Most recently, as SVP of Marketing at Central Garden &amp; Pet, I led a team of 25 to help homeowners 
+              create their own unique outdoor spaces. Marketing isn&apos;t about the highs of big wins or the lows of 
+              tests that didn&apos;t quite land—it&apos;s about showing up, taking smart risks, and always keeping the 
+              consumer at the heart of it.
             </p>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
+            <p className="text-lg text-gray-700 leading-relaxed">
+              When I&apos;m not crafting brand stories, you&apos;ll find me training for my next Ironman, hitting the trails 
+              on my mountain bike, or diving into a DIY project—whether it&apos;s home improvement, auto repair, or 
+              experimenting with AI. I believe the same curiosity and problem-solving mindset that drives my 
+              personal interests fuels my marketing success.
+            </p>
+          </div>
+        </section>
 
-  const Footer = () => (
-    <footer className="site-footer">
-      <div className="container">
-        <p>&copy; {"2025 Kinetic Brand Partners, LLC. All rights reserved."}</p>
-        <p style={{ fontSize: '0.85rem', marginTop: '1rem' }}>
-          {"Strategic Marketing Leadership | Brand Transformation | Revenue Growth Acceleration"}
-        </p>
-      </div>
-    </footer>
-  );
+        {/* Key Achievements */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Key Achievements</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-blue-500">
+              <div className="flex items-center gap-3 mb-3">
+                <TrendingUp className="text-blue-600" size={24} />
+                <h3 className="font-semibold text-gray-900">Growth Driver</h3>
+              </div>
+              <p className="text-gray-600">15+ years driving growth for iconic consumer brands with P&amp;L ownership mentality</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-green-500">
+              <div className="flex items-center gap-3 mb-3">
+                <Award className="text-green-600" size={24} />
+                <h3 className="font-semibold text-gray-900">#FlipTheTurf</h3>
+              </div>
+              <p className="text-gray-600">4B impressions, 2 Clio Sports awards - a cultural moment that sparked change</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-purple-500">
+              <div className="flex items-center gap-3 mb-3">
+                <Users className="text-purple-600" size={24} />
+                <h3 className="font-semibold text-gray-900">Team Builder</h3>
+              </div>
+              <p className="text-gray-600">Led teams of 25+ people with servant leadership approach, empowering through collaboration</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-orange-500">
+              <div className="flex items-center gap-3 mb-3">
+                <Target className="text-orange-600" size={24} />
+                <h3 className="font-semibold text-gray-900">P&amp;L Growth</h3>
+              </div>
+              <p className="text-gray-600">Delivered exceptional results including +98.8% EBIT growth and $200MM+ ARR milestones</p>
+            </div>
+          </div>
+        </section>
 
-  return (
-    <div className="site-wrapper">
-      <Header />
-      <main>
-        <HeroSection />
-        <ServicesSection />
-        <AboutSection />
-        <ExperienceSection />
-        <ContactSection />
+        {/* Experience Highlights */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Experience Highlights</h2>
+          <div className="space-y-8">
+            {/* Central Garden & Pet */}
+            <div className="bg-white rounded-xl p-8 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Senior Vice President of Marketing</h3>
+                  <p className="text-blue-600 font-medium">Central Garden &amp; Pet</p>
+                </div>
+                <span className="text-gray-500 font-medium">2019-2024</span>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Led marketing strategy for $3B+ manufacturer&apos;s Garden segment as de facto CMO, managing team of 25 across 
+                Consumer Insights, Innovation, Digital Marketing, and Creative Services.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Grew Pennington sales +8.2% (4x faster than category) through innovative launches and effective media</li>
+                <li>• Created #FlipTheTurf campaign delivering 3.95B impressions and winning two Clio Sports awards</li>
+                <li>• Built Garden Innovation team developing $20MM+ annual product pipeline focused on sustainability</li>
+                <li>• Led Pennington brand reinvention focusing on consumer trends and visual identity</li>
+              </ul>
+            </div>
+            {/* Johnson & Johnson */}
+            <div className="bg-white rounded-xl p-8 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Brand Manager &amp; Marketing Manager</h3>
+                  <p className="text-blue-600 font-medium">Johnson &amp; Johnson</p>
+                </div>
+                <span className="text-gray-500 font-medium">2006-2013</span>
+              </div>
+              <p className="text-gray-700 mb-4">
+                Managed iconic consumer brands including Johnson&apos;s Baby, Tucks, and K-Y across $15B Consumer segment, 
+                plus medical device marketing at Ortho Clinical Diagnostics.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Reversed years of Tucks decline, delivering +26.8% growth through targeted marketing</li>
+                <li>• Won J&amp;J Global Burke Award for Thanks, Mom Olympic campaign with 290MM+ impressions</li>
+                <li>• Grew Baby Oil +9.8% and Baby Powder +5.2% despite heavy private label competition</li>
+                <li>• Brought patient-first perspective to medical device marketing in regulated environment</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Core Competencies */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Core Competencies</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Strategic Leadership</h4>
+                <ul className="space-y-1 text-gray-600 text-sm">
+                  <li>• Marketing Strategy &amp; Planning</li>
+                  <li>• P&amp;L Management &amp; Pricing</li>
+                  <li>• Brand Architecture &amp; Identity</li>
+                  <li>• Cross-Functional Collaboration</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Data &amp; Innovation</h4>
+                <ul className="space-y-1 text-gray-600 text-sm">
+                  <li>• Data-Driven Decision Making</li>
+                  <li>• Marketing Mix Modeling</li>
+                  <li>• Innovation Pipeline Development</li>
+                  <li>• Consumer Insights &amp; Analysis</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Digital &amp; Execution</h4>
+                <ul className="space-y-1 text-gray-600 text-sm">
+                  <li>• Omnichannel &amp; eCommerce</li>
+                  <li>• Marketing Technology Stack</li>
+                  <li>• Agency Management</li>
+                  <li>• Team Leadership &amp; Development</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact CTA */}
+        <section className="text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-8 text-white">
+            <h2 className="text-2xl font-bold mb-4">Ready to Write the Next Chapter?</h2>
+            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+              Looking for a marketing leader who blends strategic acumen with a human touch and focus on results? 
+              Let&apos;s talk about how I can help write the next chapter of your brand story.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="mailto:danhoeller@gmail.com" 
+                className="flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                <Mail size={20} />
+                danhoeller@gmail.com
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/danhoeller" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition-colors font-medium"
+              >
+                <Linkedin size={20} />
+                LinkedIn Profile
+              </a>
+            </div>
+          </div>
+        </section>
       </main>
-      <Footer />
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-gray-400">
+            © 2025 Dan Hoeller. Triathlete, Ironman finisher, DIY enthusiast, and passionate marketing leader.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default PersonalSite;
+export default PersonalSite; 
