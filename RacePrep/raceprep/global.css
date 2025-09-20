@@ -2,12 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ensure proper scrolling on web */
-html, body {
-  height: 100%;
+/* Ensure proper scrolling on web and iOS Safari URL bar behavior */
+html {
   overflow-x: hidden;
   overflow-y: auto;
-  /* Support for iOS Safari dynamic viewport */
+  /* Remove fixed height to allow natural content flow */
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Remove fixed height - let content determine height */
   min-height: 100vh;
   min-height: 100dvh; /* Dynamic viewport height for modern browsers */
 }
@@ -31,17 +36,55 @@ body {
 /* iOS Safari specific optimizations for URL bar behavior */
 @supports (-webkit-touch-callout: none) {
   /* Only target iOS Safari */
-  html, body {
-    /* Ensure content can extend beyond initial viewport */
+  html {
+    /* Remove height constraints completely */
+    height: auto !important;
+  }
+
+  body {
+    /* Remove height constraints and use fill-available */
+    height: auto !important;
     min-height: -webkit-fill-available;
+    /* Enable smooth scrolling for better URL bar behavior */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent rubber band scrolling which can interfere with URL bar */
+    overscroll-behavior: none;
   }
 
   #root, #__next {
+    /* Remove height constraints to allow natural content flow */
+    height: auto !important;
     min-height: -webkit-fill-available;
   }
 
-  /* Prevent rubber band scrolling which can interfere with URL bar */
-  body {
-    overscroll-behavior: none;
+  /* Ensure main containers allow natural scrolling */
+  .bg-slate-900 {
+    min-height: -webkit-fill-available !important;
+    height: auto !important;
+  }
+
+  /* Override any Tailwind height constraints that prevent natural scrolling */
+  .h-full {
+    height: auto !important;
+    min-height: -webkit-fill-available !important;
+  }
+
+  /* Ensure content containers don't constrain height and force scrolling */
+  .relative.z-10 {
+    min-height: calc(-webkit-fill-available + 200px) !important;
+  }
+
+  /* Force minimum content height to ensure URL bar can hide */
+  .bg-slate-900 > .relative.z-10 {
+    min-height: calc(100vh + 200px) !important;
+    min-height: calc(100dvh + 200px) !important;
+    min-height: calc(-webkit-fill-available + 200px) !important;
+  }
+
+  /* Ensure tab navigation doesn't interfere with scrolling */
+  .expo-tab-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
   }
 }

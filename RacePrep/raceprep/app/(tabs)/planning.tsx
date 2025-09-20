@@ -57,7 +57,7 @@ export default function PlanningScreen() {
   return (
     <Provider store={store}>
       <AuthGuard>
-        <div className="bg-slate-900 relative h-full overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+        <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
         {/* Background Effects */}
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-orange-900/20"></div>

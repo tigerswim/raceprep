@@ -1971,7 +1971,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   if (hasError) {
     return (
-      <div className="bg-slate-900 relative h-full overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
         <div className="text-center">
           <div className="text-white text-lg mb-4">Training Tab Temporarily Unavailable</div>
           <div className="text-white/70 text-sm mb-4">We&apos;re working to resolve this issue. Please try refreshing the page.</div>
@@ -1988,14 +1988,14 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   if (isLoading) {
     return (
-      <div className="bg-slate-900 relative h-full overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
         <div className="text-white text-lg">Loading training data...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900 relative h-full overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+    <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
         {/* Background Effects */}
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>
