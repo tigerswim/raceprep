@@ -413,12 +413,16 @@ export const PerformanceOverviewWidget: React.FC = () => {
             {/* Grid lines */}
             <defs>
               <linearGradient id="swimGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="rgb(59, 130, 246)" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="rgb(96, 165, 250)" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="rgb(96, 165, 250)" stopOpacity="0.2" />
+              </linearGradient>
+              <linearGradient id="bikeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="rgb(251, 146, 60)" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="rgb(251, 146, 60)" stopOpacity="0.2" />
               </linearGradient>
               <linearGradient id="runGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgb(34, 197, 94)" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="rgb(34, 197, 94)" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="rgb(74, 222, 128)" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="rgb(74, 222, 128)" stopOpacity="0.2" />
               </linearGradient>
             </defs>
 
@@ -440,29 +444,28 @@ export const PerformanceOverviewWidget: React.FC = () => {
             {/* Swim (bottom layer) */}
             <path
               d={createStackedPath(d => d.swim)}
-              fill="url(#swimGradient)"
-              stroke="rgb(59, 130, 246)"
+              fill="rgb(96, 165, 250)"
+              stroke="rgb(96, 165, 250)"
               strokeWidth="1.5"
-              strokeOpacity="0.6"
+              strokeOpacity="0.8"
             />
 
             {/* Bike (middle layer) */}
             <path
               d={createStackedPath(d => d.bike, d => d.swim)}
               fill="rgb(251, 146, 60)"
-              fillOpacity="0.3"
               stroke="rgb(251, 146, 60)"
-              strokeWidth="2"
+              strokeWidth="1.5"
               strokeOpacity="0.8"
             />
 
             {/* Run (top layer) */}
             <path
               d={createStackedPath(d => d.run, d => d.swim + d.bike)}
-              fill="url(#runGradient)"
-              stroke="rgb(34, 197, 94)"
+              fill="rgb(74, 222, 128)"
+              stroke="rgb(74, 222, 128)"
               strokeWidth="1.5"
-              strokeOpacity="0.6"
+              strokeOpacity="0.8"
             />
 
             {/* Total time line */}
