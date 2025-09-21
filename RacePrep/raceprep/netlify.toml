@@ -1,4 +1,4 @@
-# Netlify configuration for RacePrep
+# Netlify configuration for RacePrep - Updated for deployment
 [build]
   # Build command for Expo web
   command = "npm run build:web"
