@@ -47,14 +47,76 @@ export const PerformanceOverviewWidget: React.FC = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [userSettings, setUserSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [stravaConnected, setStravaConnected] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     if (user) {
       loadUserProfileAndStats();
+      checkStravaConnection();
     } else {
       setIsLoading(false);
     }
   }, [user]);
+
+  const checkStravaConnection = () => {
+    const token = localStorage.getItem('strava_access_token');
+    setStravaConnected(!!token);
+  };
+
+  const handleStravaSync = async () => {
+    const stravaAccessToken = localStorage.getItem('strava_access_token');
+    if (!stravaAccessToken) return;
+
+    try {
+      setIsSyncing(true);
+
+      // Get recent activities from Strava using the API base URL
+      const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+      const activitiesResponse = await fetch(`${apiBaseUrl}/strava/activities?access_token=${stravaAccessToken}&per_page=50`);
+      const activities = await activitiesResponse.json();
+
+      // Transform and sync to database (same logic as Training tab)
+      if (activities && activities.length > 0) {
+        const deletedActivities = JSON.parse(localStorage.getItem('deletedStravaActivities') || '[]');
+
+        const transformedActivities = activities
+          .filter((activity: any) => activity.id)
+          .filter((activity: any) => !deletedActivities.includes(activity.id))
+          .map((activity: any) => ({
+            strava_activity_id: activity.id,
+            user_id: user!.id,
+            name: activity.name || 'Untitled Activity',
+            type: activity.type?.toLowerCase() || 'workout',
+            date: activity.start_date_local ? activity.start_date_local.split('T')[0] : new Date().toISOString().split('T')[0],
+            duration: activity.elapsed_time || activity.moving_time || 0,
+            moving_time: activity.moving_time || activity.elapsed_time || 0,
+            distance: activity.distance || 0,
+            average_speed: activity.average_speed || null,
+            average_heartrate: activity.average_heartrate || null,
+            max_heartrate: activity.max_heartrate || null,
+            total_elevation_gain: activity.total_elevation_gain || 0,
+            trainer: activity.trainer || false,
+            kudos_count: activity.kudos_count || 0,
+            suffer_score: activity.suffer_score || null,
+            average_watts: activity.average_watts || null
+          }));
+
+        // Sync to database
+        const { error: syncError } = await dbHelpers.trainingSessions.bulkUpsert(transformedActivities);
+        if (syncError) {
+          console.warn('Error syncing to database:', syncError);
+        }
+      }
+
+      // Reload stats after sync
+      await loadTrainingStats();
+    } catch (error) {
+      console.error('Error syncing Strava data:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const loadUserProfileAndStats = async () => {
     try {
@@ -111,8 +173,7 @@ export const PerformanceOverviewWidget: React.FC = () => {
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
       // Get training sessions from last 30 days
-      const { data: sessions, error } = await dbHelpers.trainingSessions.getUserSessions(
-        user!.id,
+      const { data: sessions, error } = await dbHelpers.trainingSessions.getByDateRange(
         thirtyDaysAgo.toISOString().split('T')[0],
         now.toISOString().split('T')[0]
       );
@@ -623,12 +684,22 @@ export const PerformanceOverviewWidget: React.FC = () => {
         </div>
         <div className="text-center py-6">
           <p className="text-white/50 mb-4">No training data available</p>
-          <button
-            onClick={() => router.push('/(tabs)/training')}
-            className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-          >
-            Connect Strava
-          </button>
+          {stravaConnected ? (
+            <button
+              onClick={handleStravaSync}
+              disabled={isSyncing}
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSyncing ? 'Syncing...' : 'Sync Strava Data'}
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push('/(tabs)/training')}
+              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+            >
+              Connect Strava
+            </button>
+          )}
         </div>
       </div>
     );
