@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
+import { TbCalendarTime, TbTarget, TbTrophy, TbAlert } from 'react-icons/tb';
 
 interface UpcomingRace {
   id: string;
@@ -11,8 +12,36 @@ interface UpcomingRace {
   distance_type: string;
   status: 'interested' | 'registered' | 'training' | 'completed';
   daysUntil: number;
+  hoursUntil: number;
+  minutesUntil: number;
   registration_url?: string;
   preparationStatus: 'excellent' | 'good' | 'needs-attention' | 'unknown';
+  trainingProgress: number; // percentage of training plan completed
+  equipmentReady: boolean;
+  nutritionPlanReady: boolean;
+}
+
+interface PlannedRace {
+  id: string;
+  status: string;
+  race_name?: string;
+  race_date?: string;
+  external_races?: {
+    name: string;
+    date: string;
+    location: string;
+    distance_type: string;
+    registration_url?: string;
+  };
+}
+
+interface LocalStorageRace {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  distance_type: string;
+  status?: string;
 }
 
 export const UpcomingRacesWidget: React.FC = () => {
@@ -20,6 +49,12 @@ export const UpcomingRacesWidget: React.FC = () => {
   const { user } = useAuth();
   const [upcomingRaces, setUpcomingRaces] = useState<UpcomingRace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [cachedRaces, setCachedRaces] = useState<UpcomingRace[]>([]);
+  const [lastCacheUpdate, setLastCacheUpdate] = useState<number>(0);
+
+  // Cache duration: 5 minutes
+  const CACHE_DURATION = 5 * 60 * 1000;
 
   useEffect(() => {
     if (user) {
@@ -29,7 +64,51 @@ export const UpcomingRacesWidget: React.FC = () => {
     }
   }, [user]);
 
-  const loadUpcomingRaces = async () => {
+  // Check cache validity
+  const isCacheValid = useMemo(() => {
+    return Date.now() - lastCacheUpdate < CACHE_DURATION;
+  }, [lastCacheUpdate]);
+
+  // Real-time countdown timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Memoized countdown calculation for performance
+  const updatedRaces = useMemo(() => {
+    if (upcomingRaces.length === 0) return [];
+
+    return upcomingRaces.map(race => {
+      const raceDate = new Date(race.date);
+      const timeDiff = raceDate.getTime() - currentTime.getTime();
+      const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      const hoursUntil = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutesUntil = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+      return {
+        ...race,
+        daysUntil: Math.max(0, daysUntil),
+        hoursUntil: Math.max(0, hoursUntil),
+        minutesUntil: Math.max(0, minutesUntil)
+      };
+    });
+  }, [upcomingRaces, currentTime]);
+
+  // The updatedRaces useMemo already handles the countdown updates
+  // No need for a useEffect that would cause infinite loops
+  // Removing this useEffect to prevent infinite re-renders
+
+  const loadUpcomingRaces = useCallback(async () => {
+    // Use cache if valid
+    if (isCacheValid && cachedRaces.length > 0) {
+      setUpcomingRaces(cachedRaces);
+      setIsLoading(false);
+      return;
+    }
     try {
       setIsLoading(true);
 
@@ -48,7 +127,7 @@ export const UpcomingRacesWidget: React.FC = () => {
             console.log('UpcomingRacesWidget loaded from localStorage:', parsedRaces.length, 'races');
 
             // Transform localStorage data to match expected format
-            const transformedLocalRaces = parsedRaces.map((race: any) => ({
+            const transformedLocalRaces = parsedRaces.map((race: LocalStorageRace) => ({
               id: race.id,
               external_races: {
                 name: race.name,
@@ -61,13 +140,17 @@ export const UpcomingRacesWidget: React.FC = () => {
 
             // Process the local races same as database races
             const processedLocalRaces = transformedLocalRaces
-              .filter((race: any) => {
+              .filter((race: PlannedRace) => {
                 const raceDate = new Date(race.external_races?.date || '');
                 return raceDate > new Date();
               })
-              .map((race: any) => {
+              .map((race: PlannedRace) => {
                 const raceDate = new Date(race.external_races?.date || '');
-                const daysUntil = Math.ceil((raceDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                const now = new Date();
+                const timeDiff = raceDate.getTime() - now.getTime();
+                const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                const hoursUntil = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutesUntil = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
                 return {
                   id: race.id,
@@ -76,15 +159,22 @@ export const UpcomingRacesWidget: React.FC = () => {
                   location: race.external_races?.location || 'Unknown Location',
                   distance_type: race.external_races?.distance_type || 'unknown',
                   status: race.status || 'interested',
-                  daysUntil,
+                  daysUntil: Math.max(0, daysUntil),
+                  hoursUntil: Math.max(0, hoursUntil),
+                  minutesUntil: Math.max(0, minutesUntil),
                   registration_url: null,
-                  preparationStatus: calculatePreparationStatus(daysUntil, race.status)
+                  preparationStatus: calculatePreparationStatus(daysUntil, race.status),
+                  trainingProgress: calculateTrainingProgress(daysUntil, race.status),
+                  equipmentReady: race.status === 'training' || race.status === 'registered',
+                  nutritionPlanReady: race.status === 'training' && daysUntil < 30
                 } as UpcomingRace;
               })
               .sort((a, b) => a.daysUntil - b.daysUntil)
               .slice(0, 3);
 
             setUpcomingRaces(processedLocalRaces);
+            setCachedRaces(processedLocalRaces);
+            setLastCacheUpdate(Date.now());
             return;
           }
         } catch (localError) {
@@ -92,7 +182,10 @@ export const UpcomingRacesWidget: React.FC = () => {
         }
 
         // Show sample data for demo as final fallback
-        setUpcomingRaces(getSampleUpcomingRaces());
+        const sampleRaces = getSampleUpcomingRaces();
+        setUpcomingRaces(sampleRaces);
+        setCachedRaces(sampleRaces);
+        setLastCacheUpdate(Date.now());
         return;
       }
 
@@ -111,7 +204,10 @@ export const UpcomingRacesWidget: React.FC = () => {
         })
         .map(race => {
           const raceDate = new Date(race.external_races?.date || race.race_date || '');
-          const daysUntil = Math.ceil((raceDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          const timeDiff = raceDate.getTime() - now.getTime();
+          const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          const hoursUntil = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutesUntil = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
           return {
             id: race.id,
@@ -120,22 +216,32 @@ export const UpcomingRacesWidget: React.FC = () => {
             location: race.external_races?.location || 'Unknown Location',
             distance_type: race.external_races?.distance_type || 'unknown',
             status: race.status || 'interested',
-            daysUntil,
+            daysUntil: Math.max(0, daysUntil),
+            hoursUntil: Math.max(0, hoursUntil),
+            minutesUntil: Math.max(0, minutesUntil),
             registration_url: race.external_races?.registration_url,
-            preparationStatus: calculatePreparationStatus(daysUntil, race.status)
+            preparationStatus: calculatePreparationStatus(daysUntil, race.status),
+            trainingProgress: calculateTrainingProgress(daysUntil, race.status),
+            equipmentReady: race.status === 'training' || race.status === 'registered',
+            nutritionPlanReady: race.status === 'training' && daysUntil < 30
           } as UpcomingRace;
         })
         .sort((a, b) => a.daysUntil - b.daysUntil) // Sort by closest race first
         .slice(0, 3); // Show only next 3 races
 
       setUpcomingRaces(processedRaces);
+      setCachedRaces(processedRaces);
+      setLastCacheUpdate(Date.now());
     } catch (error) {
       console.error('Error loading upcoming races:', error);
-      setUpcomingRaces(getSampleUpcomingRaces());
+      const sampleRaces = getSampleUpcomingRaces();
+      setUpcomingRaces(sampleRaces);
+      setCachedRaces(sampleRaces);
+      setLastCacheUpdate(Date.now());
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, isCacheValid, cachedRaces]);
 
   const getSampleUpcomingRaces = (): UpcomingRace[] => {
     const now = new Date();
@@ -143,27 +249,37 @@ export const UpcomingRacesWidget: React.FC = () => {
       {
         id: 'sample-1',
         name: 'Ironman Louisville',
-        date: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 45 days from now
+        date: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         location: 'Louisville, KY',
         distance_type: 'ironman',
         status: 'registered',
         daysUntil: 45,
-        preparationStatus: 'good'
+        hoursUntil: 12,
+        minutesUntil: 30,
+        preparationStatus: 'good',
+        trainingProgress: 75,
+        equipmentReady: true,
+        nutritionPlanReady: false
       },
       {
         id: 'sample-2',
         name: 'Nashville Sprint Triathlon',
-        date: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 21 days from now
+        date: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         location: 'Nashville, TN',
         distance_type: 'sprint',
         status: 'training',
         daysUntil: 21,
-        preparationStatus: 'excellent'
+        hoursUntil: 8,
+        minutesUntil: 15,
+        preparationStatus: 'excellent',
+        trainingProgress: 90,
+        equipmentReady: true,
+        nutritionPlanReady: true
       }
     ];
   };
 
-  const calculatePreparationStatus = (daysUntil: number, status: string): 'excellent' | 'good' | 'needs-attention' | 'unknown' => {
+  const calculatePreparationStatus = useCallback((daysUntil: number, status: string): 'excellent' | 'good' | 'needs-attention' | 'unknown' => {
     if (status === 'completed') return 'excellent';
 
     if (daysUntil > 60) return 'good';
@@ -173,9 +289,22 @@ export const UpcomingRacesWidget: React.FC = () => {
     if (daysUntil > 14) return 'needs-attention';
     if (status === 'training') return 'good';
     return 'needs-attention';
-  };
+  }, []);
 
-  const getStatusColor = (status: string) => {
+  const calculateTrainingProgress = useCallback((daysUntil: number, status: string): number => {
+    if (status === 'completed') return 100;
+    if (status === 'interested') return 0;
+
+    // Estimate training progress based on days until race and status
+    if (daysUntil > 90) return 25; // Early preparation
+    if (daysUntil > 60) return 50; // Build phase
+    if (daysUntil > 30) return 75; // Peak phase
+    if (daysUntil > 14) return 85; // Taper phase
+    if (daysUntil > 7) return 95;  // Race week
+    return 98; // Final days
+  }, []);
+
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'registered':
         return 'bg-green-500/20 text-green-400 border-green-400/30';
@@ -188,9 +317,9 @@ export const UpcomingRacesWidget: React.FC = () => {
       default:
         return 'bg-white/20 text-white/70 border-white/30';
     }
-  };
+  }, []);
 
-  const getPreparationColor = (status: 'excellent' | 'good' | 'needs-attention' | 'unknown') => {
+  const getPreparationColor = useCallback((status: 'excellent' | 'good' | 'needs-attention' | 'unknown') => {
     switch (status) {
       case 'excellent':
         return 'text-green-400';
@@ -201,7 +330,7 @@ export const UpcomingRacesWidget: React.FC = () => {
       default:
         return 'text-white/50';
     }
-  };
+  }, []);
 
   const formatDate = (dateStr: string): string => {
     const date = new Date(dateStr);
@@ -226,6 +355,26 @@ export const UpcomingRacesWidget: React.FC = () => {
         return type.charAt(0).toUpperCase() + type.slice(1);
     }
   };
+
+  const formatCountdown = useCallback((race: UpcomingRace): string => {
+    if (race.daysUntil > 7) {
+      return `${race.daysUntil} days`;
+    } else if (race.daysUntil > 1) {
+      return `${race.daysUntil}d ${race.hoursUntil}h`;
+    } else if (race.daysUntil === 1) {
+      return `1 day ${race.hoursUntil}h`;
+    } else if (race.hoursUntil > 0) {
+      return `${race.hoursUntil}h ${race.minutesUntil}m`;
+    } else {
+      return `${race.minutesUntil}m`;
+    }
+  }, []);
+
+  const getCountdownUrgency = useCallback((daysUntil: number): 'high' | 'medium' | 'low' => {
+    if (daysUntil <= 7) return 'high';
+    if (daysUntil <= 30) return 'medium';
+    return 'low';
+  }, []);
 
   if (isLoading) {
     return (
@@ -275,7 +424,7 @@ export const UpcomingRacesWidget: React.FC = () => {
         </button>
       </div>
 
-      {upcomingRaces.length === 0 ? (
+      {updatedRaces.length === 0 ? (
         <div className="text-center py-6">
           <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-3">
             <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,17 +441,27 @@ export const UpcomingRacesWidget: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {upcomingRaces.map((race) => (
-            <div key={race.id} className="border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all">
+          {updatedRaces.map((race) => (
+            <div key={race.id} className={`border rounded-xl p-4 hover:border-white/20 transition-all ${
+              getCountdownUrgency(race.daysUntil) === 'high' ? 'border-orange-400/30 bg-orange-500/5' :
+              getCountdownUrgency(race.daysUntil) === 'medium' ? 'border-yellow-400/20 bg-yellow-500/5' :
+              'border-white/10 bg-white/5'
+            }`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h4 className="text-white font-semibold mb-1">{race.name}</h4>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h4 className="text-white font-semibold">{race.name}</h4>
+                    {getCountdownUrgency(race.daysUntil) === 'high' && (
+                      <TbAlert className="w-4 h-4 text-orange-400" />
+                    )}
+                  </div>
                   <div className="flex items-center space-x-2 text-sm text-white/70 mb-2">
+                    <TbCalendarTime className="w-3 h-3" />
                     <span>{formatDate(race.date)}</span>
                     <span>•</span>
                     <span>{race.location}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mb-2">
                     <span className={`px-2 py-1 rounded-lg border text-xs font-medium ${getStatusColor(race.status)}`}>
                       {race.status.charAt(0).toUpperCase() + race.status.slice(1)}
                     </span>
@@ -312,12 +471,48 @@ export const UpcomingRacesWidget: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-white font-mono mb-1">
-                    {race.daysUntil}
+                  <div className={`text-2xl font-bold font-mono mb-1 ${
+                    getCountdownUrgency(race.daysUntil) === 'high' ? 'text-orange-400' :
+                    getCountdownUrgency(race.daysUntil) === 'medium' ? 'text-yellow-400' :
+                    'text-white'
+                  }`}>
+                    {formatCountdown(race)}
                   </div>
-                  <div className="text-xs text-white/60">
-                    {race.daysUntil === 1 ? 'day' : 'days'}
-                  </div>
+                  <div className="text-xs text-white/60">remaining</div>
+                </div>
+              </div>
+
+              {/* Training Progress Bar */}
+              <div className="mb-3">
+                <div className="flex items-center justify-between text-xs text-white/70 mb-1">
+                  <span>Training Progress</span>
+                  <span>{race.trainingProgress}%</span>
+                </div>
+                <div className="bg-white/10 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-blue-400 to-green-400 h-2 rounded-full transition-all duration-1000"
+                    style={{ width: `${race.trainingProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Preparation Checklist */}
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${
+                    race.preparationStatus === 'excellent' ? 'bg-green-400' :
+                    race.preparationStatus === 'good' ? 'bg-blue-400' :
+                    race.preparationStatus === 'needs-attention' ? 'bg-orange-400' : 'bg-white/40'
+                  }`}></div>
+                  <span className="text-xs text-white/70">Prep</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${race.equipmentReady ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                  <span className="text-xs text-white/70">Gear</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${race.nutritionPlanReady ? 'bg-green-400' : 'bg-orange-400'}`}></div>
+                  <span className="text-xs text-white/70">Nutrition</span>
                 </div>
               </div>
 
@@ -325,7 +520,11 @@ export const UpcomingRacesWidget: React.FC = () => {
               <div className="mb-3">
                 <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-orange-400 to-red-400 h-1.5 rounded-full transition-all duration-1000"
+                    className={`h-1.5 rounded-full transition-all duration-1000 ${
+                      getCountdownUrgency(race.daysUntil) === 'high' ? 'bg-gradient-to-r from-orange-400 to-red-400' :
+                      getCountdownUrgency(race.daysUntil) === 'medium' ? 'bg-gradient-to-r from-yellow-400 to-orange-400' :
+                      'bg-gradient-to-r from-blue-400 to-green-400'
+                    }`}
                     style={{
                       width: `${Math.max(10, Math.min(100, ((90 - race.daysUntil) / 90) * 100))}%`
                     }}
@@ -333,26 +532,24 @@ export const UpcomingRacesWidget: React.FC = () => {
                 </div>
               </div>
 
-              {/* Preparation Status */}
+              {/* Action Buttons */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    race.preparationStatus === 'excellent' ? 'bg-green-400' :
-                    race.preparationStatus === 'good' ? 'bg-blue-400' :
-                    race.preparationStatus === 'needs-attention' ? 'bg-orange-400' : 'bg-white/40'
-                  }`}></div>
                   <span className={`text-xs font-medium ${getPreparationColor(race.preparationStatus)}`}>
                     {race.preparationStatus === 'excellent' ? 'Ready to race!' :
                      race.preparationStatus === 'good' ? 'On track' :
                      race.preparationStatus === 'needs-attention' ? 'Needs focus' : 'Unknown status'}
                   </span>
                 </div>
-                <button
-                  onClick={() => router.push('/(tabs)/planning')}
-                  className="text-xs text-white/60 hover:text-white transition-colors"
-                >
-                  Plan →
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => router.push('/(tabs)/planning')}
+                    className="text-xs text-white/60 hover:text-white transition-colors flex items-center space-x-1"
+                  >
+                    <TbTarget className="w-3 h-3" />
+                    <span>Plan</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -361,7 +558,7 @@ export const UpcomingRacesWidget: React.FC = () => {
           <div className="pt-4 border-t border-white/10">
             <div className="flex items-center justify-between text-xs text-white/50">
               <span>
-                {upcomingRaces.filter(r => r.status === 'registered').length} registered races
+                {updatedRaces.filter(r => r.status === 'registered').length} registered races
               </span>
               <button
                 onClick={() => router.push('/(tabs)/races')}

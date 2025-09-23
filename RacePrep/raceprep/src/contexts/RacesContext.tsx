@@ -44,7 +44,7 @@ export const RacesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Start with clean slate - users will add their own races
       setSavedRaces([]);
     }
-  }, [user, savedRaces.length]);
+  }, [user]); // Removed savedRaces.length to prevent infinite loop
 
   const savedRaceIds = savedRaces.map(race => race.id);
 
