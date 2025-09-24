@@ -234,4 +234,4 @@ Private project - Kinetic Brand Partners © 2024
 ---
 
 Built with ❤️ for the triathlon community
-# Trigger deployment - Sun Sep 21 11:29:07 EDT 2025
+# Cache-busting deployment - Recent Activities removed - Tue Sep 24 08:22:00 EDT 2024
