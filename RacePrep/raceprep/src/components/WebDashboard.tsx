@@ -8,7 +8,6 @@ import { RacePredictionModal } from './RacePredictionModal';
 import { AddResultModal } from './AddResultModal';
 import { PerformanceOverviewWidget } from './dashboard/PerformanceOverviewWidget';
 import { UpcomingRacesWidget } from './dashboard/UpcomingRacesWidget';
-import { RecentActivitiesWidget } from './dashboard/RecentActivitiesWidget';
 import { GoalsProgressWidget } from './dashboard/GoalsProgressWidget';
 import { WeatherWidget } from './dashboard/WeatherWidget';
 import {
@@ -464,8 +463,6 @@ export const WebDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Recent Activities */}
-            <RecentActivitiesWidget />
 
             {/* Goals Progress */}
             <GoalsProgressWidget />
