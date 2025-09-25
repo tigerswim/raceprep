@@ -1268,6 +1268,7 @@ function RacesScreenContent() {
         {/* Race Update Modal */}
         {showUpdateModal && raceToUpdate && (
           <ImportedRaceUpdateModal
+            key={raceToUpdate.id}
             race={raceToUpdate}
             onClose={closeUpdateModal}
             onUpdate={handleRaceUpdate}
