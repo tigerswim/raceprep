@@ -208,8 +208,13 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       let result;
 
       if (isUserCreatedRace) {
-        // For user-created races, use the userRaces helper
+        // For user-created races, include existing race data to pass validation
         const updateData = {
+          // Include existing required fields
+          name: race.name,
+          date: race.date,
+          location: race.location,
+          // Update with new values
           status: formData.status,
           distance_type: validDistanceType,
           ...(formData.custom_distances && {
