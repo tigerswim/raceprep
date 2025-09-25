@@ -825,8 +825,17 @@ function RacesScreenContent() {
 
   // Handle race update completion
   const handleRaceUpdate = () => {
-    loadMyRaces();
-    loadUserCreatedRaces();
+    console.log('handleRaceUpdate called - refreshing race data...');
+
+    // Force reload by clearing any cache
+    setMyRaces([]);
+    setUserCreatedRaces([]);
+
+    // Wait a bit then reload to ensure cache is cleared
+    setTimeout(() => {
+      loadMyRaces();
+      loadUserCreatedRaces();
+    }, 100);
   };
 
   // Race result handler

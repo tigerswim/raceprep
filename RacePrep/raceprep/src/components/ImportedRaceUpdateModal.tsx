@@ -235,7 +235,21 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           }
 
           console.log('Updating user-created race with data:', updateData); // Debug log
+          console.log('Race ID being updated:', race.id); // Debug log
+          console.log('Original race data:', race); // Debug log
+
           result = await dbHelpers.userRaces.update(race.id, updateData);
+
+          console.log('Update result data:', result.data); // Debug log
+          console.log('Update result error:', result.error); // Debug log
+
+          // Verify the update actually happened by checking the returned data
+          if (result.data) {
+            console.log('Updated race status in DB:', result.data.status);
+            console.log('Updated race distance_type in DB:', result.data.distance_type);
+            console.log('Updated race notes in DB:', result.data.notes);
+            console.log('Updated race bike_distance in DB:', result.data.bike_distance);
+          }
         } catch (updateError: any) {
           console.warn('Full update failed, trying basic update:', updateError);
 
@@ -249,6 +263,10 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
 
           console.log('Attempting basic user race update:', basicUpdateData);
           result = await dbHelpers.userRaces.update(race.id, basicUpdateData);
+
+          if (result.data) {
+            console.log('Basic update result - status:', result.data.status);
+          }
         }
       } else {
         // For imported races, use the userPlannedRaces helper
@@ -287,12 +305,15 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         } else {
           console.log('Status-only update succeeded');
           alert('Race status updated successfully! Other settings may require database updates.');
+          console.log('Calling onUpdate to refresh UI...');
           onUpdate();
           onClose();
           return;
         }
       }
 
+      console.log('Update succeeded, calling onUpdate to refresh UI...');
+      console.log('Final result data before refresh:', result.data);
       onUpdate();
       onClose();
     } catch (error: any) {
