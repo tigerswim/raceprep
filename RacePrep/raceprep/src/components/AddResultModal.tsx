@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { UserRaceFormModal } from './UserRaceFormModal';
+import { dbHelpers } from '../services/supabase';
 
 interface AddResultModalProps {
   onClose: () => void;
@@ -7,6 +9,11 @@ interface AddResultModalProps {
 }
 
 export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmit, races }) => {
+  const [activeTab, setActiveTab] = useState<'select' | 'create'>('select');
+  const [showCreateRaceModal, setShowCreateRaceModal] = useState(false);
+  const [isCreatingRace, setIsCreatingRace] = useState(false);
+  const [updatedRaces, setUpdatedRaces] = useState(races);
+
   const [formData, setFormData] = useState({
     race_id: '',
     result_date: '',
@@ -150,6 +157,37 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
     setFormData(newFormData);
   };
 
+  // Handle race creation from the create tab
+  const handleCreateRace = async (raceData: any) => {
+    setIsCreatingRace(true);
+    try {
+      const { data: newRace, error } = await dbHelpers.userRaces.create(raceData);
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (newRace) {
+        // Add the new race to our local list
+        setUpdatedRaces(prev => [...prev, newRace]);
+
+        // Pre-select the new race for the result
+        setFormData(prev => ({ ...prev, race_id: newRace.id }));
+
+        // Switch back to the select tab
+        setActiveTab('select');
+
+        alert(`Race "${newRace.name}" created successfully! It has been selected for your result.`);
+      }
+    } catch (error: any) {
+      console.error('Error creating race:', error);
+      alert('Failed to create race. Please try again.');
+    } finally {
+      setIsCreatingRace(false);
+      setShowCreateRaceModal(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -204,10 +242,36 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
             </button>
           </div>
 
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-6 bg-white/5 p-1 rounded-2xl">
+            <button
+              onClick={() => setActiveTab('select')}
+              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
+                activeTab === 'select'
+                  ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Select Existing Race
+            </button>
+            <button
+              onClick={() => setActiveTab('create')}
+              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
+                activeTab === 'create'
+                  ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Create New Race
+            </button>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Race Information */}
-            <div className="space-y-4">
+
+          {/* Tab Content */}
+          {activeTab === 'select' && (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Race Information */}
+              <div className="space-y-4">
               <h3 className="text-lg font-semibold text-white mb-4">Race Information</h3>
               
               <div>
@@ -219,7 +283,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                   required
                 >
                   <option value="">Select a race</option>
-                  {races.map((race) => (
+                  {updatedRaces.map((race) => (
                     <option key={race.id} value={race.id}>
                       {race.name} - {race.date}
                     </option>
@@ -392,7 +456,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                     <div className="text-white/70 space-y-2 text-sm">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p><span className="text-white/90 font-medium">Race:</span> {races.find(r => r.id === formData.race_id)?.name || 'Not selected'}</p>
+                          <p><span className="text-white/90 font-medium">Race:</span> {updatedRaces.find(r => r.id === formData.race_id)?.name || 'Not selected'}</p>
                           <p><span className="text-white/90 font-medium">Date:</span> {formData.result_date || 'Not set'}</p>
                           <p><span className="text-white/90 font-medium">Total Time:</span> {formatTotalTime()}</p>
                         </div>
@@ -446,9 +510,64 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                 Save Race Result
               </button>
             </div>
-          </form>
+            </form>
+          )}
+
+          {activeTab === 'create' && (
+            <div className="space-y-6">
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 text-center">
+                <h3 className="text-lg font-bold text-white mb-4">Create a New Race</h3>
+                <p className="text-white/70 mb-6">
+                  Create your own custom race to add results for events that aren't in our database.
+                </p>
+                <button
+                  onClick={() => setShowCreateRaceModal(true)}
+                  disabled={isCreatingRace}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 flex items-center gap-2 mx-auto"
+                >
+                  {isCreatingRace ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      Creating Race...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Create New Race
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {formData.race_id && (
+                <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                  <p className="text-green-400 text-sm font-medium mb-2">✓ Race Created Successfully!</p>
+                  <p className="text-white/70 text-sm">
+                    Your new race has been created and selected. Switch to the "Select Existing Race" tab to continue adding your result.
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('select')}
+                    className="mt-3 bg-green-500/20 hover:bg-green-500/30 text-green-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Continue to Add Result
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Create Race Modal */}
+      {showCreateRaceModal && (
+        <UserRaceFormModal
+          mode="create"
+          onClose={() => setShowCreateRaceModal(false)}
+          onSubmit={handleCreateRace}
+        />
+      )}
     </div>
   );
 };

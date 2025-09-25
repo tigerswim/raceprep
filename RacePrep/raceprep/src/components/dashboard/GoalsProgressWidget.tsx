@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
+import { TbTrophy, TbTarget, TbCalendarTime, TbTrendingUp, TbAlertTriangle, TbCheck, TbClock, TbFlame } from 'react-icons/tb';
 
 interface Goal {
   id: string;
@@ -14,6 +15,32 @@ interface Goal {
   progress_percentage: number;
   category: 'performance' | 'training' | 'racing';
   distance_type?: string;
+  daysUntilTarget?: number;
+  urgency?: 'high' | 'medium' | 'low';
+  progressPercentage?: number;
+  status?: string;
+  recentlyUpdated?: boolean;
+  milestone?: boolean;
+  estimatedCompletion?: string;
+}
+
+interface UserGoal {
+  id: string;
+  title: string;
+  type: 'race_count' | 'race_time' | 'training_volume' | 'transition_time' | 'other';
+  target_value: string;
+  current_value: string;
+  target_date?: string;
+  achievement_status: 'not_started' | 'in_progress' | 'achieved' | 'missed';
+  distance_type?: string;
+}
+
+interface GoalCountdown {
+  goalId: string;
+  daysRemaining: number;
+  hoursRemaining: number;
+  minutesRemaining: number;
+  timeStatus: 'plenty' | 'approaching' | 'urgent' | 'overdue';
 }
 
 interface GoalSummary {
@@ -21,8 +48,21 @@ interface GoalSummary {
   achieved: number;
   inProgress: number;
   notStarted: number;
+  overdue: number;
   achievementRate: number;
   nextMilestone?: Goal;
+  recentAchievements: Goal[];
+  urgentGoals: Goal[];
+  milestoneGoals: Goal[];
+}
+
+interface GoalNotification {
+  id: string;
+  type: 'achievement' | 'milestone' | 'deadline_warning' | 'progress_update';
+  message: string;
+  goalId: string;
+  timestamp: string;
+  isNew: boolean;
 }
 
 export const GoalsProgressWidget: React.FC = () => {
@@ -31,61 +71,83 @@ export const GoalsProgressWidget: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [summary, setSummary] = useState<GoalSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [countdowns, setCountdowns] = useState<GoalCountdown[]>([]);
 
-  useEffect(() => {
-    if (user) {
-      loadGoals();
+  // Helper functions defined first to avoid hoisting issues
+  const calculateProgressPercentage = useCallback((goal: UserGoal): number => {
+    const current = parseFloat(goal.current_value) || 0;
+    const target = parseFloat(goal.target_value) || 1;
+
+    if (goal.type === 'race_time' || goal.type === 'transition_time') {
+      // For time-based goals, lower is better
+      const currentSeconds = parseTimeToSeconds(goal.current_value);
+      const targetSeconds = parseTimeToSeconds(goal.target_value);
+
+      if (currentSeconds <= targetSeconds) {
+        return 100; // Goal achieved
+      }
+
+      // Calculate progress towards the target (max 99% until achieved)
+      const improvement = Math.max(0, (currentSeconds - targetSeconds) / currentSeconds);
+      return Math.min(99, Math.max(0, (1 - improvement) * 100));
     } else {
-      setIsLoading(false);
+      // For count/volume goals, higher is better
+      return Math.min(100, (current / target) * 100);
     }
-  }, [user]);
+  }, []);
 
-  const loadGoals = async () => {
-    try {
-      setIsLoading(true);
-
-      const { data: userGoals, error } = await dbHelpers.userGoals.getAll();
-
-      if (error) {
-        console.warn('Error loading user goals:', error);
-        setGoals(getSampleGoals());
-        setSummary(calculateSummary(getSampleGoals()));
-        return;
-      }
-
-      if (!userGoals || userGoals.length === 0) {
-        setGoals([]);
-        setSummary(null);
-        return;
-      }
-
-      // Process goals and calculate progress
-      const processedGoals = userGoals.map(goal => ({
-        id: goal.id,
-        title: goal.title,
-        type: goal.type,
-        target_value: goal.target_value,
-        current_value: goal.current_value || '0',
-        target_date: goal.target_date,
-        achievement_status: goal.achievement_status,
-        progress_percentage: calculateProgressPercentage(goal),
-        category: categorizeGoal(goal.type),
-        distance_type: goal.distance_type
-      }));
-
-      setGoals(processedGoals);
-      setSummary(calculateSummary(processedGoals));
-
-    } catch (error) {
-      console.error('Error loading goals:', error);
-      setGoals(getSampleGoals());
-      setSummary(calculateSummary(getSampleGoals()));
-    } finally {
-      setIsLoading(false);
+  const parseTimeToSeconds = useCallback((timeStr: string): number => {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(':').map(Number);
+    if (parts.length === 2) {
+      return parts[0] * 60 + parts[1]; // MM:SS
+    } else if (parts.length === 3) {
+      return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
     }
-  };
+    return parseFloat(timeStr) || 0;
+  }, []);
 
-  const getSampleGoals = (): Goal[] => {
+  const categorizeGoal = useCallback((type: string): 'performance' | 'training' | 'racing' => {
+    switch (type) {
+      case 'race_count':
+        return 'racing';
+      case 'training_volume':
+        return 'training';
+      case 'race_time':
+      case 'transition_time':
+        return 'performance';
+      default:
+        return 'performance';
+    }
+  }, []);
+
+  const calculateSummary = useCallback((goals: Goal[]): GoalSummary => {
+    const total = goals.length;
+    const achieved = goals.filter(g => g.achievement_status === 'achieved').length;
+    const inProgress = goals.filter(g => g.achievement_status === 'in_progress').length;
+    const notStarted = goals.filter(g => g.achievement_status === 'not_started').length;
+    const achievementRate = total > 0 ? (achieved / total) * 100 : 0;
+
+    // Find the goal closest to completion that hasn't been achieved yet
+    const nextMilestone = goals
+      .filter(g => g.achievement_status !== 'achieved')
+      .sort((a, b) => b.progress_percentage - a.progress_percentage)[0];
+
+    return {
+      total,
+      achieved,
+      inProgress,
+      notStarted,
+      achievementRate,
+      nextMilestone,
+      recentAchievements: [],
+      urgentGoals: [],
+      milestoneGoals: [],
+      overdue: 0
+    };
+  }, []);
+
+  const getSampleGoals = useCallback((): Goal[] => {
     return [
       {
         id: 'sample-1',
@@ -129,78 +191,132 @@ export const GoalsProgressWidget: React.FC = () => {
         category: 'performance'
       }
     ];
-  };
+  }, []);
 
-  const calculateProgressPercentage = (goal: any): number => {
-    const current = parseFloat(goal.current_value) || 0;
-    const target = parseFloat(goal.target_value) || 1;
+  // Update countdowns every minute for goals with target dates
+  const updateCountdowns = useCallback(() => {
+    if (!goals || goals.length === 0) {
+      setCountdowns([]);
+      return;
+    }
 
-    if (goal.type === 'race_time' || goal.type === 'transition_time') {
-      // For time-based goals, lower is better
-      const currentSeconds = parseTimeToSeconds(goal.current_value);
-      const targetSeconds = parseTimeToSeconds(goal.target_value);
+    const now = new Date();
+    const newCountdowns = goals
+      .filter(goal => goal.target_date)
+      .map(goal => {
+        try {
+          const targetDate = new Date(goal.target_date!);
+          const timeDiff = targetDate.getTime() - now.getTime();
+          const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+          const hoursRemaining = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutesRemaining = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
-      if (currentSeconds <= targetSeconds) {
-        return 100; // Goal achieved
+          let timeStatus: 'plenty' | 'approaching' | 'urgent' | 'overdue' = 'plenty';
+          if (daysRemaining < 0) timeStatus = 'overdue';
+          else if (daysRemaining <= 7) timeStatus = 'urgent';
+          else if (daysRemaining <= 30) timeStatus = 'approaching';
+
+          return {
+            goalId: goal.id,
+            daysRemaining: Math.max(0, daysRemaining),
+            hoursRemaining: Math.max(0, hoursRemaining),
+            minutesRemaining: Math.max(0, minutesRemaining),
+            timeStatus
+          };
+        } catch (err) {
+          console.warn('Error calculating countdown for goal:', goal.id, err);
+          return {
+            goalId: goal.id,
+            daysRemaining: 0,
+            hoursRemaining: 0,
+            minutesRemaining: 0,
+            timeStatus: 'plenty' as const
+          };
+        }
+      });
+    setCountdowns(newCountdowns);
+  }, [goals]);
+
+  useEffect(() => {
+    updateCountdowns();
+    const interval = setInterval(updateCountdowns, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, [goals]); // Only depend on goals, not the updateCountdowns function
+
+  const loadGoals = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const { data: userGoals, error } = await dbHelpers.userGoals.getAll();
+
+      if (error) {
+        console.warn('Error loading user goals:', error);
+        const sampleGoals = getSampleGoals();
+        setGoals(sampleGoals);
+        setSummary(calculateSummary(sampleGoals));
+        return;
       }
 
-      // Calculate progress towards the target (max 99% until achieved)
-      const improvement = Math.max(0, (currentSeconds - targetSeconds) / currentSeconds);
-      return Math.min(99, Math.max(0, (1 - improvement) * 100));
+      if (!userGoals || userGoals.length === 0) {
+        setGoals([]);
+        setSummary(null);
+        return;
+      }
+
+      // Process goals and calculate progress with error handling
+      const processedGoals: Goal[] = userGoals.map((goal: UserGoal) => {
+        try {
+          return {
+            id: goal.id,
+            title: goal.title,
+            type: goal.type,
+            target_value: goal.target_value,
+            current_value: goal.current_value || '0',
+            target_date: goal.target_date,
+            achievement_status: goal.achievement_status,
+            progress_percentage: calculateProgressPercentage(goal),
+            category: categorizeGoal(goal.type),
+            distance_type: goal.distance_type
+          };
+        } catch (err) {
+          console.warn('Error processing goal:', goal.id, err);
+          return {
+            id: goal.id,
+            title: goal.title,
+            type: goal.type,
+            target_value: goal.target_value,
+            current_value: goal.current_value || '0',
+            target_date: goal.target_date,
+            achievement_status: goal.achievement_status,
+            progress_percentage: 0,
+            category: 'performance' as const,
+            distance_type: goal.distance_type
+          };
+        }
+      });
+
+      setGoals(processedGoals);
+      setSummary(calculateSummary(processedGoals));
+
+    } catch (error) {
+      console.error('Error loading goals:', error);
+      const sampleGoals = getSampleGoals();
+      setGoals(sampleGoals);
+      setSummary(calculateSummary(sampleGoals));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadGoals();
     } else {
-      // For count/volume goals, higher is better
-      return Math.min(100, (current / target) * 100);
+      setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  const parseTimeToSeconds = (timeStr: string): number => {
-    if (!timeStr) return 0;
-    const parts = timeStr.split(':').map(Number);
-    if (parts.length === 2) {
-      return parts[0] * 60 + parts[1]; // MM:SS
-    } else if (parts.length === 3) {
-      return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
-    }
-    return parseFloat(timeStr) || 0;
-  };
-
-  const categorizeGoal = (type: string): 'performance' | 'training' | 'racing' => {
-    switch (type) {
-      case 'race_count':
-        return 'racing';
-      case 'training_volume':
-        return 'training';
-      case 'race_time':
-      case 'transition_time':
-        return 'performance';
-      default:
-        return 'performance';
-    }
-  };
-
-  const calculateSummary = (goals: Goal[]): GoalSummary => {
-    const total = goals.length;
-    const achieved = goals.filter(g => g.achievement_status === 'achieved').length;
-    const inProgress = goals.filter(g => g.achievement_status === 'in_progress').length;
-    const notStarted = goals.filter(g => g.achievement_status === 'not_started').length;
-    const achievementRate = total > 0 ? (achieved / total) * 100 : 0;
-
-    // Find the goal closest to completion that hasn't been achieved yet
-    const nextMilestone = goals
-      .filter(g => g.achievement_status !== 'achieved')
-      .sort((a, b) => b.progress_percentage - a.progress_percentage)[0];
-
-    return {
-      total,
-      achieved,
-      inProgress,
-      notStarted,
-      achievementRate,
-      nextMilestone
-    };
-  };
-
-  const formatGoalValue = (goal: Goal): { current: string; target: string } => {
+  const formatGoalValue = useCallback((goal: Goal): { current: string; target: string } => {
     if (goal.type === 'race_count') {
       return {
         current: goal.current_value,
@@ -222,9 +338,9 @@ export const GoalsProgressWidget: React.FC = () => {
         target: goal.target_value
       };
     }
-  };
+  }, []);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'achieved':
         return 'bg-green-500/20 text-green-400 border-green-400/30';
@@ -237,9 +353,9 @@ export const GoalsProgressWidget: React.FC = () => {
       default:
         return 'bg-white/20 text-white/70 border-white/30';
     }
-  };
+  }, []);
 
-  const getCategoryIcon = (category: 'performance' | 'training' | 'racing') => {
+  const getCategoryIcon = useCallback((category: 'performance' | 'training' | 'racing') => {
     switch (category) {
       case 'performance':
         return (
@@ -260,9 +376,9 @@ export const GoalsProgressWidget: React.FC = () => {
           </svg>
         );
     }
-  };
+  }, []);
 
-  const getCategoryColor = (category: 'performance' | 'training' | 'racing') => {
+  const getCategoryColor = useCallback((category: 'performance' | 'training' | 'racing') => {
     switch (category) {
       case 'performance':
         return 'bg-purple-500/20 text-purple-400';
@@ -271,7 +387,7 @@ export const GoalsProgressWidget: React.FC = () => {
       case 'racing':
         return 'bg-orange-500/20 text-orange-400';
     }
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -312,7 +428,7 @@ export const GoalsProgressWidget: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={() => window.location.hash = '#/profile'}
+          onClick={() => router.push('/(tabs)/profile')}
           className="text-purple-400 hover:text-purple-300 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -388,46 +504,87 @@ export const GoalsProgressWidget: React.FC = () => {
 
           {/* Goals List */}
           <div className="space-y-3">
-            {goals.slice(0, 4).map((goal) => (
-              <div key={goal.id} className="border border-white/10 rounded-xl p-3 hover:border-white/20 transition-all">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <div className={`w-4 h-4 rounded-lg flex items-center justify-center ${getCategoryColor(goal.category)}`}>
-                        {getCategoryIcon(goal.category)}
+            {goals.slice(0, 4).map((goal) => {
+              const countdown = countdowns.find(c => c.goalId === goal.id);
+              return (
+                <div key={goal.id} className={`border rounded-xl p-3 hover:border-white/20 transition-all ${
+                  countdown?.timeStatus === 'urgent' ? 'border-orange-400/30 bg-orange-500/5' :
+                  countdown?.timeStatus === 'overdue' ? 'border-red-400/30 bg-red-500/5' :
+                  'border-white/10'
+                }`}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className={`w-4 h-4 rounded-lg flex items-center justify-center ${getCategoryColor(goal.category)}`}>
+                          {getCategoryIcon(goal.category)}
+                        </div>
+                        <h4 className="text-white text-sm font-medium">{goal.title}</h4>
+                        {countdown?.timeStatus === 'urgent' && (
+                          <TbAlertTriangle className="w-3 h-3 text-orange-400" />
+                        )}
+                        {countdown?.timeStatus === 'overdue' && (
+                          <TbAlertTriangle className="w-3 h-3 text-red-400" />
+                        )}
                       </div>
-                      <h4 className="text-white text-sm font-medium">{goal.title}</h4>
+                      <div className="flex items-center space-x-2 flex-wrap">
+                        <span className={`px-2 py-1 rounded-lg border text-xs font-medium ${getStatusColor(goal.achievement_status)}`}>
+                          {goal.achievement_status ? goal.achievement_status.replace('_', ' ') : 'unknown'}
+                        </span>
+                        <span className="text-xs text-white/60">
+                          {formatGoalValue(goal).current} / {formatGoalValue(goal).target}
+                        </span>
+                        {countdown && countdown.daysRemaining >= 0 && (
+                          <span className={`text-xs px-2 py-1 rounded-lg ${
+                            countdown.timeStatus === 'urgent' ? 'bg-orange-500/20 text-orange-400' :
+                            countdown.timeStatus === 'overdue' ? 'bg-red-500/20 text-red-400' :
+                            countdown.timeStatus === 'approaching' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-blue-500/20 text-blue-400'
+                          }`}>
+                            <TbClock className="w-3 h-3 inline mr-1" />
+                            {countdown.daysRemaining > 0 ? `${countdown.daysRemaining}d` : `${countdown.hoursRemaining}h`}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-lg border text-xs font-medium ${getStatusColor(goal.achievement_status)}`}>
-                        {goal.achievement_status ? goal.achievement_status.replace('_', ' ') : 'unknown'}
-                      </span>
-                      <span className="text-xs text-white/60">
-                        {formatGoalValue(goal).current} / {formatGoalValue(goal).target}
-                      </span>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-white">
+                        {Math.round(goal.progress_percentage)}%
+                      </div>
+                      {goal.achievement_status === 'achieved' && (
+                        <TbCheck className="w-4 h-4 text-green-400 mx-auto mt-1" />
+                      )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-white">
-                      {Math.round(goal.progress_percentage)}%
-                    </div>
-                  </div>
-                </div>
 
-                {/* Progress Bar */}
-                <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className={`h-1.5 rounded-full transition-all duration-1000 ${
-                      goal.achievement_status === 'achieved' ? 'bg-gradient-to-r from-green-400 to-green-500' :
-                      goal.category === 'performance' ? 'bg-gradient-to-r from-purple-400 to-purple-500' :
-                      goal.category === 'training' ? 'bg-gradient-to-r from-green-400 to-teal-400' :
-                      'bg-gradient-to-r from-orange-400 to-red-400'
-                    }`}
-                    style={{ width: `${goal.progress_percentage}%` }}
-                  ></div>
+                  {/* Progress Bar */}
+                  <div className="bg-white/10 rounded-full h-2 overflow-hidden mb-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-1000 ${
+                        goal.achievement_status === 'achieved' ? 'bg-gradient-to-r from-green-400 to-green-500' :
+                        goal.category === 'performance' ? 'bg-gradient-to-r from-purple-400 to-purple-500' :
+                        goal.category === 'training' ? 'bg-gradient-to-r from-green-400 to-teal-400' :
+                        'bg-gradient-to-r from-orange-400 to-red-400'
+                      }`}
+                      style={{ width: `${goal.progress_percentage}%` }}
+                    ></div>
+                  </div>
+
+                  {/* Goal insights */}
+                  {goal.progress_percentage > 80 && goal.achievement_status !== 'achieved' && (
+                    <div className="flex items-center space-x-1 text-xs text-green-400">
+                      <TbFlame className="w-3 h-3" />
+                      <span>Almost there!</span>
+                    </div>
+                  )}
+                  {countdown?.timeStatus === 'urgent' && goal.progress_percentage < 70 && (
+                    <div className="flex items-center space-x-1 text-xs text-orange-400">
+                      <TbTrendingUp className="w-3 h-3" />
+                      <span>Needs focus to meet deadline</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Footer */}

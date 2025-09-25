@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AuthGuard } from '../../src/components/AuthGuard';
 import { dbHelpers } from '../../src/services/supabase';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -257,8 +257,10 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   const [dateFilter, setDateFilter] = useState<'week' | 'month' | 'all'>('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Computed filtered workouts
-  const filteredWorkouts = getFilteredWorkouts(workoutLogs, activityFilter, dateFilter);
+  // Computed filtered workouts - memoized to prevent unnecessary re-calculations
+  const filteredWorkouts = useMemo(() => {
+    return getFilteredWorkouts(workoutLogs, activityFilter, dateFilter);
+  }, [workoutLogs, activityFilter, dateFilter]);
 
   const [weeklyStats, setWeeklyStats] = useState({
     swim: { distance: 0, sessions: 0, time: 0 },
@@ -370,7 +372,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     window.location.href = stravaAuthUrl;
   }, [user?.id]);
 
-  const handleStravaDisconnect = async () => {
+  const handleStravaDisconnect = useCallback(async () => {
     if (!confirm('Are you sure you want to disconnect Strava? This will remove all synced training data.')) {
       return;
     }
@@ -421,9 +423,9 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
 
-  const handleStravaSync = async () => {
+  const handleStravaSync = useCallback(async () => {
     if (!stravaAccessToken) return;
     
     try {
@@ -509,51 +511,24 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [stravaAccessToken]);
 
   const handleWorkoutClick = useCallback((workout: WorkoutLog) => {
     setSelectedWorkout(workout);
     setShowWorkoutDetail(true);
   }, []);
 
-  const handleDeleteActivity = async (workoutId: string, stravaActivityId?: string) => {
-    if (!confirm('Are you sure you want to delete this activity?')) {
+  const loadTrainingData = useCallback(async () => {
+    if (!user) {
+      setTrainingEvents([]);
+      setTrainingArticles([]);
+      setWorkoutLogs([]);
       return;
     }
 
     try {
-      // Delete from database using session ID
-      const result = await dbHelpers.trainingSessions.delete(workoutId);
-      
-      if (result.error) {
-        console.error('Error deleting activity:', result.error);
-        alert('Failed to delete activity');
-        return;
-      }
-
-      // Store deleted Strava activity ID to prevent re-downloading
-      if (stravaActivityId) {
-        const deletedActivities = JSON.parse(localStorage.getItem('deletedStravaActivities') || '[]');
-        if (!deletedActivities.includes(stravaActivityId)) {
-          deletedActivities.push(stravaActivityId);
-          localStorage.setItem('deletedStravaActivities', JSON.stringify(deletedActivities));
-        }
-      }
-
-      // Reload training data to refresh the UI
-      await loadTrainingData();
-      
-      alert('Activity deleted successfully');
-    } catch (error) {
-      console.error('Error deleting activity:', error);
-      alert('Failed to delete activity');
-    }
-  };
-
-  const loadTrainingData = useCallback(async () => {
-    try {
       setIsLoading(true);
-      
+
       // Temporarily disable database calls until tables are created
       // TODO: Re-enable when training_articles and training_events tables exist
       /*
@@ -565,12 +540,12 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       if (!eventsResult.error && eventsResult.data) {
         setTrainingEvents(eventsResult.data);
       }
-      
+
       if (!articlesResult.error && articlesResult.data) {
         setTrainingArticles(articlesResult.data);
       }
       */
-      
+
       // Use mock data for now
       setTrainingEvents([]);
       setTrainingArticles([]);
@@ -672,7 +647,41 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
+
+  const handleDeleteActivity = useCallback(async (workoutId: string, stravaActivityId?: string) => {
+    if (!confirm('Are you sure you want to delete this activity?')) {
+      return;
+    }
+
+    try {
+      // Delete from database using session ID
+      const result = await dbHelpers.trainingSessions.delete(workoutId);
+      
+      if (result.error) {
+        console.error('Error deleting activity:', result.error);
+        alert('Failed to delete activity');
+        return;
+      }
+
+      // Store deleted Strava activity ID to prevent re-downloading
+      if (stravaActivityId) {
+        const deletedActivities = JSON.parse(localStorage.getItem('deletedStravaActivities') || '[]');
+        if (!deletedActivities.includes(stravaActivityId)) {
+          deletedActivities.push(stravaActivityId);
+          localStorage.setItem('deletedStravaActivities', JSON.stringify(deletedActivities));
+        }
+      }
+
+      // Reload training data to refresh the UI
+      await loadTrainingData();
+      
+      alert('Activity deleted successfully');
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      alert('Failed to delete activity');
+    }
+  }, [loadTrainingData]);
 
   // Main data loading effect - moved after function declarations to fix initialization order
   useEffect(() => {
@@ -700,7 +709,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       isMounted = false;
       abortController.abort();
     };
-  }, [user, loadTrainingData, loadStravaData]);
+  }, [loadTrainingData, loadStravaData]); // Include stable function dependencies
 
   const renderOverview = () => (
     <div className="space-y-6">
@@ -1971,7 +1980,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   if (hasError) {
     return (
-      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100dvh' }}>
         <div className="text-center">
           <div className="text-white text-lg mb-4">Training Tab Temporarily Unavailable</div>
           <div className="text-white/70 text-sm mb-4">We&apos;re working to resolve this issue. Please try refreshing the page.</div>
@@ -1988,14 +1997,14 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   if (isLoading) {
     return (
-      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100dvh' }}>
         <div className="text-white text-lg">Loading training data...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+    <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100dvh' }}>
         {/* Background Effects */}
         <div className="fixed inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>

@@ -53,27 +53,63 @@ export const PerformanceOverviewWidget: React.FC = () => {
   useEffect(() => {
     if (user) {
       loadUserProfileAndStats();
-      checkStravaConnection();
     } else {
       setIsLoading(false);
     }
   }, [user]);
 
+  // Call checkStravaConnection after userProfile is loaded
+  useEffect(() => {
+    if (userProfile) {
+      checkStravaConnection();
+    }
+  }, [userProfile]);
+
   const checkStravaConnection = () => {
-    const token = localStorage.getItem('strava_access_token');
-    setStravaConnected(!!token);
+    // Check if user profile has valid Strava token (same logic as Training tab)
+    const hasValidStravaToken = userProfile?.strava_access_token &&
+      userProfile?.strava_token_expires_at &&
+      new Date(userProfile.strava_token_expires_at) > new Date();
+
+    console.log('[PERFORMANCE_WIDGET] Strava connection check:', {
+      hasToken: !!userProfile?.strava_access_token,
+      hasExpiry: !!userProfile?.strava_token_expires_at,
+      isExpired: userProfile?.strava_token_expires_at ? new Date(userProfile.strava_token_expires_at) <= new Date() : 'no expiry',
+      connected: !!hasValidStravaToken
+    });
+
+    setStravaConnected(!!hasValidStravaToken);
   };
 
   const handleStravaSync = async () => {
-    const stravaAccessToken = localStorage.getItem('strava_access_token');
-    if (!stravaAccessToken) return;
+    const stravaAccessToken = userProfile?.strava_access_token;
+    if (!stravaAccessToken) {
+      console.warn('[PERFORMANCE_WIDGET] No Strava access token found in user profile');
+      return;
+    }
 
     try {
       setIsSyncing(true);
 
       // Get recent activities from Strava using the API base URL
       const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
+      console.log('[PERFORMANCE_WIDGET] Making Strava API call:', {
+        url: `${apiBaseUrl}/strava/activities`,
+        hasToken: !!stravaAccessToken,
+        tokenLength: stravaAccessToken?.length
+      });
+
       const activitiesResponse = await fetch(`${apiBaseUrl}/strava/activities?access_token=${stravaAccessToken}&per_page=50`);
+
+      if (!activitiesResponse.ok) {
+        console.error('[PERFORMANCE_WIDGET] Strava API error:', {
+          status: activitiesResponse.status,
+          statusText: activitiesResponse.statusText,
+          url: activitiesResponse.url
+        });
+        throw new Error(`Failed to fetch activities: ${activitiesResponse.status} ${activitiesResponse.statusText}`);
+      }
+
       const activities = await activitiesResponse.json();
 
       // Transform and sync to database (same logic as Training tab)
@@ -173,10 +209,22 @@ export const PerformanceOverviewWidget: React.FC = () => {
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
       // Get training sessions from last 30 days
+      console.log('[PERFORMANCE_WIDGET] Querying training sessions:', {
+        startDate: thirtyDaysAgo.toISOString().split('T')[0],
+        endDate: now.toISOString().split('T')[0],
+        userId: user!.id
+      });
+
       const { data: sessions, error } = await dbHelpers.trainingSessions.getByDateRange(
         thirtyDaysAgo.toISOString().split('T')[0],
         now.toISOString().split('T')[0]
       );
+
+      console.log('[PERFORMANCE_WIDGET] Training sessions response:', {
+        sessionsCount: sessions?.length || 0,
+        error: error?.message || 'none',
+        firstSession: sessions?.[0] || 'none'
+      });
 
       if (error) {
         console.warn('Error loading training sessions:', error);
@@ -185,6 +233,7 @@ export const PerformanceOverviewWidget: React.FC = () => {
       }
 
       const allSessions = sessions || [];
+      console.log('[PERFORMANCE_WIDGET] Processing sessions:', allSessions.length);
 
       // Filter sessions by time periods
       const last7DaySessions = allSessions.filter(s =>

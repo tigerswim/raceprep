@@ -6,6 +6,7 @@ import { GeolocationService } from '../../src/services/apiIntegrations';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { AuthGuard } from '../../src/components/AuthGuard';
 import { AddResultModal } from '../../src/components/AddResultModal';
+import { UserRaceManagement } from '../../src/components/UserRaceManagement';
 import { router } from 'expo-router';
 import {
   TbTrash,
@@ -180,7 +181,7 @@ function RacesScreenContent() {
   const { user } = useAuth();
   
   // State management
-  const [activeSection, setActiveSection] = useState<'discover' | 'upcoming' | 'past'>('upcoming');
+  const [activeSection, setActiveSection] = useState<'discover' | 'upcoming' | 'past' | 'created'>('upcoming');
   const [discoveredRaces, setDiscoveredRaces] = useState<any[]>([]);
   const [myRaces, setMyRaces] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,10 +200,29 @@ function RacesScreenContent() {
   
   // Add Result Modal state
   const [showAddResultModal, setShowAddResultModal] = useState(false);
+  const [userCreatedRaces, setUserCreatedRaces] = useState<any[]>([]);
 
   // Cache management states
   const [raceCache, setRaceCache] = useState<{[key: string]: {data: any[], timestamp: number}}>({});
   const CACHE_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+
+  // Load user-created races for the results modal
+  const loadUserCreatedRaces = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await dbHelpers.userRaces.getAll();
+      if (error) {
+        console.error('Error loading user-created races:', error);
+        setUserCreatedRaces([]);
+      } else {
+        setUserCreatedRaces(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading user-created races:', error);
+      setUserCreatedRaces([]);
+    }
+  }, [user]);
 
   const loadMyRaces = useCallback(async () => {
     if (!user) return;
@@ -268,6 +288,7 @@ function RacesScreenContent() {
     try {
       await Promise.all([
         loadMyRaces(),
+        loadUserCreatedRaces(),
         // Don't auto-load discovered races - let user search
       ]);
     } catch (error) {
@@ -287,6 +308,22 @@ function RacesScreenContent() {
     getCurrentLocation();
     loadSavedRaces();
   }, [user, initializeData, loadSavedRaces]);
+
+  // Create combined races array for the AddResultModal
+  const getAllRacesForResults = () => {
+    // Combine saved races (external) and user-created races for the results modal
+    const combinedRaces = [
+      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created' })),
+      ...myRaces.map(race => ({ ...race, source: 'saved' }))
+    ];
+
+    // Remove duplicates and sort by date
+    const uniqueRaces = combinedRaces.filter((race, index, arr) =>
+      arr.findIndex(r => r.id === race.id && r.source === race.source) === index
+    );
+
+    return uniqueRaces.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
 
   // Helper function to generate cache key from search parameters
   const generateCacheKey = (locationQuery: string, searchRadius: string, raceDistance: string) => {
@@ -710,20 +747,43 @@ function RacesScreenContent() {
     if (!user) return;
 
     try {
-      // Update local state immediately for responsiveness
-      setMyRaces(prev => prev.map(race =>
-        race.id === raceId ? { ...race, status: newStatus } : race
-      ));
+      // Find the race to determine if it's user-created or external
+      const race = [...myRaces, ...userCreatedRaces].find(r => r.id === raceId);
+      if (!race) {
+        alert('Race not found.');
+        return;
+      }
 
-      // Save to database
-      const { error } = await dbHelpers.userPlannedRaces.updateStatus(raceId, newStatus);
+      const isUserCreated = race.source === 'user_created' || userCreatedRaces.some(ur => ur.id === raceId);
+
+      // Update local state immediately for responsiveness
+      if (isUserCreated) {
+        setUserCreatedRaces(prev => prev.map(race =>
+          race.id === raceId ? { ...race, status: newStatus } : race
+        ));
+      } else {
+        setMyRaces(prev => prev.map(race =>
+          race.id === raceId ? { ...race, status: newStatus } : race
+        ));
+      }
+
+      // Save to database using the appropriate helper
+      const { error } = isUserCreated
+        ? await dbHelpers.userRaces.updateStatus(raceId, newStatus)
+        : await dbHelpers.userPlannedRaces.updateStatus(raceId, newStatus);
 
       if (error) {
         console.error('Error updating race status in database:', error);
         // Revert local state if database update fails
-        setMyRaces(prev => prev.map(race =>
-          race.id === raceId ? { ...race, status: race.status } : race
-        ));
+        if (isUserCreated) {
+          setUserCreatedRaces(prev => prev.map(race =>
+            race.id === raceId ? { ...race, status: race.status } : race
+          ));
+        } else {
+          setMyRaces(prev => prev.map(race =>
+            race.id === raceId ? { ...race, status: race.status } : race
+          ));
+        }
         alert('Failed to update race status. Please try again.');
         return;
       }
@@ -770,9 +830,10 @@ function RacesScreenContent() {
 
       alert('Race result added successfully!');
       setShowAddResultModal(false);
-      
+
       // Optionally reload race data to show updated information
       loadMyRaces();
+      loadUserCreatedRaces();
     } catch (error) {
       console.error('Error adding race result:', error);
       alert('Failed to save race result. Please try again.');
@@ -798,7 +859,13 @@ function RacesScreenContent() {
   };
 
   const getUpcomingRaces = () => {
-    const upcoming = myRaces.filter(race => {
+    // Combine both saved external races and user-created races
+    const allRaces = [
+      ...myRaces,
+      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created', status: 'interested' }))
+    ];
+
+    const upcoming = allRaces.filter(race => {
       const raceDate = new Date(race.date);
       return raceDate >= new Date() && race.status !== 'completed';
     });
@@ -806,7 +873,13 @@ function RacesScreenContent() {
   };
 
   const getPastRaces = () => {
-    const past = myRaces.filter(race => {
+    // Combine both saved external races and user-created races
+    const allRaces = [
+      ...myRaces,
+      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created', status: 'completed' }))
+    ];
+
+    const past = allRaces.filter(race => {
       const raceDate = new Date(race.date);
       return raceDate < new Date() || race.status === 'completed';
     });
@@ -998,6 +1071,7 @@ function RacesScreenContent() {
             {[
               { id: 'upcoming', label: 'My Upcoming Races', icon: 'TbFlag', count: getUpcomingRaces().length },
               { id: 'past', label: 'My Past Races', icon: 'TbTrophy', count: getPastRaces().length },
+              { id: 'created', label: 'My Created Races', icon: 'TbClipboard', count: 0 },
               { id: 'discover', label: 'Discover New Races', icon: 'TbSearch', count: getFilteredDiscoveredRaces().length }
             ].map((section) => (
               <button
@@ -1141,6 +1215,12 @@ function RacesScreenContent() {
                 </>
               )}
 
+              {activeSection === 'created' && (
+                <div className="col-span-full">
+                  <UserRaceManagement onRaceUpdate={loadMyRaces} />
+                </div>
+              )}
+
               {activeSection === 'discover' && (
                 <>
                   {getFilteredDiscoveredRaces().length > 0 ? (
@@ -1165,7 +1245,7 @@ function RacesScreenContent() {
           <AddResultModal
             onClose={() => setShowAddResultModal(false)}
             onSubmit={handleAddRaceResult}
-            races={myRaces}
+            races={getAllRacesForResults()}
           />
         )}
       </div>
