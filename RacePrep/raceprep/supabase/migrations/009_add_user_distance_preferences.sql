@@ -3,7 +3,7 @@
 -- and override the default distances with custom ones
 
 ALTER TABLE user_planned_races
-ADD COLUMN IF NOT EXISTS distance_type TEXT CHECK (distance_type IN ('sprint', 'olympic', 'half', 'ironman', 'custom')),
+ADD COLUMN IF NOT EXISTS distance_type TEXT CHECK (distance_type IN ('sprint', 'olympic', 'half', 'ironman', '70.3', 'custom')),
 ADD COLUMN IF NOT EXISTS user_swim_distance NUMERIC(10,3), -- User's custom swim distance in meters/yards
 ADD COLUMN IF NOT EXISTS user_bike_distance NUMERIC(10,3), -- User's custom bike distance in km/miles
 ADD COLUMN IF NOT EXISTS user_run_distance NUMERIC(10,3),  -- User's custom run distance in km/miles

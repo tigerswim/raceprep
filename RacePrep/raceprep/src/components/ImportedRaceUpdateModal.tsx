@@ -49,11 +49,33 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
     loadUserSettings();
   }, [user]);
 
+  // Map external distance types to database-compatible values
+  const mapDistanceType = (distanceType: string): string => {
+    switch (distanceType.toLowerCase()) {
+      case '70.3':
+      case 'half ironman':
+      case 'half':
+        return 'half';
+      case 'ironman':
+      case 'full ironman':
+        return 'ironman';
+      case 'olympic':
+      case 'international':
+        return 'olympic';
+      case 'sprint':
+        return 'sprint';
+      default:
+        return 'sprint'; // Default fallback
+    }
+  };
+
   // Initialize form with race data
   useEffect(() => {
     if (race) {
+      const mappedDistanceType = mapDistanceType(race.distance_type || 'sprint');
+
       setFormData({
-        distance_type: race.distance_type || 'sprint',
+        distance_type: mappedDistanceType,
         status: race.status || 'interested',
         swim_distance: '',
         bike_distance: '',
@@ -63,7 +85,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       });
 
       // Set default distances based on race type
-      updateDistancesForType(race.distance_type || 'sprint');
+      updateDistancesForType(mappedDistanceType);
     }
   }, [race]);
 
@@ -171,10 +193,13 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
     setErrors({});
 
     try {
+      // Ensure distance_type is always a valid database value
+      const validDistanceType = mapDistanceType(formData.distance_type);
+
       // Update the user's planned race with their distance preferences
       const updateData = {
         status: formData.status,
-        distance_type: formData.distance_type,
+        distance_type: validDistanceType,
         ...(formData.custom_distances && {
           user_swim_distance: parseFloat(formData.swim_distance),
           user_bike_distance: parseFloat(formData.bike_distance),
@@ -183,9 +208,12 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         notes: formData.notes.trim() || null
       };
 
+      console.log('Updating race with data:', updateData); // Debug log
+
       const { error } = await dbHelpers.userPlannedRaces.update(race.id, updateData);
 
       if (error) {
+        console.error('Database update error:', error); // Debug log
         throw new Error(error);
       }
 
