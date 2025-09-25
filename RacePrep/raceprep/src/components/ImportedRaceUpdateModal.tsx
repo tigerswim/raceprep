@@ -208,25 +208,48 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       let result;
 
       if (isUserCreatedRace) {
-        // For user-created races, include existing race data to pass validation
-        const updateData = {
+        // For user-created races, start with basic update and add optional fields if they exist
+        const updateData: any = {
           // Include existing required fields
           name: race.name,
           date: race.date,
           location: race.location,
           // Update with new values
-          status: formData.status,
-          distance_type: validDistanceType,
-          ...(formData.custom_distances && {
-            swim_distance: parseFloat(formData.swim_distance),
-            bike_distance: parseFloat(formData.bike_distance),
-            run_distance: parseFloat(formData.run_distance)
-          }),
-          notes: formData.notes.trim() || null
+          status: formData.status
         };
 
-        console.log('Updating user-created race with data:', updateData); // Debug log
-        result = await dbHelpers.userRaces.update(race.id, updateData);
+        // Only add these fields if the database supports them (after migration)
+        try {
+          if (validDistanceType) {
+            updateData.distance_type = validDistanceType;
+          }
+
+          if (formData.custom_distances) {
+            if (formData.swim_distance) updateData.swim_distance = parseFloat(formData.swim_distance);
+            if (formData.bike_distance) updateData.bike_distance = parseFloat(formData.bike_distance);
+            if (formData.run_distance) updateData.run_distance = parseFloat(formData.run_distance);
+          }
+
+          if (formData.notes.trim()) {
+            updateData.notes = formData.notes.trim();
+          }
+
+          console.log('Updating user-created race with data:', updateData); // Debug log
+          result = await dbHelpers.userRaces.update(race.id, updateData);
+        } catch (updateError: any) {
+          console.warn('Full update failed, trying basic update:', updateError);
+
+          // Fallback to basic update without new columns
+          const basicUpdateData = {
+            name: race.name,
+            date: race.date,
+            location: race.location,
+            status: formData.status
+          };
+
+          console.log('Attempting basic user race update:', basicUpdateData);
+          result = await dbHelpers.userRaces.update(race.id, basicUpdateData);
+        }
       } else {
         // For imported races, use the userPlannedRaces helper
         const updateData = {
