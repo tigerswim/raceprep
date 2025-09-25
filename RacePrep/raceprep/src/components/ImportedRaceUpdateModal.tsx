@@ -208,64 +208,58 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       let result;
 
       if (isUserCreatedRace) {
-        // For user-created races, start with basic update and add optional fields if they exist
-        const updateData: any = {
-          // Include existing required fields
+        // For user-created races, try status-only update first to test basic functionality
+        console.log('Attempting status-only update first...');
+
+        const statusOnlyData = {
           name: race.name,
           date: race.date,
           location: race.location,
-          // Update with new values
           status: formData.status
         };
 
-        // Only add these fields if the database supports them (after migration)
-        try {
-          if (validDistanceType) {
-            updateData.distance_type = validDistanceType;
-          }
+        console.log('Status-only update data:', statusOnlyData);
+        console.log('Race ID being updated:', race.id);
+        console.log('Original race data:', race);
 
-          if (formData.custom_distances) {
-            if (formData.swim_distance) updateData.swim_distance = parseFloat(formData.swim_distance);
-            if (formData.bike_distance) updateData.bike_distance = parseFloat(formData.bike_distance);
-            if (formData.run_distance) updateData.run_distance = parseFloat(formData.run_distance);
-          }
+        result = await dbHelpers.userRaces.update(race.id, statusOnlyData);
 
-          if (formData.notes.trim()) {
-            updateData.notes = formData.notes.trim();
-          }
+        console.log('Status update result:', result);
+        console.log('Status update data returned:', result.data);
+        console.log('Status update error:', result.error);
 
-          console.log('Updating user-created race with data:', updateData); // Debug log
-          console.log('Race ID being updated:', race.id); // Debug log
-          console.log('Original race data:', race); // Debug log
+        if (result.data) {
+          console.log('Status in returned data:', result.data.status);
+          console.log('Original status was:', race.status);
+        }
 
-          result = await dbHelpers.userRaces.update(race.id, updateData);
+        // If status update worked and we have other changes, try to update them too
+        if (!result.error && (formData.custom_distances || formData.notes.trim() || validDistanceType !== race.distance_type)) {
+          console.log('Status update succeeded, attempting additional fields...');
 
-          console.log('Update result data:', result.data); // Debug log
-          console.log('Update result error:', result.error); // Debug log
-
-          // Verify the update actually happened by checking the returned data
-          if (result.data) {
-            console.log('Updated race status in DB:', result.data.status);
-            console.log('Updated race distance_type in DB:', result.data.distance_type);
-            console.log('Updated race notes in DB:', result.data.notes);
-            console.log('Updated race bike_distance in DB:', result.data.bike_distance);
-          }
-        } catch (updateError: any) {
-          console.warn('Full update failed, trying basic update:', updateError);
-
-          // Fallback to basic update without new columns
-          const basicUpdateData = {
-            name: race.name,
-            date: race.date,
-            location: race.location,
-            status: formData.status
+          const extendedData = {
+            ...statusOnlyData,
+            // Only add fields that exist in database (may need migration)
+            ...(validDistanceType && { distance_type: validDistanceType }),
+            ...(formData.custom_distances && {
+              swim_distance: parseFloat(formData.swim_distance || '0'),
+              bike_distance: parseFloat(formData.bike_distance || '0'),
+              run_distance: parseFloat(formData.run_distance || '0')
+            }),
+            ...(formData.notes.trim() && { notes: formData.notes.trim() })
           };
 
-          console.log('Attempting basic user race update:', basicUpdateData);
-          result = await dbHelpers.userRaces.update(race.id, basicUpdateData);
+          console.log('Extended update data:', extendedData);
 
-          if (result.data) {
-            console.log('Basic update result - status:', result.data.status);
+          const extendedResult = await dbHelpers.userRaces.update(race.id, extendedData);
+
+          console.log('Extended update result:', extendedResult);
+
+          if (!extendedResult.error) {
+            result = extendedResult; // Use the extended result if successful
+            console.log('Extended update succeeded');
+          } else {
+            console.log('Extended update failed, but status update worked:', extendedResult.error);
           }
         }
       } else {
