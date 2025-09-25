@@ -196,25 +196,52 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       // Ensure distance_type is always a valid database value
       const validDistanceType = mapDistanceType(formData.distance_type);
 
-      // Update the user's planned race with their distance preferences
-      const updateData = {
-        status: formData.status,
-        distance_type: validDistanceType,
-        ...(formData.custom_distances && {
-          user_swim_distance: parseFloat(formData.swim_distance),
-          user_bike_distance: parseFloat(formData.bike_distance),
-          user_run_distance: parseFloat(formData.run_distance)
-        }),
-        notes: formData.notes.trim() || null
+      // Start with basic update data (existing columns)
+      const basicUpdateData = {
+        status: formData.status
       };
 
-      console.log('Updating race with data:', updateData); // Debug log
+      console.log('Updating race with basic data:', basicUpdateData); // Debug log
 
-      const { error } = await dbHelpers.userPlannedRaces.update(race.id, updateData);
+      let result = await dbHelpers.userPlannedRaces.update(race.id, basicUpdateData);
+      console.log('Basic update result:', result); // Debug log
 
-      if (error) {
-        console.error('Database update error:', error); // Debug log
-        throw new Error(error);
+      // If basic update succeeded, try to update with new columns
+      if (!result.error) {
+        const extendedUpdateData = {
+          status: formData.status,
+          distance_type: validDistanceType,
+          ...(formData.custom_distances && {
+            user_swim_distance: parseFloat(formData.swim_distance),
+            user_bike_distance: parseFloat(formData.bike_distance),
+            user_run_distance: parseFloat(formData.run_distance)
+          }),
+          notes: formData.notes.trim() || null
+        };
+
+        console.log('Attempting extended update with:', extendedUpdateData); // Debug log
+
+        const extendedResult = await dbHelpers.userPlannedRaces.update(race.id, extendedUpdateData);
+        console.log('Extended update result:', extendedResult); // Debug log
+
+        if (extendedResult.error) {
+          console.warn('Extended update failed, but basic update succeeded:', extendedResult.error);
+          // Use the basic result since at least status was updated
+          result = extendedResult; // Still show the error but don't fail completely
+        } else {
+          result = extendedResult; // Use the successful extended result
+        }
+      }
+
+      if (result.error) {
+        console.error('Database update error details:', result.error);
+        // Check if it's a column not found error
+        if (result.error.message?.includes('column') || result.error.code === '42703') {
+          setErrors({ submit: 'Database schema needs to be updated. Please run the latest migration first.' });
+        } else {
+          throw new Error(typeof result.error === 'string' ? result.error : result.error.message || 'Database update failed');
+        }
+        return;
       }
 
       onUpdate();

@@ -1317,16 +1317,30 @@ export const dbHelpers = {
 
     // Update planned race
     update: async (plannedRaceId: string, updates: any) => {
-      const { data, error } = await supabase
-        .from('user_planned_races')
-        .update(updates)
-        .eq('id', plannedRaceId)
-        .select(`
-          *,
-          external_races (*)
-        `)
-        .single();
-      return { data, error };
+      try {
+        console.log('[SUPABASE] Updating planned race:', plannedRaceId, 'with updates:', updates);
+
+        const { data, error } = await supabase
+          .from('user_planned_races')
+          .update(updates)
+          .eq('id', plannedRaceId)
+          .select(`
+            *,
+            external_races (*)
+          `)
+          .single();
+
+        console.log('[SUPABASE] Update result:', { data, error });
+
+        if (error) {
+          console.error('[SUPABASE] Update error:', error);
+        }
+
+        return { data, error };
+      } catch (updateError: any) {
+        console.error('[SUPABASE] Update exception:', updateError);
+        return { data: null, error: updateError.message || 'Update failed' };
+      }
     },
 
     // Delete planned race
