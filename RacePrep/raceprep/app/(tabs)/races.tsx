@@ -7,6 +7,7 @@ import { useAuth } from '../../src/contexts/AuthContext';
 import { AuthGuard } from '../../src/components/AuthGuard';
 import { AddResultModal } from '../../src/components/AddResultModal';
 import { UserRaceManagement } from '../../src/components/UserRaceManagement';
+import { ImportedRaceUpdateModal } from '../../src/components/ImportedRaceUpdateModal';
 import { router } from 'expo-router';
 import {
   TbTrash,
@@ -201,6 +202,10 @@ function RacesScreenContent() {
   // Add Result Modal state
   const [showAddResultModal, setShowAddResultModal] = useState(false);
   const [userCreatedRaces, setUserCreatedRaces] = useState<any[]>([]);
+
+  // Race Update Modal state
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [raceToUpdate, setRaceToUpdate] = useState<any>(null);
 
   // Cache management states
   const [raceCache, setRaceCache] = useState<{[key: string]: {data: any[], timestamp: number}}>({});
@@ -806,6 +811,24 @@ function RacesScreenContent() {
     }
   };
 
+  // Handle opening update modal
+  const openUpdateModal = (race: any) => {
+    setRaceToUpdate(race);
+    setShowUpdateModal(true);
+  };
+
+  // Handle closing update modal
+  const closeUpdateModal = () => {
+    setShowUpdateModal(false);
+    setRaceToUpdate(null);
+  };
+
+  // Handle race update completion
+  const handleRaceUpdate = () => {
+    loadMyRaces();
+    loadUserCreatedRaces();
+  };
+
   // Race result handler
   const handleAddRaceResult = async (resultData: any) => {
     if (!user) {
@@ -905,22 +928,30 @@ function RacesScreenContent() {
           <span className="bg-orange-500/20 text-orange-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium capitalize whitespace-nowrap">
             {race.distance_type}
           </span>
-          {race.status && (
-            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium capitalize whitespace-nowrap ${
-              race.status === 'registered' ? 'bg-green-500/20 text-green-300' :
-              race.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
-              'bg-yellow-500/20 text-yellow-300'
-            }`}>
-              {race.status}
-            </span>
+          {race.status && !showSaveButton && (
+            <div className="relative">
+              <select
+                value={race.status}
+                onChange={(e) => updateRaceStatus(race.id, e.target.value as 'interested' | 'registered' | 'completed')}
+                className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-transparent border-0 outline-none cursor-pointer ${
+                  race.status === 'registered' ? 'bg-green-500/20 text-green-300' :
+                  race.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
+                  'bg-yellow-500/20 text-yellow-300'
+                }`}
+              >
+                <option value="interested">Interested</option>
+                <option value="registered">Registered</option>
+                <option value="completed">Complete</option>
+              </select>
+            </div>
           )}
         </div>
       </div>
-      
+
       {race.description && (
         <p className="text-white/70 mb-4 text-sm line-clamp-2 break-words">{race.description}</p>
       )}
-      
+
       <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
         {race.price_min && (
           <div>
@@ -939,100 +970,85 @@ function RacesScreenContent() {
       </div>
 
       <div className="space-y-2">
-        {/* Status management buttons for saved races */}
-        {!showSaveButton && (
-          <div className="flex flex-wrap gap-1 sm:gap-2">
-            <button 
-              onClick={() => updateRaceStatus(race.id, 'interested')}
-              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs transition-colors flex-1 min-w-0 ${
-                race.status === 'interested' ? 'bg-yellow-500/30 text-yellow-300' : 'bg-white/10 hover:bg-white/20 text-white/70'
-              }`}
-            >
-              Interested
-            </button>
-            <button 
-              onClick={() => updateRaceStatus(race.id, 'registered')}
-              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs transition-colors flex-1 min-w-0 ${
-                race.status === 'registered' ? 'bg-green-500/30 text-green-300' : 'bg-white/10 hover:bg-white/20 text-white/70'
-              }`}
-            >
-              Registered
-            </button>
-            <button 
-              onClick={() => updateRaceStatus(race.id, 'completed')}
-              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs transition-colors flex-1 min-w-0 ${
-                race.status === 'completed' ? 'bg-blue-500/30 text-blue-300' : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-300'
-              }`}
-            >
-              {race.status === 'completed' ? '✓ Completed' : 'Mark Complete'}
-            </button>
-          </div>
-        )}
-        
         {/* Action buttons row */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {showSaveButton && user && (
-            <button 
-              className={`flex-1 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium ${
-                savedRaces.includes(race.id)
-                  ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                  : 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30'
-              }`}
-              onClick={() => savedRaces.includes(race.id) ? unsaveRace(race.id) : saveRace(race)}
-              disabled={savingRaces.includes(race.id)}
-            >
-              {savingRaces.includes(race.id) ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  {savedRaces.includes(race.id) ? 'Removing...' : 'Saving...'}
+            <>
+              <button
+                className={`py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1 ${
+                  savedRaces.includes(race.id)
+                    ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                    : 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30'
+                }`}
+                onClick={() => savedRaces.includes(race.id) ? unsaveRace(race.id) : saveRace(race)}
+                disabled={savingRaces.includes(race.id)}
+              >
+                {savingRaces.includes(race.id) ? (
+                  <span className="flex items-center justify-center gap-1">
+                    <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    {savedRaces.includes(race.id) ? 'Removing...' : 'Saving...'}
+                  </span>
+                ) : savedRaces.includes(race.id) ? (
+                  <span className="flex items-center justify-center gap-1"><TbTrash className="w-4 h-4" /> Remove</span>
+                ) : (
+                  <span className="flex items-center justify-center gap-1"><TbStar className="w-4 h-4" /> Save</span>
+                )}
+              </button>
+              <button
+                className="py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                onClick={() => race.registration_url && window.open(race.registration_url, '_blank')}
+              >
+                Register
+              </button>
+              <div className="col-span-1"></div>
+            </>
+          )}
+
+          {!showSaveButton && (
+            <>
+              {/* Update Race Details button */}
+              <button
+                className="py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                onClick={() => openUpdateModal(race)}
+              >
+                <span className="flex items-center justify-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Update
                 </span>
-              ) : savedRaces.includes(race.id) ? (
-                <span className="flex items-center gap-1"><TbTrash className="w-4 h-4" /> Remove</span>
-              ) : (
-                <span className="flex items-center gap-1"><TbStar className="w-4 h-4" /> Save</span>
-              )}
-            </button>
+              </button>
+
+              {/* Planning button for saved races */}
+              <button
+                className="py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                onClick={() => {
+                  // Store the race data in localStorage for the Planning tab to access
+                  localStorage.setItem('selectedRaceForPlanning', JSON.stringify(race));
+                  // Navigate to Planning tab
+                  router.push('/planning');
+                }}
+              >
+                <span className="flex items-center justify-center gap-1"><TbClipboard className="w-4 h-4" /> Plan Race</span>
+              </button>
+
+              {/* Remove button for saved races */}
+              <button
+                className="py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                onClick={() => unsaveRace(race.externalRaceId || race.id)}
+                disabled={savingRaces.includes(race.externalRaceId || race.id)}
+              >
+                {savingRaces.includes(race.externalRaceId || race.id) ? (
+                  <span className="flex items-center justify-center gap-1">
+                    <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    Removing...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-1"><TbTrash className="w-4 h-4" /> Remove</span>
+                )}
+              </button>
+            </>
           )}
-          
-          {/* Planning button for saved races */}
-          {!showSaveButton && (race.status === 'registered' || race.status === 'interested' || race.status === 'completed') && (
-            <button 
-              className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium"
-              onClick={() => {
-                // Store the race data in localStorage for the Planning tab to access
-                localStorage.setItem('selectedRaceForPlanning', JSON.stringify(race));
-                // Navigate to Planning tab
-                router.push('/planning');
-              }}
-            >
-              <span className="flex items-center gap-1"><TbClipboard className="w-4 h-4" /> Plan Race</span>
-            </button>
-          )}
-          
-          {/* Remove button for saved races */}
-          {!showSaveButton && user && (
-            <button 
-              className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium"
-              onClick={() => unsaveRace(race.externalRaceId || race.id)}
-              disabled={savingRaces.includes(race.externalRaceId || race.id)}
-            >
-              {savingRaces.includes(race.externalRaceId || race.id) ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  Removing...
-                </span>
-              ) : (
-                <span className="flex items-center gap-1"><TbTrash className="w-4 h-4" /> Remove</span>
-              )}
-            </button>
-          )}
-          
-          <button 
-            className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 py-2 rounded-lg transition-colors text-xs sm:text-sm"
-            onClick={() => race.registration_url && window.open(race.registration_url, '_blank')}
-          >
-            {race.website ? 'Details' : 'Register'}
-          </button>
         </div>
       </div>
     </div>
@@ -1246,6 +1262,15 @@ function RacesScreenContent() {
             onClose={() => setShowAddResultModal(false)}
             onSubmit={handleAddRaceResult}
             races={getAllRacesForResults()}
+          />
+        )}
+
+        {/* Race Update Modal */}
+        {showUpdateModal && raceToUpdate && (
+          <ImportedRaceUpdateModal
+            race={raceToUpdate}
+            onClose={closeUpdateModal}
+            onUpdate={handleRaceUpdate}
           />
         )}
       </div>
