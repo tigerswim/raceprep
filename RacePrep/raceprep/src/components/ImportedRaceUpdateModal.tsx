@@ -196,26 +196,73 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       // Ensure distance_type is always a valid database value
       const validDistanceType = mapDistanceType(formData.distance_type);
 
-      // Now that migration is complete, we can use all the new fields
-      const updateData = {
-        status: formData.status,
-        distance_type: validDistanceType,
-        ...(formData.custom_distances && {
-          user_swim_distance: parseFloat(formData.swim_distance),
-          user_bike_distance: parseFloat(formData.bike_distance),
-          user_run_distance: parseFloat(formData.run_distance)
-        }),
-        notes: formData.notes.trim() || null
-      };
+      // Detect if this is a user-created race or an imported race
+      const isUserCreatedRace = race.source === 'user_created' || race.source === 'User Created' || !race.source;
 
-      console.log('Updating race with data:', updateData); // Debug log
+      console.log('Race type detection:', {
+        raceId: race.id,
+        source: race.source,
+        isUserCreatedRace
+      }); // Debug log
 
-      const result = await dbHelpers.userPlannedRaces.update(race.id, updateData);
+      let result;
+
+      if (isUserCreatedRace) {
+        // For user-created races, use the userRaces helper
+        const updateData = {
+          status: formData.status,
+          distance_type: validDistanceType,
+          ...(formData.custom_distances && {
+            swim_distance: parseFloat(formData.swim_distance),
+            bike_distance: parseFloat(formData.bike_distance),
+            run_distance: parseFloat(formData.run_distance)
+          }),
+          notes: formData.notes.trim() || null
+        };
+
+        console.log('Updating user-created race with data:', updateData); // Debug log
+        result = await dbHelpers.userRaces.update(race.id, updateData);
+      } else {
+        // For imported races, use the userPlannedRaces helper
+        const updateData = {
+          status: formData.status,
+          distance_type: validDistanceType,
+          ...(formData.custom_distances && {
+            user_swim_distance: parseFloat(formData.swim_distance),
+            user_bike_distance: parseFloat(formData.bike_distance),
+            user_run_distance: parseFloat(formData.run_distance)
+          }),
+          notes: formData.notes.trim() || null
+        };
+
+        console.log('Updating imported race with data:', updateData); // Debug log
+        result = await dbHelpers.userPlannedRaces.update(race.id, updateData);
+      }
+
       console.log('Database update result:', result); // Debug log
 
       if (result.error) {
         console.error('Database update error details:', result.error);
-        throw new Error(typeof result.error === 'string' ? result.error : result.error.message || 'Failed to update race.');
+
+        // Try a fallback status-only update if the full update failed
+        console.log('Attempting status-only fallback update...');
+
+        let fallbackResult;
+        if (isUserCreatedRace) {
+          fallbackResult = await dbHelpers.userRaces.updateStatus(race.id, formData.status);
+        } else {
+          fallbackResult = await dbHelpers.userPlannedRaces.updateStatus(race.id, formData.status);
+        }
+
+        if (fallbackResult.error) {
+          throw new Error(typeof result.error === 'string' ? result.error : result.error.message || 'Failed to update race.');
+        } else {
+          console.log('Status-only update succeeded');
+          alert('Race status updated successfully! Other settings may require database updates.');
+          onUpdate();
+          onClose();
+          return;
+        }
       }
 
       onUpdate();
