@@ -2082,7 +2082,7 @@ export const dbHelpers = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Not authenticated' };
 
-      // Validate updates
+      // Validate updates only for core race data changes (not status-only updates)
       if (Object.keys(updates).some(key => ['name', 'date', 'location', 'distance_type'].includes(key))) {
         const validation = dbHelpers.userRaces.validateRaceData(updates);
         if (!validation.isValid) {
@@ -2333,6 +2333,22 @@ export const dbHelpers = {
         custom: {} // No defaults for custom
       };
 
+      // CRITICAL FIX: Don't override explicitly provided custom distances
+      // If user provided specific distance values, preserve them regardless of distance_type
+      const hasCustomDistances = raceData.swim_distance !== undefined ||
+                                 raceData.bike_distance !== undefined ||
+                                 raceData.run_distance !== undefined;
+
+      if (hasCustomDistances) {
+        console.log('🎯 PRESERVING custom distances provided by user:', {
+          swim: raceData.swim_distance,
+          bike: raceData.bike_distance,
+          run: raceData.run_distance
+        });
+        return raceData; // Don't apply defaults if custom distances are provided
+      }
+
+      // Only apply defaults if no custom distances are provided
       if (raceData.distance_type && raceData.distance_type !== 'custom') {
         const typeDefaults = defaults[raceData.distance_type as keyof typeof defaults];
 

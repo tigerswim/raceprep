@@ -182,10 +182,11 @@ function RacesScreenContent() {
   const { user } = useAuth();
   
   // State management
-  const [activeSection, setActiveSection] = useState<'discover' | 'upcoming' | 'past' | 'created'>('upcoming');
+  const [activeSection, setActiveSection] = useState<'discover' | 'upcoming' | 'past'>('upcoming');
   const [discoveredRaces, setDiscoveredRaces] = useState<any[]>([]);
   const [myRaces, setMyRaces] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [renderKey, setRenderKey] = useState(0); // Force re-render key
   const [isSyncing, setIsSyncing] = useState(false);
   
   // Search and filter states
@@ -207,48 +208,90 @@ function RacesScreenContent() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [raceToUpdate, setRaceToUpdate] = useState<any>(null);
 
-  // Cache management states
+  // Enhanced cache management
   const [raceCache, setRaceCache] = useState<{[key: string]: {data: any[], timestamp: number}}>({});
+  const [userDataCache, setUserDataCache] = useState<{
+    myRaces?: { data: any[], timestamp: number },
+    userCreatedRaces?: { data: any[], timestamp: number }
+  }>({});
   const CACHE_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+  const USER_DATA_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes for user data
 
-  // Load user-created races for the results modal
-  const loadUserCreatedRaces = useCallback(async () => {
+  // Optimized data loading with caching
+  const loadUserCreatedRaces = useCallback(async (force = false) => {
     if (!user) return;
+
+    // Check cache first unless forced
+    const cached = userDataCache.userCreatedRaces;
+    const now = Date.now();
+    if (!force && cached && (now - cached.timestamp) < USER_DATA_CACHE_DURATION) {
+      setUserCreatedRaces(cached.data);
+      return;
+    }
 
     try {
       const { data, error } = await dbHelpers.userRaces.getAll();
+      const raceData = data || [];
+
       if (error) {
         console.error('Error loading user-created races:', error);
         setUserCreatedRaces([]);
       } else {
-        setUserCreatedRaces(data || []);
+        // Add source identifier to user-created races
+        const racesWithSource = raceData.map(race => ({ ...race, source: 'user_created' }));
+        setUserCreatedRaces(racesWithSource);
+
+        // CRITICAL FIX: Remove any user-created races from myRaces to prevent duplication
+        const userCreatedIds = racesWithSource.map(race => race.id);
+        setMyRaces(prev => {
+          const filtered = prev.filter(race => {
+            // Remove if it matches a user-created race ID
+            if (userCreatedIds.includes(race.id)) return false;
+            // Remove if it looks like a user-created race (no external identifiers)
+            if (!race.externalRaceId && !race.race_id && (!race.registration_url || race.registration_url === '#')) return false;
+            return true;
+          });
+          console.log('🧹 DEDUPLICATION: Removed', prev.length - filtered.length, 'user-created races from myRaces');
+          console.log('🧹 DEDUPLICATION: myRaces before:', prev.length, 'after:', filtered.length);
+          return filtered;
+        });
+
+        // Update cache
+        setUserDataCache(prev => ({
+          ...prev,
+          userCreatedRaces: { data: racesWithSource, timestamp: now }
+        }));
       }
     } catch (error) {
       console.error('Error loading user-created races:', error);
       setUserCreatedRaces([]);
     }
-  }, [user]);
+  }, [user, userDataCache.userCreatedRaces]);
 
-  const loadMyRaces = useCallback(async () => {
+  const loadMyRaces = useCallback(async (force = false) => {
     if (!user) return;
 
+    // Check cache first unless forced
+    const cached = userDataCache.myRaces;
+    const now = Date.now();
+    if (!force && cached && (now - cached.timestamp) < USER_DATA_CACHE_DURATION) {
+      setMyRaces(cached.data);
+      return;
+    }
+
     try {
-      // Try to load user's planned races from database first
       const { data, error } = await dbHelpers.userPlannedRaces.getAll();
 
-      // Database query result (debug log removed)
-
       if (error) {
-        // Handle feature disabled gracefully (not a real error)
         if (error.code === 'FEATURE_DISABLED') {
-          // Planned races feature is disabled (debug log removed)
+          // Handle gracefully
         } else {
           console.error('Error loading planned races:', error);
         }
         return;
       }
-      
-      // Transform database data to component format
+
+      // Transform database data to component format (optimized)
       const transformedRaces = (data || []).map(plannedRace => {
         const externalRace = plannedRace.external_races;
         return {
@@ -265,32 +308,60 @@ function RacesScreenContent() {
           swim_type: externalRace?.swim_type,
           bike_elevation_gain: externalRace?.bike_elevation_gain,
           wetsuit_legal: externalRace?.wetsuit_legal,
-          registration_url: externalRace?.registration_url || externalRace?.website
+          registration_url: externalRace?.registration_url || externalRace?.website,
+          // CRITICAL FIX: Include custom distance fields from database
+          user_swim_distance: plannedRace.user_swim_distance,
+          user_bike_distance: plannedRace.user_bike_distance,
+          user_run_distance: plannedRace.user_run_distance,
+          notes: plannedRace.notes
         };
       });
-      
-      setMyRaces(transformedRaces);
-      setSavedRaces(transformedRaces.map(race => race.id));
+
+      // CRITICAL FIX: Filter out any user-created races to prevent duplication
+      // Also check for races that lack external identifiers (likely user-created)
+      const userCreatedIds = userCreatedRaces.map(race => race.id);
+      const filteredRaces = transformedRaces.filter(race => {
+        // Remove if it's in userCreatedRaces array
+        if (userCreatedIds.includes(race.id)) return false;
+        // Remove if it looks like a user-created race (no external IDs)
+        if (!race.externalRaceId && !race.race_id && (!race.registration_url || race.registration_url === '#')) return false;
+        return true;
+      });
+      console.log('🧹 DEDUPLICATION: Filtered out', transformedRaces.length - filteredRaces.length, 'user-created races from myRaces');
+      console.log('🧹 DEDUPLICATION: Original count:', transformedRaces.length, 'Filtered count:', filteredRaces.length);
+
+      setMyRaces(filteredRaces);
+      setSavedRaces(filteredRaces.map(race => race.id));
+
+      // Update cache with filtered data
+      setUserDataCache(prev => ({
+        ...prev,
+        myRaces: { data: filteredRaces, timestamp: now }
+      }));
 
       // Also backup to localStorage for consistency
       try {
         const localRacesKey = `saved_races_${user.id}`;
         localStorage.setItem(localRacesKey, JSON.stringify(transformedRaces));
-        // Database races backed up to localStorage (debug log removed)
       } catch (localError) {
         console.warn('Error backing up database races to localStorage:', localError);
       }
     } catch (error) {
       console.error('Error loading my races:', error);
-      // Fallback to empty array
       setMyRaces([]);
       setSavedRaces([]);
     }
-  }, [user]);
+  }, [user, userDataCache.myRaces]);
 
   const initializeData = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
+      // Load data in parallel for better performance
       await Promise.all([
         loadMyRaces(),
         loadUserCreatedRaces(),
@@ -301,7 +372,7 @@ function RacesScreenContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [loadMyRaces]);
+  }, [user, loadMyRaces, loadUserCreatedRaces]);
 
   const loadSavedRaces = useCallback(async () => {
     // Now handled by loadMyRaces - this function kept for compatibility
@@ -749,44 +820,78 @@ function RacesScreenContent() {
   };
 
   const updateRaceStatus = async (raceId: string, newStatus: 'interested' | 'registered' | 'completed') => {
+    console.log('🔥 NEW UPDATE FUNCTION LOADED - VERSION 2.0');
     if (!user) return;
 
     try {
       // Find the race to determine if it's user-created or external
       const race = [...myRaces, ...userCreatedRaces].find(r => r.id === raceId);
+      console.log('DEBUG: Race found for status update:', race);
+      console.log('DEBUG: Race ID being updated:', raceId);
+      console.log('DEBUG: New status:', newStatus);
+
       if (!race) {
         alert('Race not found.');
         return;
       }
 
-      const isUserCreated = race.source === 'user_created' || userCreatedRaces.some(ur => ur.id === raceId);
+      // Store original status for rollback
+      const originalStatus = race.status;
+      // Check if this race is in the userCreatedRaces array (more reliable than checking source field)
+      const isUserCreated = userCreatedRaces.some(ur => ur.id === raceId) || race.source === 'user_created';
+
+      console.log('DEBUG: Is user created race:', isUserCreated);
+      console.log('DEBUG: Original status:', originalStatus);
+
+      // Enhanced debugging to track state arrays
+      console.log('🔍 BEFORE UPDATE - Array contents:');
+      console.log('🔍 userCreatedRaces contains target race:', userCreatedRaces.some(r => r.id === raceId));
+      console.log('🔍 myRaces contains target race:', myRaces.some(r => r.id === raceId));
+      console.log('🔍 Target race current status in userCreated:', userCreatedRaces.find(r => r.id === raceId)?.status);
+      console.log('🔍 Target race current status in myRaces:', myRaces.find(r => r.id === raceId)?.status);
 
       // Update local state immediately for responsiveness
+      // ROBUST FIX: Update BOTH arrays to handle any remaining duplication edge cases
+      console.log('🎯 Updating state arrays...');
+
       if (isUserCreated) {
+        console.log('🎯 Primary update: userCreatedRaces array...');
         setUserCreatedRaces(prev => prev.map(race =>
           race.id === raceId ? { ...race, status: newStatus } : race
         ));
-      } else {
+        // Also update myRaces as a safety net in case of duplication
         setMyRaces(prev => prev.map(race =>
+          race.id === raceId ? { ...race, status: newStatus } : race
+        ));
+      } else {
+        console.log('🎯 Primary update: myRaces array...');
+        setMyRaces(prev => prev.map(race =>
+          race.id === raceId ? { ...race, status: newStatus } : race
+        ));
+        // Also update userCreatedRaces as a safety net in case of duplication
+        setUserCreatedRaces(prev => prev.map(race =>
           race.id === raceId ? { ...race, status: newStatus } : race
         ));
       }
 
       // Save to database using the appropriate helper
+      console.log('DEBUG: About to call database update...');
       const { error } = isUserCreated
         ? await dbHelpers.userRaces.updateStatus(raceId, newStatus)
         : await dbHelpers.userPlannedRaces.updateStatus(raceId, newStatus);
 
+      console.log('DEBUG: Database update result - error:', error);
+
       if (error) {
         console.error('Error updating race status in database:', error);
-        // Revert local state if database update fails
+        // Revert local state to original status if database update fails
         if (isUserCreated) {
           setUserCreatedRaces(prev => prev.map(race =>
-            race.id === raceId ? { ...race, status: race.status } : race
+            race.id === raceId ? { ...race, status: originalStatus } : race
           ));
         } else {
           setMyRaces(prev => prev.map(race =>
-            race.id === raceId ? { ...race, status: race.status } : race
+            race.id === raceId ? { ...race, status: originalStatus } : race
           ));
         }
         alert('Failed to update race status. Please try again.');
@@ -796,15 +901,65 @@ function RacesScreenContent() {
       // Also update localStorage as backup
       try {
         const localRacesKey = `saved_races_${user.id}`;
-        const updatedRaces = myRaces.map(race =>
-          race.id === raceId ? { ...race, status: newStatus } : race
-        );
-        localStorage.setItem(localRacesKey, JSON.stringify(updatedRaces));
+        if (!isUserCreated) {
+          const updatedRaces = myRaces.map(race =>
+            race.id === raceId ? { ...race, status: newStatus } : race
+          );
+          localStorage.setItem(localRacesKey, JSON.stringify(updatedRaces));
+        }
       } catch (localError) {
         console.warn('Error updating localStorage:', localError);
       }
 
-      // Race status updated successfully (debug log removed)
+      // Race status updated successfully - update state directly
+      console.log('🎉 SUCCESS: Database update completed successfully!');
+      console.log('🔄 Updating local state directly...');
+
+      // FORCE RE-RENDER: Trigger React to re-render all components
+      console.log('🔄 Forcing React re-render to update UI...');
+      setRenderKey(prev => prev + 1);
+
+      // Force fresh state updates to ensure React detects the change
+      setTimeout(() => {
+        console.log('🔄 Secondary force update to ensure UI refresh...');
+        if (isUserCreated) {
+          setUserCreatedRaces(prev => [...prev.map(race =>
+            race.id === raceId ? { ...race, status: newStatus, _lastUpdated: Date.now() } : race
+          )]);
+        } else {
+          setMyRaces(prev => [...prev.map(race =>
+            race.id === raceId ? { ...race, status: newStatus, _lastUpdated: Date.now() } : race
+          )]);
+        }
+        // Force another render
+        setRenderKey(prev => prev + 1);
+      }, 50);
+
+      console.log('✅ Local state should now reflect the change');
+
+      // Also show user feedback
+      console.log(`📢 User should see status change from "${originalStatus}" to "${newStatus}"`);
+
+      // Let's see what the state looks like after update
+      setTimeout(() => {
+        const updatedRace = [...myRaces, ...userCreatedRaces].find(r => r.id === raceId);
+        console.log('🔍 Race state after update:', updatedRace?.status);
+
+        // If the state still shows old status, force update it
+        if (updatedRace && updatedRace.status !== newStatus) {
+          console.log('⚠️ State not updated correctly, forcing update...');
+          if (isUserCreated) {
+            setUserCreatedRaces(prev => prev.map(race =>
+              race.id === raceId ? { ...race, status: newStatus } : race
+            ));
+          } else {
+            setMyRaces(prev => prev.map(race =>
+              race.id === raceId ? { ...race, status: newStatus } : race
+            ));
+          }
+          console.log('🔧 Force-updated race state to:', newStatus);
+        }
+      }, 1000);
     } catch (error) {
       console.error('Error updating race status:', error);
       alert('Failed to update race status. Please try again.');
@@ -825,17 +980,20 @@ function RacesScreenContent() {
 
   // Handle race update completion
   const handleRaceUpdate = () => {
-    console.log('handleRaceUpdate called - refreshing race data...');
+    console.log('🔄 handleRaceUpdate called - selectively reloading for distance updates');
+    console.log('⏸️ Will reload data to pick up distance changes but preserve status updates');
 
-    // Force reload by clearing any cache
-    setMyRaces([]);
-    setUserCreatedRaces([]);
+    // Clear cache to force fresh data fetch for distance updates
+    setUserDataCache({});
 
-    // Wait a bit then reload to ensure cache is cleared
+    // Reload data with a delay to allow database changes to settle
     setTimeout(() => {
-      loadMyRaces();
-      loadUserCreatedRaces();
-    }, 100);
+      console.log('🔄 Reloading race data to pick up distance updates...');
+      loadMyRaces(true); // Force reload to get latest distance data for imported races
+      loadUserCreatedRaces(true); // Force reload user races too (CRITICAL FIX)
+    }, 1000);
+
+    console.log('✅ handleRaceUpdate will reload data for distance updates');
   };
 
   // Race result handler
@@ -894,7 +1052,7 @@ function RacesScreenContent() {
     // Combine both saved external races and user-created races
     const allRaces = [
       ...myRaces,
-      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created', status: 'interested' }))
+      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created' })) // CRITICAL FIX: Don't override status
     ];
 
     const upcoming = allRaces.filter(race => {
@@ -908,7 +1066,7 @@ function RacesScreenContent() {
     // Combine both saved external races and user-created races
     const allRaces = [
       ...myRaces,
-      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created', status: 'completed' }))
+      ...userCreatedRaces.map(race => ({ ...race, source: 'user_created' })) // CRITICAL FIX: Don't override status
     ];
 
     const past = allRaces.filter(race => {
@@ -923,7 +1081,7 @@ function RacesScreenContent() {
   };
 
   const renderRaceCard = (race: any, showSaveButton: boolean = true) => (
-    <div key={race.id} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl hover:bg-white/10 transition-all duration-300 w-full max-w-full overflow-hidden">
+    <div key={`${race.id}-${race.status}-${race._lastUpdated}-${renderKey}`} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl hover:bg-white/10 transition-all duration-300 w-full max-w-full overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg sm:text-xl font-bold text-white mb-1 truncate">{race.name}</h3>
@@ -1094,9 +1252,8 @@ function RacesScreenContent() {
           {/* Section Navigation */}
           <div className="flex flex-wrap gap-2 mb-6">
             {[
-              { id: 'upcoming', label: 'My Upcoming Races', icon: 'TbFlag', count: getUpcomingRaces().length },
-              { id: 'past', label: 'My Past Races', icon: 'TbTrophy', count: getPastRaces().length },
-              { id: 'created', label: 'My Created Races', icon: 'TbClipboard', count: 0 },
+              { id: 'upcoming', label: 'Upcoming Races', icon: 'TbFlag', count: getUpcomingRaces().length },
+              { id: 'past', label: 'Past Races', icon: 'TbTrophy', count: getPastRaces().length },
               { id: 'discover', label: 'Discover New Races', icon: 'TbSearch', count: getFilteredDiscoveredRaces().length }
             ].map((section) => (
               <button
@@ -1198,20 +1355,31 @@ function RacesScreenContent() {
               <div className="text-white text-lg">Loading races...</div>
             </div>
           ) : (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-full overflow-hidden">
+            <div key={`race-grid-${renderKey}`} className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-full overflow-hidden">
               {activeSection === 'upcoming' && (
                 <>
                   {getUpcomingRaces().length > 0 ? (
-                    getUpcomingRaces().map(race => renderRaceCard(race, false))
+                    <>
+                      {getUpcomingRaces().map(race => renderRaceCard(race, false))}
+                      {/* Add Create Race button at the end */}
+                      <div className="col-span-full mt-6">
+                        <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
+                      </div>
+                    </>
                   ) : (
                     <div className="col-span-full text-center py-12">
                       <p className="text-white/70 mb-4">No upcoming races found.</p>
-                      <button
-                        onClick={() => setActiveSection('discover')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-                      >
-                        Discover Races
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button
+                          onClick={() => setActiveSection('discover')}
+                          className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                        >
+                          Discover Races
+                        </button>
+                        <div className="sm:w-auto">
+                          <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
+                        </div>
+                      </div>
                     </div>
                   )}
                 </>
@@ -1240,11 +1408,6 @@ function RacesScreenContent() {
                 </>
               )}
 
-              {activeSection === 'created' && (
-                <div className="col-span-full">
-                  <UserRaceManagement onRaceUpdate={loadMyRaces} />
-                </div>
-              )}
 
               {activeSection === 'discover' && (
                 <>

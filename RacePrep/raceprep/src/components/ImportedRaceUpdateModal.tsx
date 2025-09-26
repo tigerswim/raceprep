@@ -69,23 +69,83 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
     }
   };
 
-  // Initialize form with race data
+  // Initialize form with race data and existing user preferences
   useEffect(() => {
     if (race) {
-      const mappedDistanceType = mapDistanceType(race.distance_type || 'sprint');
+      // Enhanced race detection logic - match the working logic from races.tsx exactly
+      // A race is user-created if:
+      // 1. It has source === 'user_created' (set when loading user races)
+      // 2. It lacks both external identifiers (externalRaceId and registration_url)
+      // 3. It has a registration_url that equals '#' (default for user races)
+      // 4. It came from the RunSignup discovery but was saved without external IDs
 
-      setFormData({
+      const hasExternalId = !!race.externalRaceId || !!race.race_id;
+      const hasExternalUrl = race.registration_url && race.registration_url !== '#' && race.registration_url !== 'https://example.com/register';
+      const isMarkedAsUserCreated = race.source === 'user_created';
+
+      // A race is user-created if it's explicitly marked OR lacks external identifiers
+      const isUserCreatedRace = isMarkedAsUserCreated || (!hasExternalId && !hasExternalUrl);
+
+      const defaultDistanceType = isUserCreatedRace ? 'custom' : 'sprint';
+      const userDistanceType = race.distance_type || defaultDistanceType;
+      const mappedDistanceType = mapDistanceType(userDistanceType);
+
+      // CRITICAL FIX: Handle different field names for user-created vs imported races
+      // User-created races use: swim_distance, bike_distance, run_distance
+      // Imported races use: user_swim_distance, user_bike_distance, user_run_distance
+      const swimDist = race.user_swim_distance || race.swim_distance;
+      const bikeDist = race.user_bike_distance || race.bike_distance;
+      const runDist = race.user_run_distance || race.run_distance;
+
+      const initialFormData = {
         distance_type: mappedDistanceType,
         status: race.status || 'interested',
-        swim_distance: '',
-        bike_distance: '',
-        run_distance: '',
-        custom_distances: false,
-        notes: ''
-      });
+        swim_distance: swimDist?.toString() || '',
+        bike_distance: bikeDist?.toString() || '',
+        run_distance: runDist?.toString() || '',
+        custom_distances: !!(swimDist || bikeDist || runDist),
+        notes: race.notes || ''
+      };
 
-      // Set default distances based on race type
-      updateDistancesForType(mappedDistanceType);
+      console.log('🔍 ENHANCED MODAL DETECTION - VERSION 3.0');
+      console.log('DEBUG: Distance field detection:', {
+        user_swim_distance: race.user_swim_distance,
+        swim_distance: race.swim_distance,
+        selected_swim: swimDist,
+        user_bike_distance: race.user_bike_distance,
+        bike_distance: race.bike_distance,
+        selected_bike: bikeDist,
+        user_run_distance: race.user_run_distance,
+        run_distance: race.run_distance,
+        selected_run: runDist,
+        custom_distances_detected: !!(swimDist || bikeDist || runDist)
+      });
+      console.log('DEBUG: Modal initialization - race data:', race);
+      console.log('DEBUG: Enhanced race detection details:', {
+        raceId: race.id,
+        raceName: race.name,
+        raceSource: race.source,
+        hasExternalRaceId: !!race.externalRaceId,
+        hasRaceId: !!race.race_id,
+        hasExternalId: hasExternalId,
+        registrationUrl: race.registration_url,
+        hasValidExternalUrl: hasExternalUrl,
+        isMarkedAsUserCreated: isMarkedAsUserCreated,
+        finalDetectionResult: isUserCreatedRace,
+        defaultDistanceType: defaultDistanceType
+      });
+      console.log('DEBUG: Modal initialization - form data:', initialFormData);
+
+      setFormData(initialFormData);
+
+      // Set default distances based on race type, but only if no custom distances exist
+      // CRITICAL FIX: Use the same field detection logic as above
+      if (!swimDist && !bikeDist && !runDist) {
+        console.log('🔧 No custom distances found, applying defaults for type:', mappedDistanceType);
+        updateDistancesForType(mappedDistanceType);
+      } else {
+        console.log('🎯 Custom distances found, preserving them:', { swimDist, bikeDist, runDist });
+      }
     }
   }, [race]);
 
@@ -152,10 +212,15 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   };
 
   const toggleCustomDistances = () => {
-    setFormData(prev => ({
-      ...prev,
-      custom_distances: !prev.custom_distances
-    }));
+    console.log('DEBUG: Toggle custom distances clicked, current state:', formData.custom_distances);
+    setFormData(prev => {
+      const newState = {
+        ...prev,
+        custom_distances: !prev.custom_distances
+      };
+      console.log('DEBUG: Toggle custom distances new state:', newState.custom_distances);
+      return newState;
+    });
   };
 
   // Validation
@@ -183,6 +248,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('🚀 NEW MODAL SUBMIT FUNCTION LOADED - VERSION 2.0');
     e.preventDefault();
 
     if (!validateForm()) {
@@ -196,70 +262,59 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       // Ensure distance_type is always a valid database value
       const validDistanceType = mapDistanceType(formData.distance_type);
 
-      // Detect if this is a user-created race or an imported race
-      const isUserCreatedRace = race.source === 'user_created' || race.source === 'User Created' || !race.source;
+      // Use the same enhanced detection logic as initialization
+      const hasExternalId = !!race.externalRaceId || !!race.race_id;
+      const hasExternalUrl = race.registration_url && race.registration_url !== '#' && race.registration_url !== 'https://example.com/register';
+      const isMarkedAsUserCreated = race.source === 'user_created';
+      const isUserCreatedRace = isMarkedAsUserCreated || (!hasExternalId && !hasExternalUrl);
 
-      console.log('Race type detection:', {
+      console.log('🚀 ENHANCED MODAL SUBMIT - VERSION 3.0');
+      console.log('DEBUG: Form submission started');
+      console.log('DEBUG: Form data being submitted:', formData);
+      console.log('DEBUG: Valid distance type:', validDistanceType);
+      console.log('DEBUG: Enhanced race type detection:', {
         raceId: race.id,
+        raceName: race.name,
         source: race.source,
-        isUserCreatedRace
-      }); // Debug log
+        hasExternalId: hasExternalId,
+        hasExternalUrl: hasExternalUrl,
+        isMarkedAsUserCreated: isMarkedAsUserCreated,
+        finalDetectionResult: isUserCreatedRace
+      });
 
       let result;
 
       if (isUserCreatedRace) {
-        // For user-created races, try status-only update first to test basic functionality
-        console.log('Attempting status-only update first...');
-
-        const statusOnlyData = {
+        // For user-created races, start with basic fields including distance_type
+        const basicData = {
           name: race.name,
           date: race.date,
           location: race.location,
-          status: formData.status
+          status: formData.status,
+          distance_type: validDistanceType // Ensure distance_type is always included
         };
 
-        console.log('Status-only update data:', statusOnlyData);
-        console.log('Race ID being updated:', race.id);
-        console.log('Original race data:', race);
+        result = await dbHelpers.userRaces.update(race.id, basicData);
 
-        result = await dbHelpers.userRaces.update(race.id, statusOnlyData);
-
-        console.log('Status update result:', result);
-        console.log('Status update data returned:', result.data);
-        console.log('Status update error:', result.error);
-
-        if (result.data) {
-          console.log('Status in returned data:', result.data.status);
-          console.log('Original status was:', race.status);
-        }
-
-        // If status update worked and we have other changes, try to update them too
-        if (!result.error && (formData.custom_distances || formData.notes.trim() || validDistanceType !== race.distance_type)) {
-          console.log('Status update succeeded, attempting additional fields...');
-
+        // Now try to add all other fields in one update
+        if (!result.error) {
           const extendedData = {
-            ...statusOnlyData,
-            // Only add fields that exist in database (may need migration)
-            ...(validDistanceType && { distance_type: validDistanceType }),
+            ...basicData,
+            ...(formData.notes.trim() && { notes: formData.notes.trim() }),
             ...(formData.custom_distances && {
               swim_distance: parseFloat(formData.swim_distance || '0'),
               bike_distance: parseFloat(formData.bike_distance || '0'),
               run_distance: parseFloat(formData.run_distance || '0')
-            }),
-            ...(formData.notes.trim() && { notes: formData.notes.trim() })
+            })
           };
-
-          console.log('Extended update data:', extendedData);
 
           const extendedResult = await dbHelpers.userRaces.update(race.id, extendedData);
 
-          console.log('Extended update result:', extendedResult);
-
           if (!extendedResult.error) {
             result = extendedResult; // Use the extended result if successful
-            console.log('Extended update succeeded');
           } else {
-            console.log('Extended update failed, but status update worked:', extendedResult.error);
+            console.warn('Extended fields update failed:', extendedResult.error);
+            // Keep the basic result since it succeeded
           }
         }
       } else {
@@ -267,13 +322,21 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         const updateData = {
           status: formData.status,
           distance_type: validDistanceType,
-          ...(formData.custom_distances && {
-            user_swim_distance: parseFloat(formData.swim_distance),
-            user_bike_distance: parseFloat(formData.bike_distance),
-            user_run_distance: parseFloat(formData.run_distance)
-          }),
           notes: formData.notes.trim() || null
         };
+
+        // Handle distance preferences
+        if (formData.custom_distances) {
+          // User wants custom distances - save their specified values
+          updateData.user_swim_distance = parseFloat(formData.swim_distance);
+          updateData.user_bike_distance = parseFloat(formData.bike_distance);
+          updateData.user_run_distance = parseFloat(formData.run_distance);
+        } else {
+          // User wants standard distances - clear any previous custom distance overrides
+          updateData.user_swim_distance = null;
+          updateData.user_bike_distance = null;
+          updateData.user_run_distance = null;
+        }
 
         console.log('Updating imported race with data:', updateData); // Debug log
         result = await dbHelpers.userPlannedRaces.update(race.id, updateData);
@@ -300,16 +363,30 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           console.log('Status-only update succeeded');
           alert('Race status updated successfully! Other settings may require database updates.');
           console.log('Calling onUpdate to refresh UI...');
-          onUpdate();
+
+          // Close modal immediately to show the change
           onClose();
+
+          // Delay the onUpdate call to allow local state updates to settle
+          setTimeout(() => {
+            console.log('🕐 Delayed onUpdate call for fallback update');
+            onUpdate();
+          }, 500);
           return;
         }
       }
 
       console.log('Update succeeded, calling onUpdate to refresh UI...');
       console.log('Final result data before refresh:', result.data);
-      onUpdate();
+
+      // Close modal immediately to show the change
       onClose();
+
+      // Delay the onUpdate call to allow local state updates to settle
+      setTimeout(() => {
+        console.log('🕐 Delayed onUpdate call to preserve status changes');
+        onUpdate();
+      }, 500);
     } catch (error: any) {
       console.error('Error updating race:', error);
       setErrors({ submit: error.message || 'Failed to update race. Please try again.' });
@@ -406,17 +483,27 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Distance Details</h3>
-                <button
-                  type="button"
-                  onClick={toggleCustomDistances}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                    formData.custom_distances
-                      ? 'bg-orange-500/20 text-orange-300'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
-                  }`}
-                >
-                  {formData.custom_distances ? 'Use Custom' : 'Use Standard'}
-                </button>
+                <div className="flex items-center space-x-3">
+                  <span className={`text-sm font-medium transition-colors ${!formData.custom_distances ? 'text-white' : 'text-white/50'}`}>
+                    Standard
+                  </span>
+                  <button
+                    type="button"
+                    onClick={toggleCustomDistances}
+                    className={`relative w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formData.custom_distances ? 'bg-orange-500' : 'bg-white/20'
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
+                        formData.custom_distances ? 'translate-x-6' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                  <span className={`text-sm font-medium transition-colors ${formData.custom_distances ? 'text-white' : 'text-white/50'}`}>
+                    Custom
+                  </span>
+                </div>
               </div>
 
               {!formData.custom_distances && (
