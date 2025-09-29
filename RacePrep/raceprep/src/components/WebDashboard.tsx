@@ -70,6 +70,14 @@ export const WebDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add caching for dashboard data
+  const [dashboardCache, setDashboardCache] = useState<{
+    courses?: { data: Course[], timestamp: number },
+    races?: { data: Race[], timestamp: number },
+    results?: { data: UserRaceResult[], timestamp: number }
+  }>({});
+  const DASHBOARD_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   // Modal states
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
@@ -199,19 +207,15 @@ export const WebDashboard: React.FC = () => {
 
       console.log('[DASHBOARD] Loading races and race results...');
 
-      // Load race results and races with timeout protection
+      // Load race results with timeout protection
       const raceResultsTimeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Race results query timeout')), 3000);
       });
 
-      const racesTimeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Races query timeout')), 3000);
-      });
-
-      const [racesResult, raceResultsResult] = await Promise.all([
-        Promise.race([dbHelpers.races.getAll(), racesTimeoutPromise]).catch(() => ({ data: [], error: 'timeout' })),
-        user ? Promise.race([dbHelpers.raceResults.getUserResults(user.id), raceResultsTimeoutPromise]).catch(() => ({ data: [], error: 'timeout' })) : Promise.resolve({ data: [], error: null })
-      ]);
+      // Only load race results since we don't need all races for dashboard
+      const raceResultsResult = user
+        ? await Promise.race([dbHelpers.raceResults.getUserResults(user.id), raceResultsTimeoutPromise]).catch(() => ({ data: [], error: 'timeout' }))
+        : { data: [], error: null };
 
       if (raceResultsResult.error) {
         console.warn('[DASHBOARD] Error loading race results:', raceResultsResult.error);
@@ -221,7 +225,7 @@ export const WebDashboard: React.FC = () => {
 
       // Set courses to saved races instead of generic courses
       setCourses(savedRaces);
-      setRaces(racesResult.data || []);
+      setRaces([]); // We don't need general races for dashboard
 
       // Process user race results
       const raceResults = raceResultsResult.data || [];
