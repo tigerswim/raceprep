@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Strava OAuth Debug</title>
+</head>
+<body>
+    <h1>Strava OAuth Debug Tool</h1>
+    <div id="info"></div>
+    <button onclick="testStrava()">Test Strava OAuth URL</button>
+
+    <script>
+        function testStrava() {
+            const clientId = '176658';
+            const redirectUri = `${window.location.origin}/strava-callback`;
+            const scope = 'read,activity:read_all';
+            const stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&approval_prompt=force&scope=${scope}`;
+
+            document.getElementById('info').innerHTML = `
+                <h3>Debug Information:</h3>
+                <p><strong>Current Origin:</strong> ${window.location.origin}</p>
+                <p><strong>Expected Redirect URI:</strong> ${redirectUri}</p>
+                <p><strong>Strava OAuth URL:</strong></p>
+                <p style="word-break: break-all; background: #f0f0f0; padding: 10px;">${stravaAuthUrl}</p>
+                <p><strong>Client ID:</strong> ${clientId}</p>
+                <br>
+                <p><strong>Instructions:</strong></p>
+                <ol>
+                    <li>Copy the redirect URI above: <code>${redirectUri}</code></li>
+                    <li>Go to <a href="https://www.strava.com/settings/api" target="_blank">Strava API Settings</a></li>
+                    <li>Edit your RacePrep app</li>
+                    <li>Add the redirect URI to the "Authorization Callback Domain" field</li>
+                    <li>Make sure it exactly matches: <code>localhost:8081</code> or the full URI: <code>${redirectUri}</code></li>
+                </ol>
+            `;
+
+            console.log('Strava OAuth URL:', stravaAuthUrl);
+        }
+
+        // Auto-run on page load
+        testStrava();
+    </script>
+</body>
+</html>

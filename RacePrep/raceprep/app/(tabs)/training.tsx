@@ -2257,6 +2257,15 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             </div>
           </div>
         )}
+
+        {/* Strava Attribution */}
+        {stravaConnected && (
+          <div className="mt-8 pt-4 border-t border-white/5">
+            <div className="flex items-center justify-center text-xs text-white/40">
+              <span>Powered by Strava</span>
+            </div>
+          </div>
+        )}
       </div>
   );
 });

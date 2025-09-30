@@ -430,6 +430,9 @@ function StravaCallbackContent() {
               <p className="text-xs text-white/50">
                 Having trouble? Make sure you&apos;re logged into Strava and try again.
               </p>
+              <div className="flex items-center justify-center mt-3">
+                <span className="text-xs text-white/30">Powered by Strava</span>
+              </div>
             </div>
           </div>
         </div>

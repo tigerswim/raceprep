@@ -922,6 +922,11 @@ export const PerformanceOverviewWidget: React.FC = () => {
           <span>30-day volume: {formatTime(stats.last30Days.totalTime)}</span>
           <span>Trend: {stats.last30Days.weeklyTrend === 'up' ? '📈' : stats.last30Days.weeklyTrend === 'down' ? '📉' : '➡️'}</span>
         </div>
+        <div className="mt-2 pt-2 border-t border-white/5">
+          <div className="flex items-center justify-center text-xs text-white/40">
+            <span>Powered by Strava</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -39,6 +39,14 @@ RacePrep is a mobile-first triathlon tracking application designed for beginner 
 - **Enhanced Backend Services**: Request batching, connection pooling, and performance monitoring
 - **User-Created Races**: Comprehensive race management with RLS security policies
 
+### 🛡️ Privacy & Data Protection
+- **Strava API Compliance**: Full adherence to Strava data usage guidelines and branding requirements
+- **Data Export Rights**: Complete user data export in JSON/CSV formats for portability
+- **48-Hour Data Deletion**: Automated deletion scheduling per Strava API requirements
+- **"Powered by Strava" Attribution**: Proper branding on all Strava-sourced content
+- **User Data Transparency**: Clear visibility into what data is collected and how it's used
+- **GDPR Compliance**: Right to data portability and erasure for all user information
+
 ### 🤖 Development Innovation
 - **Multi-Agent System**: Specialized AI agents for frontend, backend, and code review
 - **Agent Templates**: Copy-paste agent descriptions for rapid development
@@ -280,6 +288,47 @@ For questions or support regarding RacePrep development:
 - Review the project's technical architecture
 - Follow the step-by-step implementation guide
 
+## Privacy Policy & Data Handling
+
+### Strava Data Integration
+RacePrep integrates with Strava to provide comprehensive training analytics while maintaining strict compliance with Strava's API terms and data usage policies.
+
+#### Data Collection
+- **Training Activities**: Workout data including duration, distance, pace, heart rate, and elevation
+- **User Profile**: Basic Strava profile information (name, photo) with user consent
+- **Performance Metrics**: Aggregated statistics for training analysis and trend visualization
+
+#### Data Usage
+- **Training Analysis**: Activity data is used exclusively for performance insights and training trends
+- **Race Preparation**: Historical training data helps predict race performance and suggest improvements
+- **Personal Dashboard**: All data remains private to the individual user account
+
+#### Data Rights
+- **Export**: Users can export all their data (training, races, goals, profile) in JSON or CSV format
+- **Deletion**: Users can request complete data deletion with 48-hour processing (Strava API requirement)
+- **Transparency**: Full visibility into what data is stored and how it's used
+
+#### Compliance
+- **"Powered by Strava" Attribution**: Displayed on all screens showing Strava-sourced training data
+- **Strava Branding Guidelines**: Logo usage and attribution follow official Strava brand standards
+- **API Terms Compliance**: Strict adherence to Strava's developer terms and data usage policies
+- **48-Hour Deletion**: Automated data deletion within required timeframe per Strava API terms
+
+#### User Control
+Users maintain full control over their data through the Profile settings:
+- **Connect/Disconnect Strava**: Easy OAuth2 integration and disconnection
+- **Data Export**: One-click export of all personal data
+- **Deletion Request**: Schedule complete data removal with confirmation
+- **Privacy Settings**: Control what training data is analyzed and displayed
+
+### GDPR Compliance
+RacePrep respects user privacy rights under GDPR and similar data protection regulations:
+- **Right to Access**: Complete data export functionality
+- **Right to Erasure**: Comprehensive data deletion capabilities
+- **Right to Portability**: Data export in standard formats (JSON/CSV)
+- **Data Minimization**: Only necessary data is collected and stored
+- **Purpose Limitation**: Data used only for stated training and race analysis purposes
+
 ## License
 
 Private project - Kinetic Brand Partners © 2024
@@ -291,6 +340,15 @@ Built with ❤️ for the triathlon community
 ---
 
 **Recent Updates:**
+- **Strava API Compliance Implementation (September 30, 2024)**
+  - ✅ Implemented "Powered by Strava" branding on all training data displays
+  - ✅ Added comprehensive user data export functionality (JSON/CSV formats)
+  - ✅ Created 48-hour data deletion system per Strava API requirements
+  - ✅ Enhanced privacy controls with complete data transparency
+  - ✅ Updated privacy policy and documentation for Strava data handling
+  - ✅ Full compliance with Strava branding guidelines and API terms
+  - ✅ Resolved Strava OAuth connection issues in development environment
+  - ✅ Enhanced debugging tools and server configuration validation
 - **Race Management System Overhaul (September 26, 2024)**
   - ✅ Fixed status update persistence for both imported and user-created races
   - ✅ Resolved custom distance settings not saving correctly
@@ -305,4 +363,4 @@ Built with ❤️ for the triathlon community
 - Dashboard performance improvements and bug fixes
 - Comprehensive backend monitoring and error handling
 
-*Last updated: September 26, 2024*
+*Last updated: September 30, 2024*

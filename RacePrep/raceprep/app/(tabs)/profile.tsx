@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Provider } from 'react-redux';
 import { store } from '../../src/store';
 import { dbHelpers } from '../../src/services/supabase';
+import { userDataService } from '../../src/services/userDataService';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { AuthModal } from '../../src/components/AuthModal';
 import {
@@ -10,7 +11,10 @@ import {
   TbSettings,
   TbTrophy,
   TbFlag,
-  TbUser
+  TbUser,
+  TbDownload,
+  TbTrash,
+  TbShield
 } from 'react-icons/tb';
 
 // Icon component mapping
@@ -20,7 +24,10 @@ const iconComponents = {
   TbSettings,
   TbTrophy,
   TbFlag,
-  TbUser
+  TbUser,
+  TbDownload,
+  TbTrash,
+  TbShield
 };
 
 const renderIcon = (iconName: string, className = "w-4 h-4") => {
@@ -48,6 +55,8 @@ function ProfileScreenContent() {
     target_value: '',
     target_date: ''
   });
+  const [dataOperationInProgress, setDataOperationInProgress] = useState(false);
+  const [showDeletionConfirm, setShowDeletionConfirm] = useState(false);
 
   const profileSections = [
     { id: 'profile', label: 'Profile', icon: 'TbUser' },
@@ -286,6 +295,121 @@ function ProfileScreenContent() {
     setRaceStats(null);
     setProfileForm({});
     setSettingsForm({});
+  };
+
+  const handleDataExport = async (format: 'json' | 'csv' | 'both' = 'json') => {
+    setDataOperationInProgress(true);
+    try {
+      const result = await userDataService.exportAllUserData(format);
+
+      if (result.error) {
+        alert('Error exporting data: ' + result.error);
+        return;
+      }
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `raceprep-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else if (format === 'csv') {
+        // Create zip file with multiple CSV files
+        const csvData = result.data;
+        Object.keys(csvData).forEach((tableName) => {
+          const blob = new Blob([csvData[tableName]], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${tableName}-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      } else {
+        // Both formats
+        const jsonBlob = new Blob([JSON.stringify(result.data.json, null, 2)], { type: 'application/json' });
+        const jsonUrl = URL.createObjectURL(jsonBlob);
+        const jsonA = document.createElement('a');
+        jsonA.href = jsonUrl;
+        jsonA.download = `raceprep-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(jsonA);
+        jsonA.click();
+        document.body.removeChild(jsonA);
+        URL.revokeObjectURL(jsonUrl);
+
+        Object.keys(result.data.csv).forEach((tableName) => {
+          const blob = new Blob([result.data.csv[tableName]], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${tableName}-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      alert('Data export completed successfully!');
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      alert('Error exporting data. Please try again.');
+    } finally {
+      setDataOperationInProgress(false);
+    }
+  };
+
+  const handleDataDeletionRequest = async () => {
+    setDataOperationInProgress(true);
+    try {
+      const result = await userDataService.requestDataDeletion();
+
+      if (result.error) {
+        alert('Error requesting data deletion: ' + result.error);
+        return;
+      }
+
+      alert(`Data deletion scheduled successfully!\n\n${result.data.message}\n\nRequest ID: ${result.data.request_id}`);
+      setShowDeletionConfirm(false);
+    } catch (error) {
+      console.error('Error requesting data deletion:', error);
+      alert('Error requesting data deletion. Please try again.');
+    } finally {
+      setDataOperationInProgress(false);
+    }
+  };
+
+  const handleImmediateDataDeletion = async () => {
+    if (!confirm('WARNING: This will immediately and permanently delete ALL your data including:\n\n• Training sessions from Strava\n• Race results and goals\n• User preferences and settings\n• All associated account data\n\nThis action CANNOT be undone. Are you absolutely sure?')) {
+      return;
+    }
+
+    setDataOperationInProgress(true);
+    try {
+      const result = await userDataService.executeDataDeletion();
+
+      if (result.error) {
+        alert('Error deleting data: ' + result.error);
+        return;
+      }
+
+      alert(`Data deletion completed!\n\n${result.data.message}\n\nSummary: ${result.data.summary.successful_deletions} of ${result.data.summary.total_tables} data categories processed successfully.`);
+
+      // Sign out the user after deletion
+      await handleSignOut();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+      alert('Error deleting data. Please try again.');
+    } finally {
+      setDataOperationInProgress(false);
+      setShowDeletionConfirm(false);
+    }
   };
 
   // Show loading spinner while auth is loading
@@ -740,7 +864,86 @@ function ProfileScreenContent() {
                   </div>
 
                   <div className="pt-6 border-t border-white/10">
-                    <button className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-6 py-3 rounded-xl font-medium transition-colors">
+                    <h4 className="text-white font-semibold mb-4">Data Privacy</h4>
+                    <div className="space-y-4">
+                      <div className="bg-white/5 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <TbDownload className="w-5 h-5 text-blue-400" />
+                            <div>
+                              <div className="text-white font-medium">Export Your Data</div>
+                              <div className="text-white/60 text-sm">Download all your training, race, and profile data</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleDataExport('json')}
+                            disabled={dataOperationInProgress}
+                            className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {dataOperationInProgress ? 'Exporting...' : 'JSON'}
+                          </button>
+                          <button
+                            onClick={() => handleDataExport('csv')}
+                            disabled={dataOperationInProgress}
+                            className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {dataOperationInProgress ? 'Exporting...' : 'CSV'}
+                          </button>
+                          <button
+                            onClick={() => handleDataExport('both')}
+                            disabled={dataOperationInProgress}
+                            className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {dataOperationInProgress ? 'Exporting...' : 'Both'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <TbShield className="w-5 h-5 text-orange-400" />
+                            <div>
+                              <div className="text-white font-medium">Data Deletion Request</div>
+                              <div className="text-white/60 text-sm">Schedule deletion of all your data (48-hour notice)</div>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setShowDeletionConfirm(true)}
+                          disabled={dataOperationInProgress}
+                          className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Request Deletion
+                        </button>
+                      </div>
+
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <TbTrash className="w-5 h-5 text-red-400" />
+                          <div>
+                            <div className="text-red-300 font-medium">Immediate Data Deletion</div>
+                            <div className="text-red-200/70 text-sm">Permanently delete all data immediately (irreversible)</div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleImmediateDataDeletion}
+                          disabled={dataOperationInProgress}
+                          className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {dataOperationInProgress ? 'Deleting...' : 'Delete All Data Now'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/10">
+                    <button
+                      onClick={handleSignOut}
+                      className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-6 py-3 rounded-xl font-medium transition-colors"
+                    >
                       Sign Out
                     </button>
                   </div>
@@ -748,6 +951,58 @@ function ProfileScreenContent() {
               </div>
             )}
           </div>
+          )}
+
+          {/* Data Deletion Confirmation Modal */}
+          {showDeletionConfirm && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-800 rounded-2xl border border-red-500/20 p-6 w-full max-w-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <TbShield className="w-6 h-6 text-orange-400" />
+                  <h3 className="text-xl font-bold text-white">
+                    Schedule Data Deletion
+                  </h3>
+                </div>
+
+                <div className="space-y-4 text-white/80">
+                  <p>
+                    This will schedule the permanent deletion of all your data within 48 hours, including:
+                  </p>
+                  <ul className="space-y-1 text-sm text-white/70 ml-4">
+                    <li>• Training sessions and Strava data</li>
+                    <li>• Race results and planned races</li>
+                    <li>• User goals and preferences</li>
+                    <li>• Profile information and settings</li>
+                  </ul>
+                  <div className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3">
+                    <div className="text-orange-300 text-sm font-medium mb-1">Important Notes:</div>
+                    <ul className="text-orange-200/80 text-xs space-y-1">
+                      <li>• This complies with Strava API data deletion requirements</li>
+                      <li>• You will receive a confirmation email</li>
+                      <li>• You can contact support to cancel before deletion</li>
+                      <li>• This action cannot be undone once executed</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={handleDataDeletionRequest}
+                    disabled={dataOperationInProgress}
+                    className="flex-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 py-3 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {dataOperationInProgress ? 'Scheduling...' : 'Schedule Deletion'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeletionConfirm(false)}
+                    disabled={dataOperationInProgress}
+                    className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Goal Modal */}
