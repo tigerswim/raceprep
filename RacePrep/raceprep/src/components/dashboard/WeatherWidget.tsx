@@ -465,7 +465,8 @@ export const WeatherWidget: React.FC = () => {
   });
 
   const formatTime = (datetime: string): string => {
-    const date = new Date(datetime);
+    // OpenWeatherMap returns UTC time, need to properly parse as UTC
+    const date = new Date(datetime + 'Z'); // Add 'Z' to indicate UTC
     return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
   };
 
