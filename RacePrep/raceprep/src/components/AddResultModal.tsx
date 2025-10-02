@@ -361,15 +361,35 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                   </div>
 
                   {/* T1 */}
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <h4 className="text-white/80 font-semibold mb-3">T1: Swim → Bike</h4>
+                  <div className="bg-gradient-to-r from-blue-500/5 to-orange-500/5 border border-blue-400/20 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-white font-semibold flex items-center gap-2">
+                        <span className="text-blue-400">🏊‍♂️</span>
+                        <span>→</span>
+                        <span className="text-orange-400">🚴‍♂️</span>
+                        <span className="ml-2">T1 Transition</span>
+                      </h4>
+                      <div className="text-xs text-white/50 bg-white/10 px-2 py-1 rounded-lg">
+                        Target: &lt;2:00
+                      </div>
+                    </div>
                     <input
                       type="text"
                       value={formData.t1_time}
                       onChange={(e) => handleTimeChange('t1_time', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="2:15"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      placeholder="2:15 (MM:SS)"
                     />
+                    {formData.t1_time && timeToSeconds(formData.t1_time) > 120 && (
+                      <p className="text-yellow-400 text-xs mt-2 flex items-center gap-1">
+                        ⚡ Tip: Practice transitions to get under 2 minutes
+                      </p>
+                    )}
+                    {formData.t1_time && timeToSeconds(formData.t1_time) <= 120 && (
+                      <p className="text-green-400 text-xs mt-2 flex items-center gap-1">
+                        ✓ Great transition time!
+                      </p>
+                    )}
                   </div>
 
                   {/* Bike */}
@@ -402,15 +422,35 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                   </div>
 
                   {/* T2 */}
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <h4 className="text-white/80 font-semibold mb-3">T2: Bike → Run</h4>
+                  <div className="bg-gradient-to-r from-orange-500/5 to-green-500/5 border border-orange-400/20 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-white font-semibold flex items-center gap-2">
+                        <span className="text-orange-400">🚴‍♂️</span>
+                        <span>→</span>
+                        <span className="text-green-400">🏃‍♂️</span>
+                        <span className="ml-2">T2 Transition</span>
+                      </h4>
+                      <div className="text-xs text-white/50 bg-white/10 px-2 py-1 rounded-lg">
+                        Target: &lt;1:30
+                      </div>
+                    </div>
                     <input
                       type="text"
                       value={formData.t2_time}
                       onChange={(e) => handleTimeChange('t2_time', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="1:45"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      placeholder="1:45 (MM:SS)"
                     />
+                    {formData.t2_time && timeToSeconds(formData.t2_time) > 90 && (
+                      <p className="text-yellow-400 text-xs mt-2 flex items-center gap-1">
+                        ⚡ Tip: Quick helmet removal and shoe change saves seconds
+                      </p>
+                    )}
+                    {formData.t2_time && timeToSeconds(formData.t2_time) <= 90 && (
+                      <p className="text-green-400 text-xs mt-2 flex items-center gap-1">
+                        ✓ Excellent transition time!
+                      </p>
+                    )}
                   </div>
 
                   {/* Run */}

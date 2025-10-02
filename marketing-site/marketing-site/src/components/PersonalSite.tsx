@@ -118,8 +118,8 @@ const PersonalSite = () => {
         </p>
         
         <div className="cta-group">
-          <a 
-            href="#contact" 
+          <a
+            href="#contact"
             className="btn btn-primary"
             onClick={(e) => {
               e.preventDefault();
@@ -128,8 +128,8 @@ const PersonalSite = () => {
           >
             {"Get Your Marketing Assessment"}
           </a>
-          <a 
-            href="#services" 
+          <a
+            href="#services"
             className="btn btn-secondary"
             onClick={(e) => {
               e.preventDefault();
@@ -138,21 +138,6 @@ const PersonalSite = () => {
           >
             {"View Services"}
           </a>
-        </div>
-        
-        <div className="metrics">
-          <div className="metric">
-            <strong>{"4B+"}</strong>
-            {"Campaign Impressions"}
-          </div>
-          <div className="metric">
-            <strong>{"25+"}</strong>
-            {"Team Members Led"}
-          </div>
-          <div className="metric">
-            <strong>{"15+"}</strong>
-            {"Years P&L Experience"}
-          </div>
         </div>
       </div>
     </section>
@@ -185,7 +170,7 @@ const PersonalSite = () => {
             </ul>
           </article>
           
-          <article style={{ borderLeftColor: 'var(--accent-green)' }}>
+          <article>
             <h3>{"Marketing Organization Development"}</h3>
             <p>{
               "Build marketing capabilities that scale with your business. Transform from ad-hoc campaigns to strategic, data-driven operations with clear processes, metrics, and team structures."}

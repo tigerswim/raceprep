@@ -1,0 +1,130 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { TrainingCalendar } from '../src/components/training/TrainingCalendar';
+import { WorkoutDetailModal } from '../src/components/training/WorkoutDetailModal';
+import { AuthGuard } from '../src/components/AuthGuard';
+import type { WorkoutWithCompletion } from '../src/types/trainingPlans';
+
+export default function TrainingCalendarScreen() {
+  const params = useLocalSearchParams();
+  const router = useRouter();
+  const planId = params.planId as string;
+  const currentWeek = parseInt(params.currentWeek as string) || 1;
+
+  const [selectedWorkout, setSelectedWorkout] = useState<WorkoutWithCompletion | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleWorkoutUpdated = () => {
+    setSelectedWorkout(null);
+    setRefreshKey(prev => prev + 1); // Force calendar to refresh
+  };
+
+  // Validate planId
+  if (!planId || planId === 'undefined') {
+    return (
+      <AuthGuard>
+        <View style={styles.container}>
+          <Stack.Screen
+            options={{
+              title: 'Training Calendar',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: '#1a1a1a',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                color: '#fff',
+              },
+            }}
+          />
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>No training plan specified</Text>
+            <Text style={styles.errorDescription}>
+              Please select a training plan to view your calendar.
+            </Text>
+            <TouchableOpacity
+              style={styles.goToPlansButton}
+              onPress={() => router.push('/training-plans')}
+            >
+              <Text style={styles.goToPlansButtonText}>Go to Training Plans</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </AuthGuard>
+    );
+  }
+
+  return (
+    <AuthGuard>
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            title: 'Training Calendar',
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#1a1a1a',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              color: '#fff',
+            },
+          }}
+        />
+
+        <TrainingCalendar
+          key={refreshKey}
+          planId={planId}
+          currentWeek={currentWeek}
+          onWorkoutPress={setSelectedWorkout}
+        />
+
+        <WorkoutDetailModal
+          visible={selectedWorkout !== null}
+          workout={selectedWorkout}
+          planId={planId}
+          onClose={() => setSelectedWorkout(null)}
+          onWorkoutUpdated={handleWorkoutUpdated}
+        />
+      </View>
+    </AuthGuard>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  errorText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FF3B30',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  errorDescription: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  goToPlansButton: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  goToPlansButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

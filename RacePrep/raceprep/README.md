@@ -7,14 +7,17 @@ RacePrep is a mobile-first triathlon tracking application designed for beginner 
 ## Features
 
 ### 🏊‍♂️ Comprehensive Race Analysis
-- **Transition Analytics**: Detailed T1/T2 analysis with age group comparisons  
-- **Split Breakdowns**: Complete swim, bike, run performance tracking
-- **Performance Insights**: AI-powered recommendations for improvement
+- **Transition Analytics**: Dedicated widget tracking T1/T2 across all races with optimization tips
+- **Age Group Comparison**: Percentile rankings vs. age group averages for all disciplines
+- **Interactive Race Timeline**: Stacked visualization showing time distribution across swim→T1→bike→T2→run
+- **Split Breakdowns**: Complete swim, bike, run performance tracking with color-coded performance indicators
+- **Performance Insights**: AI-powered recommendations based on actual performance data
+- **Personal Bests Widget**: Track PRs across all race distances with recent achievement tracking
 
-### 🗺️ Course Database & Discovery
-- **50+ Pre-loaded Courses**: Sprint and Olympic distance races
-- **Detailed Course Info**: Elevation, swim type, weather patterns, difficulty ratings
-- **Community Reviews**: User-driven ratings and tips
+### 🗺️ Race Discovery & Management
+- **User-Created Races**: Custom race creation with comprehensive validation
+- **Race Discovery**: Integration with RunSignup API for finding races
+- **Race Details**: Distance type, location, date tracking
 
 ### 📋 Race Planning Tools
 - **Nutrition Planning**: Science-based fueling strategies for race day
@@ -57,6 +60,21 @@ RacePrep is a mobile-first triathlon tracking application designed for beginner 
 - **Native iOS & Android**: Smooth, responsive performance
 - **Dark Theme**: Modern glassmorphism design optimized for readability
 - **Offline Support**: Core features work without internet connection
+
+## 📖 Documentation Guide
+
+**📋 See [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for complete documentation catalog**
+
+**New to this project? Start here:**
+
+1. **[QUICKSTART.md](QUICKSTART.md)** ⭐ - Fast setup guide for Claude Code in Zed (START HERE)
+2. **[CONTEXT.md](CONTEXT.md)** - Complete project context for AI assistants
+3. **[.claude-session-template.md](.claude-session-template.md)** - Session starter templates
+4. **[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)** - Detailed roadmap and priorities
+5. **[PHASE_2_COMPLETION_SUMMARY.md](PHASE_2_COMPLETION_SUMMARY.md)** - Recent accomplishments
+6. **[README.md](README.md)** (this file) - General overview
+
+---
 
 ## Getting Started
 
@@ -214,22 +232,32 @@ src/
 - [x] **Code quality improvements (0 errors, 30 warnings)**
 - [x] **Jest testing framework with 7/7 service tests passing**
 
-### Phase 2: Core Features (95% Complete) ✅
+### Phase 2: Core Features (100% Complete) ✅
 - [x] **Complete profile management with goals and statistics**
 - [x] **Advanced race planning and nutrition tools**
 - [x] **Comprehensive training data integration (Strava)**
 - [x] **Race discovery and management system**
 - [x] **Planning tools with race-specific features**
-- [x] **Enhanced dashboard with performance widgets and SVG charts**
+- [x] **Enhanced dashboard with 6 comprehensive widgets**
+  - Performance Overview with SVG charts
+  - Upcoming Races with countdown timers
+  - Goals Progress with trend analysis
+  - Weather Widget with geolocation
+  - **TransitionAnalyticsWidget with optimization tips** (NEW)
+  - **PersonalBestsWidget tracking PRs across distances** (NEW)
+- [x] **Advanced Race Result Analytics**
+  - Enhanced T1/T2 tracking with real-time validation
+  - Interactive race timeline visualization
+  - Age group percentile comparisons
+  - Color-coded performance indicators
 - [x] **Multi-agent development system with specialized agents**
 - [x] **Fixed Strava sync issues with enhanced database schema**
 - [x] **Security hardening: Input validation and resource protection**
+- [x] **Strava API compliance with data usage guidelines**
 - [x] **Dashboard optimization: Removed legacy Recent Activities feature and fixed rendering issues**
 - [x] **Backend enhancements: Request batching, connection pooling, and monitoring systems**
 - [x] **User-created races system: Custom race management with comprehensive validation**
-- [ ] Race result analytics and transition timing
-- [ ] Course database population (50+ races)
-- [ ] Weather integration for race planning
+- [x] **Race result analytics and transition timing** ✅
 
 ### Phase 3: Advanced Features (Future)
 - [ ] Training plan engine with structured workouts

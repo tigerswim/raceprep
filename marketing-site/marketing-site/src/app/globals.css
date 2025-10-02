@@ -603,27 +603,18 @@ section:nth-child(even) {
   color: var(--primary-blue);
   font-size: 1.2rem;
   font-weight: bold;
-  animation: sparkle 2s ease-in-out infinite;
 }
 
 .pillars li:nth-child(2)::before {
   color: var(--secondary-orange);
-  animation-delay: 0.5s;
 }
 
 .pillars li:nth-child(3)::before {
   color: var(--accent-red);
-  animation-delay: 1s;
 }
 
 .pillars li:nth-child(4)::before {
   color: var(--primary-blue);
-  animation-delay: 1.5s;
-}
-
-@keyframes sparkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
 }
 
 .pillars li:hover {
