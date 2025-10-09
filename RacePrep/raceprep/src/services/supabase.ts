@@ -850,7 +850,7 @@ export const dbHelpers = {
       let validRaces = raceResults || [];
       if (goal.distance_type && goal.distance_type !== 'all') {
         validRaces = validRaces.filter(result =>
-          result.races?.distance_type === goal.distance_type
+          result.user_races?.distance_type === goal.distance_type
         );
       }
 
@@ -882,7 +882,7 @@ export const dbHelpers = {
 
       // Filter by distance type
       const relevantResults = raceResults.filter(result =>
-        result.races?.distance_type === goal.distance_type
+        result.user_races?.distance_type === goal.distance_type
       );
 
       if (relevantResults.length === 0) {
