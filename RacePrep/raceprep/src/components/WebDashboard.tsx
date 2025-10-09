@@ -458,13 +458,14 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Enhanced Dashboard Widgets - Temporarily disabled for debugging */}
-          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Enhanced Dashboard Widgets - Testing one at a time */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Test 1: PerformanceOverviewWidget */}
             <PerformanceOverviewWidget />
-            <UpcomingRacesWidget />
+            {/* <UpcomingRacesWidget /> */}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <GoalsProgressWidget />
           </div>
 
