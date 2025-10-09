@@ -458,28 +458,19 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Enhanced Dashboard Widgets */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Performance Overview */}
+          {/* Enhanced Dashboard Widgets - Temporarily disabled for debugging */}
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-
-            {/* Upcoming Races */}
             <UpcomingRacesWidget />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-
-            {/* Goals Progress */}
             <GoalsProgressWidget />
-
-            {/* Training Plan Progress - Temporarily disabled (uses React Native components not compatible with web) */}
-            {/* <TrainingPlanProgressWidget userId={user?.id || ""} onViewDetails={() => router.push("/training-calendar")} /> */}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Weather Widget */}
             <WeatherWidget />
-          </div>
+          </div> */}
 
           {/* Race Analysis Section */}
           {userRaceResults.length > 0 && (
