@@ -837,7 +837,7 @@ export const dbHelpers = {
       // Get completed races this year
       const { data: raceResults, error } = await supabase
         .from('race_results')
-        .select('id, race_id, races(*)')
+        .select('id, user_race_id, user_races(*)')
         .eq('user_id', userId)
         .gte('created_at', startOfYear.toISOString());
 
@@ -872,7 +872,7 @@ export const dbHelpers = {
         .from('race_results')
         .select(`
           overall_time,
-          races (distance_type)
+          user_races (*)
         `)
         .eq('user_id', userId);
 
@@ -928,7 +928,7 @@ export const dbHelpers = {
       // Get average transition times from recent races
       const { data: raceResults, error } = await supabase
         .from('race_results')
-        .select('t1_time, t2_time, races(distance_type)')
+        .select('t1_time, t2_time, user_races(*)')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(5); // Last 5 races
