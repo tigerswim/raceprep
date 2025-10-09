@@ -238,55 +238,38 @@ export const dbHelpers = {
 
   // Race results operations
   raceResults: {
-    // Get all race results (includes both external races and user-created races)
+    // Get all race results
     getAll: async () => {
       const { data, error } = await supabase
         .from('race_results')
         .select(`
           *,
-          races (
-            *,
-            courses (*)
-          ),
           user_races (*)
         `)
         .order('created_at', { ascending: false });
       return { data, error };
     },
 
-    // Get user's race results (includes both external races and user-created races)
+    // Get user's race results
     getUserResults: async (userId: string) => {
       const { data, error } = await supabase
         .from('race_results')
         .select(`
           *,
-          races (
-            *,
-            courses (*)
-          ),
           user_races (*)
         `)
         .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false});
       return { data, error };
     },
 
-    // Add new race result (supports both external races and user-created races)
+    // Add new race result
     add: async (raceResult: any) => {
-      // Validate that either race_id or user_race_id is provided
-      if (!raceResult.race_id && !raceResult.user_race_id) {
-        return { data: null, error: 'Either race_id or user_race_id must be provided' };
-      }
-
       const { data, error } = await supabase
         .from('race_results')
         .insert(raceResult)
         .select(`
           *,
-          races (
-            *,
-            courses (*)
-          ),
           user_races (*)
         `)
         .single();
@@ -301,10 +284,6 @@ export const dbHelpers = {
         .eq('id', resultId)
         .select(`
           *,
-          races (
-            *,
-            courses (*)
-          ),
           user_races (*)
         `)
         .single();
