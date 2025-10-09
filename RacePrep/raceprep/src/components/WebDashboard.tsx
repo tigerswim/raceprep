@@ -260,10 +260,10 @@ export const WebDashboard: React.FC = () => {
     // Convert race results to our interface format
     const results: UserRaceResult[] = raceResults.map((result: any) => ({
       id: result.id,
-      race_name: result.races?.name || 'Unknown Race',
-      race_date: result.races?.date || result.race_date || '',
-      race_location: result.races?.location || '',
-      distance_type: result.races?.distance_type || result.distance_type || 'sprint',
+      race_name: result.user_races?.name || 'Unknown Race',
+      race_date: result.user_races?.date || result.race_date || '',
+      race_location: result.user_races?.location || '',
+      distance_type: result.user_races?.distance_type || result.distance_type || 'sprint',
       overall_time: result.overall_time || '0:00:00',
       swim_time: result.swim_time,
       t1_time: result.t1_time,
