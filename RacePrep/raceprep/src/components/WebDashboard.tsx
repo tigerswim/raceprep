@@ -458,20 +458,19 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Enhanced Dashboard Widgets - Testing one at a time */}
+          {/* Dashboard Widgets - UpcomingRacesWidget disabled (causes React error #130) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-            {/* Test 2: UpcomingRacesWidget */}
-            <UpcomingRacesWidget />
+            {/* UpcomingRacesWidget disabled - contains component returning undefined */}
           </div>
 
-          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <GoalsProgressWidget />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <WeatherWidget />
-          </div> */}
+          </div>
 
           {/* Race Analysis Section */}
           {userRaceResults.length > 0 && (
