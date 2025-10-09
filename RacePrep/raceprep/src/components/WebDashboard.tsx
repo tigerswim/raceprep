@@ -460,9 +460,9 @@ export const WebDashboard: React.FC = () => {
 
           {/* Enhanced Dashboard Widgets - Testing one at a time */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Test 1: PerformanceOverviewWidget */}
             <PerformanceOverviewWidget />
-            {/* <UpcomingRacesWidget /> */}
+            {/* Test 2: UpcomingRacesWidget */}
+            <UpcomingRacesWidget />
           </div>
 
           {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
