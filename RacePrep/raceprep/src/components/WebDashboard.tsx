@@ -10,7 +10,7 @@ import { PerformanceOverviewWidget } from './dashboard/PerformanceOverviewWidget
 import { UpcomingRacesWidget } from './dashboard/UpcomingRacesWidget';
 import { GoalsProgressWidget } from './dashboard/GoalsProgressWidget';
 import { WeatherWidget } from './dashboard/WeatherWidget';
-import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget';
+// import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget'; // Disabled - uses React Native components
 import {
   TbClock,
   TbVs,
@@ -472,8 +472,8 @@ export const WebDashboard: React.FC = () => {
             {/* Goals Progress */}
             <GoalsProgressWidget />
 
-            {/* Training Plan Progress */}
-            <TrainingPlanProgressWidget userId={user?.id || ""} onViewDetails={() => router.push("/training-calendar")} />
+            {/* Training Plan Progress - Temporarily disabled (uses React Native components not compatible with web) */}
+            {/* <TrainingPlanProgressWidget userId={user?.id || ""} onViewDetails={() => router.push("/training-calendar")} /> */}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
