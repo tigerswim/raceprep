@@ -63,6 +63,32 @@ export const UpcomingRacesWidget: React.FC = () => {
     return Date.now() - lastCacheUpdate < CACHE_DURATION;
   }, [lastCacheUpdate]);
 
+  // Define helper functions BEFORE loadUpcomingRaces to avoid TDZ errors
+  const calculatePreparationStatus = useCallback((daysUntil: number, status: string): 'excellent' | 'good' | 'needs-attention' | 'unknown' => {
+    if (status === 'completed') return 'excellent';
+
+    if (daysUntil > 60) return 'good';
+    if (daysUntil > 30 && status === 'training') return 'excellent';
+    if (daysUntil > 30) return 'good';
+    if (daysUntil > 14 && status === 'training') return 'good';
+    if (daysUntil > 14) return 'needs-attention';
+    if (status === 'training') return 'good';
+    return 'needs-attention';
+  }, []);
+
+  const calculateTrainingProgress = useCallback((daysUntil: number, status: string): number => {
+    if (status === 'completed') return 100;
+    if (status === 'interested') return 0;
+
+    // Estimate training progress based on days until race and status
+    if (daysUntil > 90) return 25; // Early preparation
+    if (daysUntil > 60) return 50; // Build phase
+    if (daysUntil > 30) return 75; // Peak phase
+    if (daysUntil > 14) return 85; // Taper phase
+    if (daysUntil > 7) return 95;  // Race week
+    return 98; // Final days
+  }, []);
+
   // Wrap loadUpcomingRaces in useCallback to stabilize reference
   const loadUpcomingRaces = useCallback(async () => {
     // Use cache if valid
@@ -281,31 +307,6 @@ export const UpcomingRacesWidget: React.FC = () => {
       }
     ];
   };
-
-  const calculatePreparationStatus = useCallback((daysUntil: number, status: string): 'excellent' | 'good' | 'needs-attention' | 'unknown' => {
-    if (status === 'completed') return 'excellent';
-
-    if (daysUntil > 60) return 'good';
-    if (daysUntil > 30 && status === 'training') return 'excellent';
-    if (daysUntil > 30) return 'good';
-    if (daysUntil > 14 && status === 'training') return 'good';
-    if (daysUntil > 14) return 'needs-attention';
-    if (status === 'training') return 'good';
-    return 'needs-attention';
-  }, []);
-
-  const calculateTrainingProgress = useCallback((daysUntil: number, status: string): number => {
-    if (status === 'completed') return 100;
-    if (status === 'interested') return 0;
-
-    // Estimate training progress based on days until race and status
-    if (daysUntil > 90) return 25; // Early preparation
-    if (daysUntil > 60) return 50; // Build phase
-    if (daysUntil > 30) return 75; // Peak phase
-    if (daysUntil > 14) return 85; // Taper phase
-    if (daysUntil > 7) return 95;  // Race week
-    return 98; // Final days
-  }, []);
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
