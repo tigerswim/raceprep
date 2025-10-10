@@ -10,7 +10,7 @@ import { PerformanceOverviewWidget } from './dashboard/PerformanceOverviewWidget
 import { UpcomingRacesWidget } from './dashboard/UpcomingRacesWidget';
 import { GoalsProgressWidget } from './dashboard/GoalsProgressWidget';
 import { WeatherWidget } from './dashboard/WeatherWidget';
-// import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget'; // Disabled - uses React Native components
+import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget';
 import {
   TbClock,
   TbVs,
@@ -462,9 +462,7 @@ export const WebDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
             <UpcomingRacesWidget />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <TrainingPlanProgressWidget />
             <GoalsProgressWidget />
           </div>
 

@@ -1,12 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import {
   TbSwimming,
@@ -18,44 +10,38 @@ import {
 } from 'react-icons/tb';
 import { trainingPlanService } from '../../services/trainingPlanService';
 import type { TrainingPlanProgress } from '../../types/trainingPlans';
+import { useAuth } from '../../contexts/AuthContext';
 
-interface TrainingPlanProgressWidgetProps {
-  userId: string;
-  onViewDetails?: () => void;
-}
-
-export const TrainingPlanProgressWidget: React.FC<TrainingPlanProgressWidgetProps> = ({
-  userId,
-  onViewDetails,
-}) => {
+export const TrainingPlanProgressWidget: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
-  const [currentWeek, setCurrentWeek] = useState<number>(1);
   const [progress, setProgress] = useState<TrainingPlanProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadProgress();
-  }, [userId]);
-
-  const handleViewCalendar = () => {
+  const handleViewCalendar = useCallback(() => {
     if (activePlanId && progress) {
       router.push(`/training-calendar?planId=${activePlanId}&currentWeek=${progress.currentWeek}`);
     }
-  };
+  }, [activePlanId, progress, router]);
 
-  const handleStartPlan = () => {
+  const handleStartPlan = useCallback(() => {
     router.push("/training-plans");
-  };
+  }, [router]);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
       // Get user's active training plan
-      const plansResult = await trainingPlanService.getUserTrainingPlans(userId, 'active');
+      const plansResult = await trainingPlanService.getUserTrainingPlans(user.id, 'active');
 
       if (plansResult.error) {
         setError(plansResult.error.message);
@@ -71,7 +57,6 @@ export const TrainingPlanProgressWidget: React.FC<TrainingPlanProgressWidgetProp
       // Get progress for the first active plan
       const activePlan = plansResult.data[0];
       setActivePlanId(activePlan.id);
-      setCurrentWeek(activePlan.current_week || 1);
       const progressResult = await trainingPlanService.getTrainingPlanProgress(activePlan.id);
 
       if (progressResult.error) {
@@ -84,46 +69,57 @@ export const TrainingPlanProgressWidget: React.FC<TrainingPlanProgressWidgetProp
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
+
+  // Ensure component always renders - prevent undefined returns
+  if (!user && !loading) {
+    return (
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <div className="text-center py-6">
+          <p className="text-white/50">Please log in to view your training plan</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Training Plan</Text>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#3B82F6" />
-        </View>
-      </View>
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <h3 className="text-xl font-bold text-white mb-4">Training Plan</h3>
+        <div className="flex justify-center items-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Training Plan</Text>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <h3 className="text-xl font-bold text-white mb-4">Training Plan</h3>
+        <p className="text-red-400 text-center mt-5">{error}</p>
+      </div>
     );
   }
 
   if (!progress) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.title}>Training Plan</Text>
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>No active training plan</Text>
-          <TouchableOpacity onPress={handleStartPlan}>
-            <LinearGradient
-              colors={['#3B82F6', '#F97316']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.startButton}
-            >
-              <Text style={styles.startButtonText}>Start a Plan</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <h3 className="text-xl font-bold text-white mb-4">Training Plan</h3>
+        <div className="py-10 text-center">
+          <p className="text-white/60 mb-4">No active training plan</p>
+          <button
+            onClick={handleStartPlan}
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+          >
+            Start a Plan
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -132,246 +128,96 @@ export const TrainingPlanProgressWidget: React.FC<TrainingPlanProgressWidgetProp
     : 0;
 
   return (
-    <TouchableOpacity style={styles.container} onPress={handleViewCalendar} activeOpacity={0.7}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Training Plan</Text>
-        <Text style={styles.weekBadge}>
+    <div
+      className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl cursor-pointer hover:bg-white/10 transition-all"
+      onClick={handleViewCalendar}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center mb-5">
+        <h3 className="text-xl font-bold text-white">Training Plan</h3>
+        <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
           Week {progress.currentWeek}/{progress.totalWeeks}
-        </Text>
-      </View>
+        </span>
+      </div>
 
       {/* Progress Ring */}
-      <View style={styles.progressRing}>
-        <View style={styles.progressRingInner}>
-          <Text style={styles.progressPercentage}>{completionPercentage}%</Text>
-          <Text style={styles.progressLabel}>Complete</Text>
-        </View>
-      </View>
+      <div className="flex justify-center my-5">
+        <div className="relative w-32 h-32">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-full h-full rounded-full border-8 border-blue-500 bg-white/5 flex flex-col items-center justify-center">
+              <span className="text-3xl font-bold text-blue-500">{completionPercentage}%</span>
+              <span className="text-xs text-white/60 mt-1">Complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Stats Row */}
-      <View style={styles.statsRow}>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>{progress.completedWorkouts}</Text>
-          <Text style={styles.statLabel}>Completed</Text>
-        </View>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>{progress.adherenceRate}%</Text>
-          <Text style={styles.statLabel}>Adherence</Text>
-        </View>
-        <View style={styles.stat}>
-          <Text style={styles.statValue}>
+      <div className="flex justify-around py-4 border-t border-b border-white/10">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-500">{progress.completedWorkouts}</div>
+          <div className="text-xs text-white/60 mt-1">Completed</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-500">{progress.adherenceRate}%</div>
+          <div className="text-xs text-white/60 mt-1">Adherence</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-500">
             {progress.totalWorkouts - progress.completedWorkouts}
-          </Text>
-          <Text style={styles.statLabel}>Remaining</Text>
-        </View>
-      </View>
+          </div>
+          <div className="text-xs text-white/60 mt-1">Remaining</div>
+        </div>
+      </div>
 
       {/* This Week Summary */}
       {progress.upcomingWorkouts && progress.upcomingWorkouts.length > 0 && (
-        <View style={styles.upcomingSection}>
-          <Text style={styles.upcomingTitle}>This Week:</Text>
-          <View style={styles.upcomingWorkouts}>
+        <div className="mt-4">
+          <h4 className="text-sm font-semibold text-white mb-3">This Week:</h4>
+          <div className="space-y-2">
             {progress.upcomingWorkouts.slice(0, 3).map((workout, index) => (
-              <View key={index} style={styles.upcomingWorkout}>
+              <div key={index} className="flex items-center gap-2">
                 {getDisciplineIcon(workout.discipline)}
-                <Text style={styles.workoutDetail}>
+                <span className="text-sm text-white/60">
                   {workout.discipline} • {workout.duration_minutes || '?'} min
-                </Text>
-              </View>
+                </span>
+              </div>
             ))}
-          </View>
-        </View>
+          </div>
+        </div>
       )}
 
-      <TouchableOpacity onPress={handleViewCalendar}>
-        <LinearGradient
-          colors={['#3B82F6', '#F97316']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.viewDetailsButton}
-        >
-          <Text style={styles.viewDetailsText}>View Calendar →</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    </TouchableOpacity>
+      {/* View Calendar Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleViewCalendar();
+        }}
+        className="w-full mt-4 px-4 py-3 bg-gradient-to-r from-blue-500 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+      >
+        View Calendar →
+      </button>
+    </div>
   );
 };
 
 const getDisciplineIcon = (discipline: string) => {
-
+  const iconClass = "text-base mr-1";
 
   switch (discipline.toLowerCase()) {
     case 'swim':
-      return <TbSwimming size={16} color="#007AFF" style={{ marginRight: 4 }} />;
+      return <TbSwimming className={`${iconClass} text-[#007AFF]`} />;
     case 'bike':
-      return <TbBike size={16} color="#FF9500" style={{ marginRight: 4 }} />;
+      return <TbBike className={`${iconClass} text-[#FF9500]`} />;
     case 'run':
-      return <TbRun size={16} color="#34C759" style={{ marginRight: 4 }} />;
+      return <TbRun className={`${iconClass} text-[#34C759]`} />;
     case 'brick':
-      return <TbFlame size={16} color="#AF52DE" style={{ marginRight: 4 }} />;
+      return <TbFlame className={`${iconClass} text-[#AF52DE]`} />;
     case 'strength':
-      return <TbWeight size={16} color="#FF3B30" style={{ marginRight: 4 }} />;
+      return <TbWeight className={`${iconClass} text-[#FF3B30]`} />;
     case 'rest':
-      return <TbBed size={16} color="#8E8E93" style={{ marginRight: 4 }} />;
+      return <TbBed className={`${iconClass} text-[#8E8E93]`} />;
     default:
-      return <TbBed size={16} color="#8E8E93" style={{ marginRight: 4 }} />;
+      return <TbBed className={`${iconClass} text-[#8E8E93]`} />;
   }
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  emptyContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 1)',
-  },
-  weekBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  progressRing: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  progressRingInner: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 8,
-    borderColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  progressPercentage: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  progressLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 4,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  stat: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 4,
-  },
-  upcomingSection: {
-    marginTop: 16,
-  },
-  upcomingTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
-    marginBottom: 12,
-  },
-  upcomingWorkouts: {
-    gap: 8,
-  },
-  upcomingWorkout: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  workoutDiscipline: {
-    fontSize: 20,
-  },
-  workoutDetail: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
-  viewDetailsButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  viewDetailsText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  emptyState: {
-    paddingVertical: 40,
-    alignItems: 'center',
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 16,
-  },
-  startButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  startButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  loadingContainer: {
-    paddingVertical: 40,
-    alignItems: 'center',
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#FF3B30',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-});
