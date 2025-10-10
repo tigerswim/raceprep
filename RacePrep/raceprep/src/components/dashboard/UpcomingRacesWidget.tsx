@@ -58,11 +58,6 @@ export const UpcomingRacesWidget: React.FC = () => {
   // Cache duration: 5 minutes
   const CACHE_DURATION = 5 * 60 * 1000;
 
-  // Check cache validity - memoize with useCallback to prevent recreating on every render
-  const isCacheValid = useCallback(() => {
-    return Date.now() - lastCacheUpdate < CACHE_DURATION;
-  }, [lastCacheUpdate]);
-
   // Define helper functions BEFORE loadUpcomingRaces to avoid TDZ errors
   const calculatePreparationStatus = useCallback((daysUntil: number, status: string): 'excellent' | 'good' | 'needs-attention' | 'unknown' => {
     if (status === 'completed') return 'excellent';
@@ -91,8 +86,9 @@ export const UpcomingRacesWidget: React.FC = () => {
 
   // Wrap loadUpcomingRaces in useCallback to stabilize reference
   const loadUpcomingRaces = useCallback(async () => {
-    // Use cache if valid
-    if (isCacheValid() && cachedRaces.length > 0) {
+    // Use cache if valid (inline check to avoid dependency issues)
+    const cacheValid = Date.now() - lastCacheUpdate < CACHE_DURATION;
+    if (cacheValid && cachedRaces.length > 0) {
       setUpcomingRaces(cachedRaces);
       setIsLoading(false);
       return;
@@ -229,7 +225,10 @@ export const UpcomingRacesWidget: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user, isCacheValid, cachedRaces, calculatePreparationStatus, calculateTrainingProgress]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, calculatePreparationStatus, calculateTrainingProgress]);
+  // NOTE: cachedRaces and lastCacheUpdate are intentionally omitted to prevent infinite loops.
+  // They are read for caching logic but should not trigger function recreation.
 
   useEffect(() => {
     if (user) {
