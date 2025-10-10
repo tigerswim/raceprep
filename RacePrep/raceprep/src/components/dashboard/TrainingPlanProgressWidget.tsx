@@ -30,7 +30,7 @@ export const TrainingPlanProgressWidget: React.FC = () => {
     router.push("/training-plans");
   }, [router]);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     if (!user?.id) {
       setLoading(false);
       return;
@@ -69,12 +69,11 @@ export const TrainingPlanProgressWidget: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     loadProgress();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [loadProgress]);
 
   // All hooks must run before any conditional returns
   // Render logic after all hooks

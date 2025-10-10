@@ -61,50 +61,10 @@ export const UpcomingRacesWidget: React.FC = () => {
   // Check cache validity - memoize with useCallback to prevent recreating on every render
   const isCacheValid = useCallback(() => {
     return Date.now() - lastCacheUpdate < CACHE_DURATION;
-  }, [lastCacheUpdate, CACHE_DURATION]);
+  }, [lastCacheUpdate]);
 
-  useEffect(() => {
-    if (user) {
-      loadUpcomingRaces();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]); // Remove loadUpcomingRaces from dependencies to prevent loops
-
-  // Real-time countdown timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
-
-    return () => clearInterval(timer);
-  }, []);
-
-  // Memoized countdown calculation for performance
-  const updatedRaces = useMemo(() => {
-    if (upcomingRaces.length === 0) return [];
-
-    return upcomingRaces.map(race => {
-      const raceDate = new Date(race.date);
-      const timeDiff = raceDate.getTime() - currentTime.getTime();
-      const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-      const hoursUntil = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutesUntil = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-
-      return {
-        ...race,
-        daysUntil: Math.max(0, daysUntil),
-        hoursUntil: Math.max(0, hoursUntil),
-        minutesUntil: Math.max(0, minutesUntil)
-      };
-    });
-  }, [upcomingRaces, currentTime]);
-
-  // The updatedRaces useMemo already handles the countdown updates
-  // No need for a useEffect that would cause infinite loops
-  // Removing this useEffect to prevent infinite re-renders
-
-  const loadUpcomingRaces = async () => {
+  // Wrap loadUpcomingRaces in useCallback to stabilize reference
+  const loadUpcomingRaces = useCallback(async () => {
     // Use cache if valid
     if (isCacheValid() && cachedRaces.length > 0) {
       setUpcomingRaces(cachedRaces);
@@ -243,7 +203,48 @@ export const UpcomingRacesWidget: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }; // Removed useCallback - function doesn't need memoization and dependencies were causing issues
+  }, [user, isCacheValid, cachedRaces, calculatePreparationStatus, calculateTrainingProgress]);
+
+  useEffect(() => {
+    if (user) {
+      loadUpcomingRaces();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, loadUpcomingRaces]);
+
+  // Real-time countdown timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Memoized countdown calculation for performance
+  const updatedRaces = useMemo(() => {
+    if (upcomingRaces.length === 0) return [];
+
+    return upcomingRaces.map(race => {
+      const raceDate = new Date(race.date);
+      const timeDiff = raceDate.getTime() - currentTime.getTime();
+      const daysUntil = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+      const hoursUntil = Math.ceil((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutesUntil = Math.ceil((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+      return {
+        ...race,
+        daysUntil: Math.max(0, daysUntil),
+        hoursUntil: Math.max(0, hoursUntil),
+        minutesUntil: Math.max(0, minutesUntil)
+      };
+    });
+  }, [upcomingRaces, currentTime]);
+
+  // The updatedRaces useMemo already handles the countdown updates
+  // No need for a useEffect that would cause infinite loops
+  // Removed duplicate function - now using useCallback version above
 
   const getSampleUpcomingRaces = (): UpcomingRace[] => {
     const now = new Date();
