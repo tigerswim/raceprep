@@ -45,6 +45,8 @@ interface LocalStorageRace {
 }
 
 export const UpcomingRacesWidget: React.FC = () => {
+  // ALL HOOKS MUST EXECUTE BEFORE ANY CONDITIONAL RETURNS
+  // This ensures React's Rules of Hooks are followed
   const router = useRouter();
   const { user } = useAuth();
   const [upcomingRaces, setUpcomingRaces] = useState<UpcomingRace[]>([]);
@@ -53,19 +55,13 @@ export const UpcomingRacesWidget: React.FC = () => {
   const [cachedRaces, setCachedRaces] = useState<UpcomingRace[]>([]);
   const [lastCacheUpdate, setLastCacheUpdate] = useState<number>(0);
 
-  // Ensure component always renders - prevent undefined returns
-  if (!user && !isLoading) {
-    return (
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
-        <div className="text-center py-6">
-          <p className="text-white/50">Please log in to view upcoming races</p>
-        </div>
-      </div>
-    );
-  }
-
   // Cache duration: 5 minutes
   const CACHE_DURATION = 5 * 60 * 1000;
+
+  // Check cache validity - memoize with useCallback to prevent recreating on every render
+  const isCacheValid = useCallback(() => {
+    return Date.now() - lastCacheUpdate < CACHE_DURATION;
+  }, [lastCacheUpdate, CACHE_DURATION]);
 
   useEffect(() => {
     if (user) {
@@ -74,11 +70,6 @@ export const UpcomingRacesWidget: React.FC = () => {
       setIsLoading(false);
     }
   }, [user]); // Remove loadUpcomingRaces from dependencies to prevent loops
-
-  // Check cache validity - memoize with useCallback to prevent recreating on every render
-  const isCacheValid = useCallback(() => {
-    return Date.now() - lastCacheUpdate < CACHE_DURATION;
-  }, [lastCacheUpdate]);
 
   // Real-time countdown timer
   useEffect(() => {
@@ -386,6 +377,18 @@ export const UpcomingRacesWidget: React.FC = () => {
     if (daysUntil <= 30) return 'medium';
     return 'low';
   }, []);
+
+  // ALL HOOKS HAVE NOW EXECUTED - SAFE TO ADD CONDITIONAL RETURNS
+  // This ensures React's Rules of Hooks are followed
+  if (!user && !isLoading) {
+    return (
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
+        <div className="text-center py-6">
+          <p className="text-white/50">Please log in to view upcoming races</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

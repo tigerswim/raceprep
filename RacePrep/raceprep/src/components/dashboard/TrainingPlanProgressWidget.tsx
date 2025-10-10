@@ -76,7 +76,8 @@ export const TrainingPlanProgressWidget: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Ensure component always renders - prevent undefined returns
+  // All hooks must run before any conditional returns
+  // Render logic after all hooks
   if (!user && !loading) {
     return (
       <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">
