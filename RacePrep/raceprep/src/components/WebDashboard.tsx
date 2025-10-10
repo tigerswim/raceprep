@@ -458,11 +458,11 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Dashboard Widgets - Testing UpcomingRacesWidget */}
+          {/* Dashboard Widgets - Only working widgets enabled */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-            <UpcomingRacesWidget />
-            {/* <TrainingPlanProgressWidget /> */}
+            {/* <UpcomingRacesWidget /> */} {/* Disabled - causes React error #130 */}
+            {/* <TrainingPlanProgressWidget /> */} {/* Disabled - causes React error #130 */}
             <GoalsProgressWidget />
           </div>
 
