@@ -30,7 +30,7 @@ export const TrainingPlanProgressWidget: React.FC = () => {
     router.push("/training-plans");
   }, [router]);
 
-  const loadProgress = useCallback(async () => {
+  const loadProgress = async () => {
     if (!user?.id) {
       setLoading(false);
       return;
@@ -69,11 +69,12 @@ export const TrainingPlanProgressWidget: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  };
 
   useEffect(() => {
     loadProgress();
-  }, [loadProgress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // Ensure component always renders - prevent undefined returns
   if (!user && !loading) {
