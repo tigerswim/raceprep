@@ -10,7 +10,7 @@ import { PerformanceOverviewWidget } from './dashboard/PerformanceOverviewWidget
 import { UpcomingRacesWidget } from './dashboard/UpcomingRacesWidget';
 import { GoalsProgressWidget } from './dashboard/GoalsProgressWidget';
 import { WeatherWidget } from './dashboard/WeatherWidget';
-// import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget'; // Temporarily disabled - debugging React error #130
+import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget';
 import {
   TbClock,
   TbVs,
@@ -458,11 +458,11 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Dashboard Widgets - Only working widgets enabled */}
+          {/* Dashboard Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-            {/* <UpcomingRacesWidget /> */} {/* Disabled - causes React error #130 */}
-            {/* <TrainingPlanProgressWidget /> */} {/* Disabled - causes React error #130 */}
+            <UpcomingRacesWidget />
+            <TrainingPlanProgressWidget />
             <GoalsProgressWidget />
           </div>
 
