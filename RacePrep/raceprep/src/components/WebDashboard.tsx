@@ -458,16 +458,16 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Dashboard Widgets - Isolating which widget causes React error #130 */}
+          {/* Dashboard Widgets - Testing TrainingPlanProgressWidget */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
             {/* <UpcomingRacesWidget /> */}
-            {/* <TrainingPlanProgressWidget /> */}
+            <TrainingPlanProgressWidget />
             {/* <GoalsProgressWidget /> */}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* <WeatherWidget /> */}
+            <WeatherWidget />
           </div>
 
           {/* Race Analysis Section */}
