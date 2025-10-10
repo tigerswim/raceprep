@@ -458,10 +458,10 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Dashboard Widgets - UpcomingRacesWidget disabled (causes React error #130) */}
+          {/* Dashboard Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-            {/* UpcomingRacesWidget disabled - contains component returning undefined */}
+            <UpcomingRacesWidget />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
