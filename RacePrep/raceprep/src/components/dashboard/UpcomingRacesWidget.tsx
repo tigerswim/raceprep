@@ -84,6 +84,43 @@ export const UpcomingRacesWidget: React.FC = () => {
     return 98; // Final days
   }, []);
 
+  // Define getSampleUpcomingRaces BEFORE loadUpcomingRaces to avoid TDZ errors
+  const getSampleUpcomingRaces = (): UpcomingRace[] => {
+    const now = new Date();
+    return [
+      {
+        id: 'sample-1',
+        name: 'Ironman Louisville',
+        date: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        location: 'Louisville, KY',
+        distance_type: 'ironman',
+        status: 'registered',
+        daysUntil: 45,
+        hoursUntil: 12,
+        minutesUntil: 30,
+        preparationStatus: 'good',
+        trainingProgress: 75,
+        equipmentReady: true,
+        nutritionPlanReady: false
+      },
+      {
+        id: 'sample-2',
+        name: 'Nashville Sprint Triathlon',
+        date: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        location: 'Nashville, TN',
+        distance_type: 'sprint',
+        status: 'training',
+        daysUntil: 21,
+        hoursUntil: 8,
+        minutesUntil: 15,
+        preparationStatus: 'excellent',
+        trainingProgress: 90,
+        equipmentReady: true,
+        nutritionPlanReady: true
+      }
+    ];
+  };
+
   // Wrap loadUpcomingRaces in useCallback to stabilize reference
   const loadUpcomingRaces = useCallback(async () => {
     // Use cache if valid (inline check to avoid dependency issues)
@@ -269,43 +306,7 @@ export const UpcomingRacesWidget: React.FC = () => {
 
   // The updatedRaces useMemo already handles the countdown updates
   // No need for a useEffect that would cause infinite loops
-  // Removed duplicate function - now using useCallback version above
-
-  const getSampleUpcomingRaces = (): UpcomingRace[] => {
-    const now = new Date();
-    return [
-      {
-        id: 'sample-1',
-        name: 'Ironman Louisville',
-        date: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        location: 'Louisville, KY',
-        distance_type: 'ironman',
-        status: 'registered',
-        daysUntil: 45,
-        hoursUntil: 12,
-        minutesUntil: 30,
-        preparationStatus: 'good',
-        trainingProgress: 75,
-        equipmentReady: true,
-        nutritionPlanReady: false
-      },
-      {
-        id: 'sample-2',
-        name: 'Nashville Sprint Triathlon',
-        date: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        location: 'Nashville, TN',
-        distance_type: 'sprint',
-        status: 'training',
-        daysUntil: 21,
-        hoursUntil: 8,
-        minutesUntil: 15,
-        preparationStatus: 'excellent',
-        trainingProgress: 90,
-        equipmentReady: true,
-        nutritionPlanReady: true
-      }
-    ];
-  };
+  // Removed duplicate functions - now defined before loadUpcomingRaces
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
