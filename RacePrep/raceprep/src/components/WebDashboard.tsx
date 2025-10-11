@@ -458,11 +458,11 @@ export const WebDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Dashboard Widgets */}
+          {/* Dashboard Widgets - TEMPORARY: Commenting out to isolate error */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <PerformanceOverviewWidget />
-            <UpcomingRacesWidget />
-            <TrainingPlanProgressWidget />
+            {/* <UpcomingRacesWidget /> */}
+            {/* <TrainingPlanProgressWidget /> */}
             <GoalsProgressWidget />
           </div>
 
