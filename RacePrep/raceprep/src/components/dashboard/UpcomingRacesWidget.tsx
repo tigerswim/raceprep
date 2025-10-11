@@ -2,7 +2,13 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
-import { TbCalendarTime, TbTarget, TbTrophy, TbAlert } from 'react-icons/tb';
+// TEMPORARY: Comment out react-icons to test if this is causing the error
+// import { TbCalendarTime, TbTarget, TbTrophy, TbAlert } from 'react-icons/tb';
+
+// Temporary placeholder components
+const TbAlert = () => <span>⚠️</span>;
+const TbCalendarTime = () => <span>📅</span>;
+const TbTarget = () => <span>🎯</span>;
 
 interface UpcomingRace {
   id: string;
