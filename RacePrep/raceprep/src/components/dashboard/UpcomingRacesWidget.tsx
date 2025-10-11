@@ -140,7 +140,7 @@ export const UpcomingRacesWidget: React.FC = () => {
 
         // Try localStorage fallback
         try {
-          const localRacesKey = `saved_races_${user.id}`;
+          const localRacesKey = `saved_races_${user?.id || 'guest'}`;
           const localRaces = localStorage.getItem(localRacesKey);
 
           if (localRaces) {
