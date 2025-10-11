@@ -31,8 +31,9 @@ RacePrep is a mobile-first triathlon tracking application designed for beginner 
 - **Training Load Analysis**: Track weekly volume and intensity across all disciplines
 - **SVG Training Charts**: Interactive 7-day trend visualization with glassmorphism design
 - **Performance Dashboard**: Real-time analytics with week-over-week comparisons
-- **Modern UI Components**: Tabler Icons for consistent iconography across all interfaces
+- **Modern UI Components**: Tabler Icons (react-icons/tb) for consistent iconography across dashboard widgets
 - **Enhanced Chart Visualizations**: Gradient-free bar charts with improved readability and vibrant orange cycling colors
+- **Cross-Platform Icon Support**: Lucide React Native icons for web-compatible components
 
 ### 🔒 Security & Performance
 - **Input Validation**: Comprehensive parameter sanitization to prevent injection attacks
@@ -238,13 +239,13 @@ src/
 - [x] **Comprehensive training data integration (Strava)**
 - [x] **Race discovery and management system**
 - [x] **Planning tools with race-specific features**
-- [x] **Enhanced dashboard with 6 comprehensive widgets**
-  - Performance Overview with SVG charts
-  - Upcoming Races with countdown timers
-  - Goals Progress with trend analysis
-  - Weather Widget with geolocation
-  - **TransitionAnalyticsWidget with optimization tips** (NEW)
-  - **PersonalBestsWidget tracking PRs across distances** (NEW)
+- [x] **Enhanced dashboard with 6 comprehensive widgets** (All production-ready)
+  - Performance Overview with SVG charts and discipline breakdowns
+  - Upcoming Races with countdown timers and preparation status (Lucide icons)
+  - Training Plan Progress with weekly adherence tracking (Tabler icons)
+  - Goals Progress with trend analysis and completion tracking (Tabler icons)
+  - Transition Analytics with T1/T2 optimization tips (Tabler icons)
+  - Personal Bests tracking PRs across all race distances (Tabler icons)
 - [x] **Advanced Race Result Analytics**
   - Enhanced T1/T2 tracking with real-time validation
   - Interactive race timeline visualization
@@ -368,6 +369,13 @@ Built with ❤️ for the triathlon community
 ---
 
 **Recent Updates:**
+- **Dashboard Widget Icon Fix (January 2025)**
+  - ✅ Resolved React Error #130 in UpcomingRacesWidget caused by react-icons bundling in production
+  - ✅ Replaced problematic react-icons with Lucide React Native icons in UpcomingRacesWidget
+  - ✅ Maintained Tabler Icons (react-icons/tb) across all other dashboard widgets for consistency
+  - ✅ Added null safety checks for user.id in localStorage operations
+  - ✅ Confirmed all 6 dashboard widgets now render successfully in production
+  - ✅ Dashboard widgets: PerformanceOverview, UpcomingRaces, TrainingPlanProgress, GoalsProgress, TransitionAnalytics, PersonalBests
 - **Strava API Compliance Implementation (September 30, 2024)**
   - ✅ Implemented "Powered by Strava" branding on all training data displays
   - ✅ Added comprehensive user data export functionality (JSON/CSV formats)
@@ -391,4 +399,4 @@ Built with ❤️ for the triathlon community
 - Dashboard performance improvements and bug fixes
 - Comprehensive backend monitoring and error handling
 
-*Last updated: September 30, 2024*
+*Last updated: January 2025*
