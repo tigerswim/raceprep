@@ -2,13 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
-// TEMPORARY: Comment out react-icons to test if this is causing the error
-// import { TbCalendarTime, TbTarget, TbTrophy, TbAlert } from 'react-icons/tb';
-
-// Temporary placeholder components
-const TbAlert = () => <span>⚠️</span>;
-const TbCalendarTime = () => <span>📅</span>;
-const TbTarget = () => <span>🎯</span>;
+import { CalendarClock, Target, AlertCircle } from 'lucide-react-native';
 
 interface UpcomingRace {
   id: string;
@@ -474,11 +468,11 @@ export const UpcomingRacesWidget: React.FC = () => {
                   <div className="flex items-center space-x-2 mb-1">
                     <h4 className="text-white font-semibold">{race.name}</h4>
                     {getCountdownUrgency(race.daysUntil) === 'high' && (
-                      <TbAlert className="w-4 h-4 text-orange-400" />
+                      <AlertCircle size={16} color="#fb923c" />
                     )}
                   </div>
                   <div className="flex items-center space-x-2 text-sm text-white/70 mb-2">
-                    <TbCalendarTime className="w-3 h-3" />
+                    <CalendarClock size={12} />
                     <span>{formatDate(race.date)}</span>
                     <span>•</span>
                     <span>{race.location}</span>
@@ -568,7 +562,7 @@ export const UpcomingRacesWidget: React.FC = () => {
                     onClick={() => router.push('/(tabs)/planning')}
                     className="text-xs text-white/60 hover:text-white transition-colors flex items-center space-x-1"
                   >
-                    <TbTarget className="w-3 h-3" />
+                    <Target size={12} />
                     <span>Plan</span>
                   </button>
                 </div>
