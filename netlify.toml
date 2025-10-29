@@ -1,5 +1,7 @@
 # Netlify configuration for RacePrep - Force deployment with correct settings
 [build]
+  # Base directory (root of repo after cleanup)
+  base = "."
   # Build command for Expo web
   command = "npm run build:web"
   # Directory to publish
