@@ -1,1 +1,0 @@
-export { TrainingPlanSelectionScreen } from './TrainingPlanSelectionScreen';
