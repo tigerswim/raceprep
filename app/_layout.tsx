@@ -28,6 +28,7 @@ export default function RootLayout() {
         <RacesProvider>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="strava-callback" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
