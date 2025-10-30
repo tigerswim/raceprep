@@ -524,7 +524,9 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
                     <div className="flex-1">
                       <div className="font-medium">{race.race_name}</div>
                       <div className="text-sm text-white/60">
-                        {race.race_location} • {race.distance_type} • {new Date(race.race_date).toLocaleDateString()}
+                        {race.race_location} • {race.distance_type} • Date: {race.race_date && !isNaN(Date.parse(race.race_date)) 
+                          ? new Date(race.race_date).toLocaleDateString() 
+                          : 'TBD'}
                       </div>
                       {race.goal_time && (
                         <div className="text-sm text-green-400">Goal: {race.goal_time}</div>
