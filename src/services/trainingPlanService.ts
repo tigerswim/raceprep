@@ -15,6 +15,7 @@ import {
   WorkoutFilters,
   CompletionFilters,
 } from '../types/trainingPlans';
+import { logger } from '../utils/logger';
 
 /**
  * Training Plan Service
@@ -212,7 +213,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Created training plan:', data.id);
+      logger.debug('[TRAINING_PLAN_SERVICE] Created training plan:', data.id);
       return { data: data as UserTrainingPlan, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception creating user plan:', error);
@@ -241,7 +242,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Updated training plan:', planId);
+      logger.debug('[TRAINING_PLAN_SERVICE] Updated training plan:', planId);
       return { data: data as UserTrainingPlan, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception updating user plan:', error);
@@ -264,7 +265,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Deleted training plan:', planId);
+      logger.debug('[TRAINING_PLAN_SERVICE] Deleted training plan:', planId);
       return { data: true, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception deleting user plan:', error);
@@ -409,7 +410,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Workout completed:', data.id);
+      logger.debug('[TRAINING_PLAN_SERVICE] Workout completed:', data.id);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception completing workout:', error);
@@ -440,7 +441,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Workout skipped:', data.id);
+      logger.debug('[TRAINING_PLAN_SERVICE] Workout skipped:', data.id);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception skipping workout:', error);
@@ -468,7 +469,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Completion updated:', completionId);
+      logger.debug('[TRAINING_PLAN_SERVICE] Completion updated:', completionId);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception updating completion:', error);
@@ -491,7 +492,7 @@ export const trainingPlanService = {
         return { data: null, error: error.message };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Completion deleted:', completionId);
+      logger.debug('[TRAINING_PLAN_SERVICE] Completion deleted:', completionId);
       return { data: true, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception deleting completion:', error);
@@ -784,7 +785,7 @@ export const trainingPlanService = {
         return { data: null, error: result.error };
       }
 
-      console.log('[TRAINING_PLAN_SERVICE] Auto-matched Strava activity to workout');
+      logger.debug('[TRAINING_PLAN_SERVICE] Auto-matched Strava activity to workout');
       return { data: result.data, error: null };
     } catch (error: any) {
       console.error('[TRAINING_PLAN_SERVICE] Exception matching Strava activity:'    , error);

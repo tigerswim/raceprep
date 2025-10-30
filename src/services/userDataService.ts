@@ -1,4 +1,5 @@
 import { supabase, dbHelpers } from './supabase';
+import { logger } from '../utils/logger';
 
 /**
  * User Data Management Service
@@ -15,7 +16,7 @@ export const userDataService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Not authenticated' };
 
-      console.log('[USER_DATA_SERVICE] Starting comprehensive data export for user:', user.id);
+      logger.debug('[USER_DATA_SERVICE] Starting comprehensive data export for user:', user.id);
 
       const exportData: any = {
         user_id: user.id,
@@ -25,46 +26,46 @@ export const userDataService = {
       };
 
       // 1. User Profile Data
-      console.log('[USER_DATA_SERVICE] Exporting user profile...');
+      logger.debug('[USER_DATA_SERVICE] Exporting user profile...');
       const profileResult = await dbHelpers.users.getCurrent();
       if (profileResult.data) {
         exportData.data.user_profile = profileResult.data;
       }
 
       // 2. Training Sessions (Strava Data)
-      console.log('[USER_DATA_SERVICE] Exporting training sessions...');
+      logger.debug('[USER_DATA_SERVICE] Exporting training sessions...');
       const sessionsResult = await dbHelpers.trainingSessions.getAll();
       if (sessionsResult.data) {
         exportData.data.training_sessions = sessionsResult.data;
-        console.log(`[USER_DATA_SERVICE] Exported ${sessionsResult.data.length} training sessions`);
+        logger.debug(`[USER_DATA_SERVICE] Exported ${sessionsResult.data.length} training sessions`);
       }
 
       // 3. User Goals
-      console.log('[USER_DATA_SERVICE] Exporting user goals...');
+      logger.debug('[USER_DATA_SERVICE] Exporting user goals...');
       const goalsResult = await dbHelpers.userGoals.getAll();
       if (goalsResult.data) {
         exportData.data.user_goals = goalsResult.data;
-        console.log(`[USER_DATA_SERVICE] Exported ${goalsResult.data.length} goals`);
+        logger.debug(`[USER_DATA_SERVICE] Exported ${goalsResult.data.length} goals`);
       }
 
       // 4. User Races
-      console.log('[USER_DATA_SERVICE] Exporting user races...');
+      logger.debug('[USER_DATA_SERVICE] Exporting user races...');
       const racesResult = await dbHelpers.userRaces.getAll();
       if (racesResult.data) {
         exportData.data.user_races = racesResult.data;
-        console.log(`[USER_DATA_SERVICE] Exported ${racesResult.data.length} races`);
+        logger.debug(`[USER_DATA_SERVICE] Exported ${racesResult.data.length} races`);
       }
 
       // 5. User Planned Races
-      console.log('[USER_DATA_SERVICE] Exporting planned races...');
+      logger.debug('[USER_DATA_SERVICE] Exporting planned races...');
       const plannedRacesResult = await dbHelpers.userPlannedRaces.getAll();
       if (plannedRacesResult.data) {
         exportData.data.user_planned_races = plannedRacesResult.data;
-        console.log(`[USER_DATA_SERVICE] Exported ${plannedRacesResult.data.length} planned races`);
+        logger.debug(`[USER_DATA_SERVICE] Exported ${plannedRacesResult.data.length} planned races`);
       }
 
       // 6. User Settings
-      console.log('[USER_DATA_SERVICE] Exporting user settings...');
+      logger.debug('[USER_DATA_SERVICE] Exporting user settings...');
       const settingsResult = await dbHelpers.userSettings.get();
       if (settingsResult.data) {
         exportData.data.user_settings = settingsResult.data;
@@ -80,7 +81,7 @@ export const userDataService = {
         strava_user_id: exportData.data.user_profile?.strava_user_id || null
       };
 
-      console.log('[USER_DATA_SERVICE] Data export completed successfully');
+      logger.debug('[USER_DATA_SERVICE] Data export completed successfully');
 
       if (format === 'csv' || format === 'both') {
         // Convert to CSV format for key data tables
@@ -95,7 +96,7 @@ export const userDataService = {
       return { data: exportData, error: null };
 
     } catch (error) {
-      console.error('[USER_DATA_SERVICE] Export error:', error);
+      logger.error('[USER_DATA_SERVICE] Export error:', error);
       return { data: null, error: error.message };
     }
   },
@@ -146,7 +147,7 @@ export const userDataService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Not authenticated' };
 
-      console.log('[USER_DATA_SERVICE] Creating data deletion request for user:', user.id);
+      logger.debug('[USER_DATA_SERVICE] Creating data deletion request for user:', user.id);
 
       // Create deletion request record
       const deletionRequest = {
@@ -168,9 +169,9 @@ export const userDataService = {
       if (error) {
         // If table doesn't exist, create it
         if (error.code === '42P01') {
-          console.log('[USER_DATA_SERVICE] Creating user_data_deletion_requests table...');
+          logger.log('[USER_DATA_SERVICE] Creating user_data_deletion_requests table...');
           // We'll handle this gracefully by storing in a temporary way
-          console.warn('[USER_DATA_SERVICE] Deletion request table not found. User should contact support.');
+          logger.warn('[USER_DATA_SERVICE] Deletion request table not found. User should contact support.');
           return {
             data: {
               message: 'Deletion request received. Please contact support to complete the process within 48 hours.',
@@ -183,7 +184,7 @@ export const userDataService = {
         throw error;
       }
 
-      console.log('[USER_DATA_SERVICE] Deletion request created:', data.id);
+      logger.debug('[USER_DATA_SERVICE] Deletion request created:', data.id);
 
       return {
         data: {
@@ -196,7 +197,7 @@ export const userDataService = {
       };
 
     } catch (error) {
-      console.error('[USER_DATA_SERVICE] Deletion request error:', error);
+      logger.error('[USER_DATA_SERVICE] Deletion request error:', error);
       return { data: null, error: error.message };
     }
   },
@@ -211,7 +212,7 @@ export const userDataService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Not authenticated' };
 
-      console.log('[USER_DATA_SERVICE] Executing comprehensive data deletion for user:', user.id);
+      logger.debug('[USER_DATA_SERVICE] Executing comprehensive data deletion for user:', user.id);
 
       const deletionResults: any = {
         user_id: user.id,
@@ -220,7 +221,7 @@ export const userDataService = {
       };
 
       // 1. Delete Training Sessions (Strava data)
-      console.log('[USER_DATA_SERVICE] Deleting training sessions...');
+      logger.debug('[USER_DATA_SERVICE] Deleting training sessions...');
       const sessionsResult = await dbHelpers.trainingSessions.deleteAll();
       deletionResults.deleted_tables.push({
         table: 'training_sessions',
@@ -229,7 +230,7 @@ export const userDataService = {
       });
 
       // 2. Delete User Goals
-      console.log('[USER_DATA_SERVICE] Deleting user goals...');
+      logger.debug('[USER_DATA_SERVICE] Deleting user goals...');
       try {
         const { error: goalsError } = await supabase
           .from('user_goals')
@@ -249,7 +250,7 @@ export const userDataService = {
       }
 
       // 3. Delete User Races
-      console.log('[USER_DATA_SERVICE] Deleting user races...');
+      logger.debug('[USER_DATA_SERVICE] Deleting user races...');
       try {
         const { error: racesError } = await supabase
           .from('user_races')
@@ -269,7 +270,7 @@ export const userDataService = {
       }
 
       // 4. Delete Planned Races
-      console.log('[USER_DATA_SERVICE] Deleting planned races...');
+      logger.debug('[USER_DATA_SERVICE] Deleting planned races...');
       try {
         const { error: plannedError } = await supabase
           .from('user_planned_races')
@@ -289,7 +290,7 @@ export const userDataService = {
       }
 
       // 5. Delete User Settings
-      console.log('[USER_DATA_SERVICE] Deleting user settings...');
+      logger.debug('[USER_DATA_SERVICE] Deleting user settings...');
       try {
         const { error: settingsError } = await supabase
           .from('user_settings')
@@ -309,7 +310,7 @@ export const userDataService = {
       }
 
       // 6. Clear Strava tokens from user profile
-      console.log('[USER_DATA_SERVICE] Clearing Strava tokens from user profile...');
+      logger.debug('[USER_DATA_SERVICE] Clearing Strava tokens from user profile...');
       try {
         const { error: profileError } = await dbHelpers.users.updateProfile(user.id, {
           strava_access_token: null,
@@ -331,7 +332,7 @@ export const userDataService = {
       }
 
       // 7. Clear any cached data
-      console.log('[USER_DATA_SERVICE] Clearing cached data...');
+      logger.debug('[USER_DATA_SERVICE] Clearing cached data...');
       try {
         dbHelpers.cache.invalidatePattern(`*${user.id}*`);
         deletionResults.deleted_tables.push({
@@ -351,16 +352,16 @@ export const userDataService = {
       if (typeof window !== 'undefined') {
         try {
           localStorage.removeItem('deletedStravaActivities');
-          console.log('[USER_DATA_SERVICE] Cleared client-side storage');
+          logger.debug('[USER_DATA_SERVICE] Cleared client-side storage');
         } catch (error) {
-          console.warn('[USER_DATA_SERVICE] Could not clear localStorage:', error);
+          logger.warn('[USER_DATA_SERVICE] Could not clear localStorage:', error);
         }
       }
 
       const successCount = deletionResults.deleted_tables.filter(t => t.success).length;
       const totalTables = deletionResults.deleted_tables.length;
 
-      console.log(`[USER_DATA_SERVICE] Data deletion completed: ${successCount}/${totalTables} tables processed successfully`);
+      logger.debug(`[USER_DATA_SERVICE] Data deletion completed: ${successCount}/${totalTables} tables processed successfully`);
 
       return {
         data: {
@@ -376,7 +377,7 @@ export const userDataService = {
       };
 
     } catch (error) {
-      console.error('[USER_DATA_SERVICE] Data deletion error:', error);
+      logger.error('[USER_DATA_SERVICE] Data deletion error:', error);
       return { data: null, error: error.message };
     }
   },

@@ -12,6 +12,7 @@ import type {
   TrainingWeekStats,
   DatabaseError
 } from '../types/dashboard';
+import { logger } from '../utils/logger';
 
 export class DashboardService {
   private static instance: DashboardService;
@@ -300,7 +301,7 @@ export class DashboardService {
   async syncTrainingData(onProgress?: (progress: any) => void): Promise<ApiResponse<any>> {
     try {
       // This would integrate with Strava API service
-      console.log('[DashboardService] Starting training data sync...');
+      logger.debug('[DashboardService] Starting training data sync...');
 
       // Invalidate training-related cache after sync
       dbHelpers.cache.invalidate('training');

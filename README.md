@@ -404,3 +404,12 @@ Built with ❤️ for the triathlon community
 - Comprehensive backend monitoring and error handling
 
 *Last updated: January 2025*
+
+---
+
+## Logging Policy
+
+- All direct `console.log` statements have been removed from production code.
+- Logging is now routed through `src/utils/logger.ts`. Developers should use `logger.debug`, `logger.info`, `logger.warn`, or `logger.error` for in-code logging.
+- **By default, logs only appear in development and are silent in production builds.**
+- This improves performance, avoids leaking sensitive data, and follows best practices for production code quality.

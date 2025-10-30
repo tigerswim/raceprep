@@ -22,6 +22,7 @@ export * from '../apiIntegrations';
 import { performanceMonitor } from '../shared/performanceMonitoring';
 import { connectionPool } from '../shared/connectionPool';
 import { requestBatcher } from '../shared/requestBatching';
+import { logger } from '../../utils/logger';
 
 // Service initialization and configuration
 export class EnhancedBackendServices {
@@ -31,22 +32,22 @@ export class EnhancedBackendServices {
   static async initialize(): Promise<void> {
     if (this.initialized) return;
 
-    console.log('[ENHANCED_SERVICES] Initializing enhanced backend services...');
+    logger.debug('[ENHANCED_SERVICES] Initializing enhanced backend services...');
 
     try {
       // Start performance monitoring
       performanceMonitor.startMonitoring(30000); // 30 second intervals
 
       // Initialize connection pool (already initialized in constructor)
-      console.log('[ENHANCED_SERVICES] Connection pool initialized');
+      logger.debug('[ENHANCED_SERVICES] Connection pool initialized');
 
       // Log service status
       this.logServiceStatus();
 
       this.initialized = true;
-      console.log('[ENHANCED_SERVICES] All enhanced services initialized successfully');
+      logger.debug('[ENHANCED_SERVICES] All enhanced services initialized successfully');
     } catch (error) {
-      console.error('[ENHANCED_SERVICES] Failed to initialize services:', error);
+      logger.error('[ENHANCED_SERVICES] Failed to initialize services:', error);
       throw error;
     }
   }
@@ -55,7 +56,7 @@ export class EnhancedBackendServices {
   static async shutdown(): Promise<void> {
     if (!this.initialized) return;
 
-    console.log('[ENHANCED_SERVICES] Shutting down enhanced services...');
+    logger.debug('[ENHANCED_SERVICES] Shutting down enhanced services...');
 
     try {
       // Stop performance monitoring
@@ -65,9 +66,9 @@ export class EnhancedBackendServices {
       await connectionPool.shutdown();
 
       this.initialized = false;
-      console.log('[ENHANCED_SERVICES] All services shut down successfully');
+      logger.debug('[ENHANCED_SERVICES] All services shut down successfully');
     } catch (error) {
-      console.error('[ENHANCED_SERVICES] Error during shutdown:', error);
+      logger.error('[ENHANCED_SERVICES] Error during shutdown:', error);
       throw error;
     }
   }
@@ -117,7 +118,7 @@ export class EnhancedBackendServices {
   private static logServiceStatus(): void {
     const healthStatus = this.getHealthStatus();
 
-    console.log('[ENHANCED_SERVICES] Service Status:', {
+    logger.debug('[ENHANCED_SERVICES] Service Status:', {
       overall: healthStatus.status,
       services: healthStatus.services,
       performanceScore: healthStatus.metrics.performance.score,
@@ -163,18 +164,18 @@ export class EnhancedBackendServices {
 if (typeof window === 'undefined') {
   // Server-side initialization
   EnhancedBackendServices.initialize().catch(error => {
-    console.error('[ENHANCED_SERVICES] Auto-initialization failed:', error);
+    logger.error('[ENHANCED_SERVICES] Auto-initialization failed:', error);
   });
 
   // Graceful shutdown handling
   process.on('SIGTERM', async () => {
-    console.log('[ENHANCED_SERVICES] Received SIGTERM, shutting down gracefully...');
+    logger.debug('[ENHANCED_SERVICES] Received SIGTERM, shutting down gracefully...');
     await EnhancedBackendServices.shutdown();
     process.exit(0);
   });
 
   process.on('SIGINT', async () => {
-    console.log('[ENHANCED_SERVICES] Received SIGINT, shutting down gracefully...');
+    logger.debug('[ENHANCED_SERVICES] Received SIGINT, shutting down gracefully...');
     await EnhancedBackendServices.shutdown();
     process.exit(0);
   });
