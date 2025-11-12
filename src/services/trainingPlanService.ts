@@ -61,13 +61,13 @@ export const trainingPlanService = {
       const { data, error } = await query;
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching templates:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching templates:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as TrainingPlanTemplate[], error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching templates:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching templates:', error);
       return { data: null, error: error.message };
     }
   },
@@ -84,13 +84,13 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching template:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching template:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as TrainingPlanTemplate, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching template:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching template:', error);
       return { data: null, error: error.message };
     }
   },
@@ -114,13 +114,13 @@ export const trainingPlanService = {
       const { data, error } = await query;
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching workouts:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching workouts:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as TrainingPlanWorkout[], error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching workouts:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching workouts:', error);
       return { data: null, error: error.message };
     }
   },
@@ -155,13 +155,13 @@ export const trainingPlanService = {
       const { data, error } = await query;
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching user plans:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching user plans:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as UserTrainingPlan[], error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching user plans:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching user plans:', error);
       return { data: null, error: error.message };
     }
   },
@@ -182,13 +182,13 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching user plan:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching user plan:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as UserTrainingPlan, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching user plan:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching user plan:', error);
       return { data: null, error: error.message };
     }
   },
@@ -209,14 +209,14 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error creating user plan:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error creating user plan:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Created training plan:', data.id);
       return { data: data as UserTrainingPlan, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception creating user plan:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception creating user plan:', error);
       return { data: null, error: error.message };
     }
   },
@@ -238,14 +238,14 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error updating user plan:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error updating user plan:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Updated training plan:', planId);
       return { data: data as UserTrainingPlan, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception updating user plan:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception updating user plan:', error);
       return { data: null, error: error.message };
     }
   },
@@ -261,14 +261,14 @@ export const trainingPlanService = {
         .eq('id', planId);
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error deleting user plan:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error deleting user plan:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Deleted training plan:', planId);
       return { data: true, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception deleting user plan:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception deleting user plan:', error);
       return { data: null, error: error.message };
     }
   },
@@ -312,9 +312,11 @@ export const trainingPlanService = {
         const weekDates = trainingPlanService.calculateWeekDates(plan.start_date, workout.week_number);
         const scheduledDate = new Date(weekDates.start);
         scheduledDate.setDate(scheduledDate.getDate() + (workout.day_of_week - 1));
+        const scheduledDateStr = scheduledDate.toISOString().split('T')[0];
 
         return {
           ...workout,
+          scheduled_date: scheduledDateStr,
           completion,
           isScheduledForToday: trainingPlanService.isToday(scheduledDate.toISOString()),
           isOverdue: trainingPlanService.isWorkoutOverdue(scheduledDate.toISOString()) && !completion?.completed_date
@@ -323,7 +325,7 @@ export const trainingPlanService = {
 
       return { data: workoutsWithCompletions, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception getting scheduled workouts:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception getting scheduled workouts:', error);
       return { data: null, error: error.message };
     }
   },
@@ -360,7 +362,7 @@ export const trainingPlanService = {
 
       return { data: upcoming, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception getting upcoming workouts:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception getting upcoming workouts:', error);
       return { data: null, error: error.message };
     }
   },
@@ -378,7 +380,7 @@ export const trainingPlanService = {
       const today = upcomingResult.data?.filter(w => w.isScheduledForToday) || [];
       return { data: today, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception getting todays workouts:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception getting todays workouts:', error);
       return { data: null, error: error.message };
     }
   },
@@ -406,14 +408,14 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error completing workout:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error completing workout:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Workout completed:', data.id);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception completing workout:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception completing workout:', error);
       return { data: null, error: error.message };
     }
   },
@@ -437,14 +439,14 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error skipping workout:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error skipping workout:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Workout skipped:', data.id);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception skipping workout:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception skipping workout:', error);
       return { data: null, error: error.message };
     }
   },
@@ -465,14 +467,14 @@ export const trainingPlanService = {
         .single();
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error updating completion:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error updating completion:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Completion updated:', completionId);
       return { data: data as WorkoutCompletion, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception updating completion:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception updating completion:', error);
       return { data: null, error: error.message };
     }
   },
@@ -488,14 +490,14 @@ export const trainingPlanService = {
         .eq('id', completionId);
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error deleting completion:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error deleting completion:', error);
         return { data: null, error: error.message };
       }
 
       logger.debug('[TRAINING_PLAN_SERVICE] Completion deleted:', completionId);
       return { data: true, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception deleting completion:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception deleting completion:', error);
       return { data: null, error: error.message };
     }
   },
@@ -527,13 +529,13 @@ export const trainingPlanService = {
       const { data, error } = await query;
 
       if (error) {
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching completions:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching completions:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data as WorkoutCompletion[], error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching completions:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching completions:', error);
       return { data: null, error: error.message };
     }
   },
@@ -590,7 +592,7 @@ export const trainingPlanService = {
 
       return { data: progress, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception getting progress:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception getting progress:', error);
       return { data: null, error: error.message };
     }
   },
@@ -629,7 +631,7 @@ export const trainingPlanService = {
 
       return { data: schedule, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception getting weekly schedule:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception getting weekly schedule:', error);
       return { data: null, error: error.message };
     }
   },
@@ -676,7 +678,7 @@ export const trainingPlanService = {
         error: null 
       };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception calculating adherence:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception calculating adherence:', error);
       return { data: null, error: error.message };
     }
   },
@@ -788,7 +790,7 @@ export const trainingPlanService = {
       logger.debug('[TRAINING_PLAN_SERVICE] Auto-matched Strava activity to workout');
       return { data: result.data, error: null };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception matching Strava activity:'    , error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception matching Strava activity:'    , error);
       return { data: null, error: error.message };
     }
   },
@@ -818,7 +820,7 @@ export const trainingPlanService = {
           // No active plan found
           return null;
         }
-        console.error('[TRAINING_PLAN_SERVICE] Error fetching active plan:', error);
+        logger.error('[TRAINING_PLAN_SERVICE] Error fetching active plan:', error);
         return null;
       }
 
@@ -861,8 +863,237 @@ export const trainingPlanService = {
         upcoming_workouts: workouts || []
       };
     } catch (error: any) {
-      console.error('[TRAINING_PLAN_SERVICE] Exception fetching active plan:', error);
+      logger.error('[TRAINING_PLAN_SERVICE] Exception fetching active plan:', error);
       return null;
+    }
+  },
+
+  // ============================================================================
+  // STRAVA MATCHING
+  // ============================================================================
+
+  /**
+   * Find potential matches between Strava activities and training plan workouts
+   */
+  findStravaMatches: async (planId: string, daysBack: number = 14): Promise<{ data: any; error: string | null }> => {
+    try {
+      // Get the training plan
+      const planResult = await trainingPlanService.getUserTrainingPlan(planId);
+      if (planResult.error || !planResult.data) {
+        return { data: null, error: planResult.error || 'Plan not found' };
+      }
+
+      const plan = planResult.data;
+
+      // Get scheduled workouts from the past N days that aren't completed
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - daysBack);
+      const workoutsResult = await trainingPlanService.getScheduledWorkouts(planId);
+
+      if (workoutsResult.error || !workoutsResult.data) {
+        return { data: null, error: workoutsResult.error || 'Workouts not found' };
+      }
+
+      // Filter to workouts within date range and not already completed
+      const recentWorkouts = workoutsResult.data.filter(w => {
+        if (!w.scheduled_date) return false;
+        const workoutDate = new Date(w.scheduled_date);
+        return workoutDate >= cutoffDate && !w.completion?.completed_date;
+      });
+
+      // Get Strava activities from the past N days
+      const { data: activities, error: activitiesError } = await supabase
+        .from('strava_activities')
+        .select('*')
+        .eq('user_id', plan.user_id)
+        .gte('start_date', cutoffDate.toISOString())
+        .order('start_date', { ascending: false });
+
+      if (activitiesError) {
+        return { data: null, error: activitiesError.message };
+      }
+
+      if (!activities || activities.length === 0) {
+        return {
+          data: {
+            highConfidence: [],
+            mediumConfidence: [],
+            lowConfidence: [],
+            unmatchedActivities: [],
+            unmatchedWorkouts: recentWorkouts
+          },
+          error: null
+        };
+      }
+
+      // Find matches
+      const matches: any[] = [];
+      const matchedActivityIds = new Set<number>();
+      const matchedWorkoutIds = new Set<string>();
+
+      for (const workout of recentWorkouts) {
+        for (const activity of activities) {
+          if (matchedActivityIds.has(activity.strava_activity_id)) continue;
+
+          const match = trainingPlanService.calculateMatchScore(workout, activity);
+
+          if (match.confidence >= 40) { // Minimum 40% confidence
+            matches.push(match);
+          }
+        }
+      }
+
+      // Sort by confidence and group
+      matches.sort((a, b) => b.confidence - a.confidence);
+
+      // Mark best matches to avoid duplicates
+      const bestMatches = matches.filter(match => {
+        if (matchedActivityIds.has(match.activity.strava_activity_id) ||
+            matchedWorkoutIds.has(match.workout.id)) {
+          return false;
+        }
+        matchedActivityIds.add(match.activity.strava_activity_id);
+        matchedWorkoutIds.add(match.workout.id);
+        return true;
+      });
+
+      // Group by confidence
+      const result = {
+        highConfidence: bestMatches.filter(m => m.confidence >= 80),
+        mediumConfidence: bestMatches.filter(m => m.confidence >= 50 && m.confidence < 80),
+        lowConfidence: bestMatches.filter(m => m.confidence < 50),
+        unmatchedActivities: activities.filter(a => !matchedActivityIds.has(a.strava_activity_id)),
+        unmatchedWorkouts: recentWorkouts.filter(w => !matchedWorkoutIds.has(w.id))
+      };
+
+      return { data: result, error: null };
+    } catch (error: any) {
+      logger.error('[TRAINING_PLAN_SERVICE] Exception finding Strava matches:', error);
+      return { data: null, error: error.message };
+    }
+  },
+
+  /**
+   * Calculate match score between a workout and Strava activity
+   */
+  calculateMatchScore: (workout: any, activity: any): any => {
+    let confidence = 0;
+    const matchReasons: string[] = [];
+    const warnings: string[] = [];
+
+    // Date proximity (max 40 points)
+    const workoutDate = new Date(workout.scheduled_date);
+    const activityDate = new Date(activity.start_date);
+    const daysDiff = Math.abs((workoutDate.getTime() - activityDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff === 0) {
+      confidence += 40;
+      matchReasons.push('Same day');
+    } else if (daysDiff === 1) {
+      confidence += 30;
+      matchReasons.push('Within 1 day');
+    } else if (daysDiff <= 2) {
+      confidence += 20;
+      matchReasons.push('Within 2 days');
+    } else if (daysDiff <= 3) {
+      confidence += 10;
+      warnings.push(`${Math.round(daysDiff)} days apart`);
+    }
+
+    // Discipline match (max 30 points)
+    const disciplineMap: Record<string, string[]> = {
+      swim: ['Swim'],
+      bike: ['Ride', 'VirtualRide', 'EBikeRide'],
+      run: ['Run', 'VirtualRun'],
+      strength: ['WeightTraining', 'Workout']
+    };
+
+    const workoutDiscipline = workout.discipline.toLowerCase();
+    const matchingTypes = disciplineMap[workoutDiscipline] || [];
+
+    if (matchingTypes.includes(activity.sport_type)) {
+      confidence += 30;
+      matchReasons.push(`Matching discipline: ${activity.sport_type}`);
+    } else {
+      warnings.push('Different discipline');
+    }
+
+    // Duration match (max 20 points)
+    if (workout.duration_minutes && activity.moving_time_seconds) {
+      const workoutMinutes = workout.duration_minutes;
+      const activityMinutes = activity.moving_time_seconds / 60;
+      const durationDiff = Math.abs(workoutMinutes - activityMinutes) / workoutMinutes;
+
+      if (durationDiff <= 0.1) {
+        confidence += 20;
+        matchReasons.push('Duration matches closely');
+      } else if (durationDiff <= 0.2) {
+        confidence += 15;
+        matchReasons.push('Duration similar');
+      } else if (durationDiff <= 0.3) {
+        confidence += 10;
+        warnings.push(`Duration differs by ${Math.round(durationDiff * 100)}%`);
+      } else {
+        warnings.push(`Duration differs significantly`);
+      }
+    }
+
+    // Distance match (max 10 points)
+    if (workout.distance_miles && activity.distance_meters) {
+      const workoutMiles = workout.distance_miles;
+      const activityMiles = activity.distance_meters * 0.000621371;
+      const distanceDiff = Math.abs(workoutMiles - activityMiles) / workoutMiles;
+
+      if (distanceDiff <= 0.1) {
+        confidence += 10;
+        matchReasons.push('Distance matches');
+      } else if (distanceDiff <= 0.2) {
+        confidence += 5;
+      } else {
+        warnings.push('Distance differs');
+      }
+    }
+
+    return {
+      workout,
+      activity,
+      confidence: Math.round(confidence),
+      matchReasons,
+      warnings: warnings.length > 0 ? warnings : undefined
+    };
+  },
+
+  /**
+   * Accept a Strava match and mark workout as complete
+   */
+  acceptStravaMatch: async (workoutId: string, planId: string, stravaActivityId: number): Promise<{ data: any; error: string | null }> => {
+    try {
+      // Get the activity details
+      const { data: activity, error: activityError } = await supabase
+        .from('strava_activities')
+        .select('*')
+        .eq('strava_activity_id', stravaActivityId)
+        .single();
+
+      if (activityError || !activity) {
+        return { data: null, error: 'Strava activity not found' };
+      }
+
+      // Mark workout as complete with Strava data
+      const completionData = {
+        user_training_plan_id: planId,
+        planned_workout_id: workoutId,
+        completed_date: activity.start_date,
+        strava_activity_id: stravaActivityId,
+        actual_duration_minutes: Math.round(activity.moving_time_seconds / 60),
+        actual_distance_miles: activity.distance_meters ? activity.distance_meters * 0.000621371 : null,
+        notes: `Imported from Strava: ${activity.name}`
+      };
+
+      return await trainingPlanService.completeWorkout(completionData);
+    } catch (error: any) {
+      logger.error('[TRAINING_PLAN_SERVICE] Exception accepting Strava match:', error);
+      return { data: null, error: error.message };
     }
   }
 };

@@ -173,7 +173,7 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
         id: plannedRace.id,
         external_race_id: plannedRace.external_race_id,
         race_name: plannedRace.external_races?.name || 'Unknown Race',
-        race_date: plannedRace.external_races?.race_date || new Date().toISOString(),
+        race_date: plannedRace.external_races?.date || plannedRace.race_date || new Date().toISOString(),
         race_location: plannedRace.external_races?.location || 'Unknown Location',
         distance_type: plannedRace.external_races?.distance_type || 'unknown',
         status: plannedRace.status || 'interested',

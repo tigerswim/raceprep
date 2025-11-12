@@ -32,10 +32,7 @@
       }
     },
     "plugins": [
-      [
-        "expo-router",
-        { "src": "app" }
-      ],
+      "expo-router",
       [
         "expo-splash-screen",
         {

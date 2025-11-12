@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
+  Platform,
+  Modal,
+  TextInput,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   TbSwimming,
   TbBike,
@@ -16,7 +19,11 @@ import {
   TbWeight,
   TbBed,
   TbFlame,
-} from 'react-icons/tb';import { trainingPlanService } from '../../services/trainingPlanService';
+  TbEdit,
+  TbTrash,
+  TbBrandStrava,
+} from 'react-icons/tb';
+import { trainingPlanService } from '../../services/trainingPlanService';
 import type { WorkoutWithCompletion } from '../../types/trainingPlans';
 
 interface TrainingCalendarProps {
@@ -33,9 +40,13 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   onWeekChange,
 }) => {
   const [weekNumber, setWeekNumber] = useState(currentWeek);
-  const router = useRouter();  const [workouts, setWorkouts] = useState<WorkoutWithCompletion[]>([]);
+  const router = useRouter();
+  const [workouts, setWorkouts] = useState<WorkoutWithCompletion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedPlanName, setEditedPlanName] = useState('');
+  const [planData, setPlanData] = useState<any>(null);
 
   // Validate planId early
   if (!planId || planId === 'undefined') {
@@ -51,7 +62,20 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
 
   useEffect(() => {
     loadWeekWorkouts();
+    loadPlanDetails();
   }, [planId, weekNumber]);
+
+  const loadPlanDetails = async () => {
+    try {
+      const result = await trainingPlanService.getUserTrainingPlan(planId);
+      if (!result.error && result.data) {
+        setPlanData(result.data);
+        setEditedPlanName(result.data.plan_name);
+      }
+    } catch (err) {
+      console.error('Failed to load plan details:', err);
+    }
+  };
 
   const loadWeekWorkouts = async () => {
     try {
@@ -84,6 +108,102 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
     const newWeek = weekNumber + 1;
     setWeekNumber(newWeek);
     onWeekChange?.(newWeek);
+  };
+
+  const handleEditPlan = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSavePlan = async () => {
+    if (!editedPlanName.trim()) {
+      if (Platform.OS === 'web') {
+        window.alert('Please enter a plan name');
+      } else {
+        Alert.alert('Error', 'Please enter a plan name');
+      }
+      return;
+    }
+
+    try {
+      const result = await trainingPlanService.updateUserTrainingPlan(planId, {
+        plan_name: editedPlanName.trim(),
+      });
+
+      if (result.error) {
+        if (Platform.OS === 'web') {
+          window.alert(`Failed to update plan: ${result.error}`);
+        } else {
+          Alert.alert('Error', `Failed to update plan: ${result.error}`);
+        }
+      } else {
+        setShowEditModal(false);
+        loadPlanDetails(); // Reload to show updated name
+        if (Platform.OS === 'web') {
+          window.alert('Training plan updated successfully');
+        } else {
+          Alert.alert('Success', 'Training plan updated successfully');
+        }
+      }
+    } catch (err) {
+      if (Platform.OS === 'web') {
+        window.alert('Failed to update training plan');
+      } else {
+        Alert.alert('Error', 'Failed to update training plan');
+      }
+    }
+  };
+
+  const handleDeletePlan = async () => {
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        'Are you sure you want to delete this training plan? This action cannot be undone.'
+      );
+
+      if (confirmed) {
+        try {
+          const result = await trainingPlanService.deleteUserTrainingPlan(planId);
+
+          if (result.error) {
+            window.alert(`Failed to delete plan: ${result.error.message}`);
+          } else {
+            window.alert('Training plan deleted successfully');
+            router.back();
+          }
+        } catch (err) {
+          window.alert('Failed to delete training plan');
+        }
+      }
+    } else {
+      Alert.alert(
+        'Delete Training Plan',
+        'Are you sure you want to delete this training plan? This action cannot be undone.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                const result = await trainingPlanService.deleteUserTrainingPlan(planId);
+
+                if (result.error) {
+                  Alert.alert('Error', `Failed to delete plan: ${result.error.message}`);
+                } else {
+                  Alert.alert('Success', 'Training plan deleted successfully', [
+                    {
+                      text: 'OK',
+                      onPress: () => router.back(),
+                    },
+                  ]);
+                }
+              } catch (err) {
+                Alert.alert('Error', 'Failed to delete training plan');
+              }
+            },
+          },
+        ]
+      );
+    }
   };
 
   const getDisciplineColor = (discipline: string): string => {
@@ -150,7 +270,17 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
       >
         <View style={styles.workoutHeader}>
           <View style={styles.workoutDay}>
-            <Text style={styles.dayName}>{getDayName(workout.day_of_week)}</Text>
+            <View>
+              <Text style={styles.dayName}>{getDayName(workout.day_of_week)}</Text>
+              {workout.scheduled_date && (
+                <Text style={styles.scheduledDate}>
+                  {new Date(workout.scheduled_date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </Text>
+              )}
+            </View>
             <Text style={styles.dayIcon}>{getDisciplineIcon(workout.discipline)}</Text>
           </View>
 
@@ -228,6 +358,28 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Header with Back Button */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Training Calendar</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => router.push(`/strava-match-review?planId=${planId}`)}
+          >
+            <TbBrandStrava size={20} color="#FC4C02" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={handleEditPlan}>
+            <TbEdit size={20} color="#3B82F6" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={handleDeletePlan}>
+            <TbTrash size={20} color="#FF3B30" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Week Navigation */}
       <View style={styles.weekNavigation}>
         <TouchableOpacity
@@ -279,21 +431,46 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
         )}
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <LinearGradient
-            colors={['#3B82F6', '#F97316']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.bottomNavButton}
-          >
-            <Text style={styles.bottomNavIcon}>←</Text>
-            <Text style={styles.bottomNavText}>Back to Dashboard</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+      {/* Edit Plan Modal */}
+      <Modal
+        visible={showEditModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowEditModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Training Plan</Text>
 
+            <Text style={styles.modalLabel}>Plan Name</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={editedPlanName}
+              onChangeText={setEditedPlanName}
+              placeholder="Enter plan name"
+              placeholderTextColor="rgba(255, 255, 255, 0.4)"
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonCancel]}
+                onPress={() => {
+                  setShowEditModal(false);
+                  setEditedPlanName(planData?.plan_name || '');
+                }}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonSave]}
+                onPress={handleSavePlan}
+              >
+                <Text style={styles.modalButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -424,6 +601,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(255, 255, 255, 1)',
   },
+  scheduledDate: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
   dayIcon: {
     fontSize: 20,
   },
@@ -508,29 +690,108 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  bottomNav: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: 16,
-    paddingBottom: 24,
-  },
-  bottomNavButton: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 12,
+    gap: 12,
+  },
+  backButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 8,
-    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  bottomNavIcon: {
-    fontSize: 20,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  bottomNavText: {
+  backButtonText: {
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  modalLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginBottom: 8,
+  },
+  modalInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 24,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  modalButtonSave: {
+    backgroundColor: '#3B82F6',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 });

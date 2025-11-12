@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,44 +8,94 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
 import { trainingPlanService } from '../../services/trainingPlanService';
-import type { TrainingPlanTemplate } from '../../types/trainingPlans';
+import type { TrainingPlanTemplate, UserTrainingPlan } from '../../types/trainingPlans';
 
 type DistanceFilter = 'all' | 'sprint' | 'olympic' | '70.3' | 'ironman';
 type ExperienceFilter = 'all' | 'beginner' | 'intermediate' | 'advanced';
 
 interface TrainingPlanSelectionScreenProps {
   onSelectPlan?: (template: TrainingPlanTemplate) => void;
+  onBack?: () => void;
 }
 
 export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenProps> = ({
   onSelectPlan,
+  onBack,
 }) => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [userPlans, setUserPlans] = useState<UserTrainingPlan[]>([]);
   const [templates, setTemplates] = useState<TrainingPlanTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPlans, setLoadingPlans] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [distanceFilter, setDistanceFilter] = useState<DistanceFilter>('all');
   const [experienceFilter, setExperienceFilter] = useState<ExperienceFilter>('all');
-  
+
   const [selectedTemplate, setSelectedTemplate] = useState<TrainingPlanTemplate | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Reload user plans when screen comes into focus (e.g., after navigating back from calendar)
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.id) {
+        loadUserPlans();
+      }
+    }, [user?.id])
+  );
+
+  useEffect(() => {
+    if (user?.id) {
+      loadUserPlans();
+    }
+    loadTemplates();
+  }, [user?.id]);
 
   useEffect(() => {
     loadTemplates();
   }, [distanceFilter, experienceFilter]);
 
+  const loadUserPlans = async () => {
+    if (!user?.id) {
+      console.log('No user ID, skipping load user plans');
+      setLoadingPlans(false);
+      return;
+    }
+
+    try {
+      setLoadingPlans(true);
+      console.log('Loading user plans for user:', user.id); // Debug log
+      const result = await trainingPlanService.getUserTrainingPlans(user.id);
+
+      console.log('User plans result:', result); // Debug log
+      if (!result.error && result.data) {
+        console.log('Setting user plans:', result.data); // Debug log
+        setUserPlans(result.data);
+      } else if (result.error) {
+        console.error('Error loading user plans:', result.error);
+      }
+    } catch (err) {
+      console.error('Failed to load user plans:', err);
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
+
   const loadTemplates = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const filters: any = {};
       if (distanceFilter !== 'all') filters.distance_type = distanceFilter;
       if (experienceFilter !== 'all') filters.experience_level = experienceFilter;
-      
+
       const result = await trainingPlanService.getTrainingPlanTemplates(filters);
-      
+
       if (result.error) {
         setError(result.error.message);
       } else {
@@ -67,6 +117,25 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
     if (selectedTemplate && onSelectPlan) {
       onSelectPlan(selectedTemplate);
       setShowDetailModal(false);
+    }
+  };
+
+  const handleDeletePlan = async (planId: string) => {
+    if (!confirm('Are you sure you want to delete this training plan? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const result = await trainingPlanService.deleteUserTrainingPlan(planId);
+      if (!result.error) {
+        // Remove from local state
+        setUserPlans(userPlans.filter(plan => plan.id !== planId));
+      } else {
+        alert('Failed to delete training plan: ' + result.error.message);
+      }
+    } catch (err) {
+      console.error('Error deleting plan:', err);
+      alert('Failed to delete training plan');
     }
   };
 
@@ -278,10 +347,47 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Choose Your Training Plan</Text>
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+      )}
+      <Text style={styles.header}>Training Plans</Text>
       <Text style={styles.subheader}>
-        Select a structured training plan based on your goals and experience level
+        {userPlans.length > 0
+          ? 'Continue your active plan or start a new one'
+          : 'Select a structured training plan based on your goals and experience level'
+        }
       </Text>
+
+      {/* My Plans Section */}
+      {userPlans.length > 0 && (
+        <View style={styles.myPlansSection}>
+          <Text style={styles.sectionTitle}>My Plans</Text>
+          {userPlans.map((plan) => (
+            <TouchableOpacity
+              key={plan.id}
+              style={styles.userPlanCard}
+              onPress={() => router.push(`/training-calendar?planId=${plan.id}&currentWeek=${plan.current_week || 1}`)}
+            >
+              <View style={styles.userPlanHeader}>
+                <Text style={styles.userPlanName}>{plan.plan_name}</Text>
+                <Text style={styles.userPlanWeek}>Week {plan.current_week || 1}/{plan.duration_weeks || 12}</Text>
+              </View>
+              {(plan.template?.distance_type || plan.template?.experience_level) && (
+                <Text style={styles.userPlanSubtext}>
+                  {plan.template?.distance_type?.toUpperCase() || 'Custom'} · {plan.template?.experience_level || 'Intermediate'}
+                </Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      {/* Divider */}
+      {userPlans.length > 0 && <View style={styles.divider} />}
+
+      <Text style={styles.browsePlansTitle}>Browse Training Plan Templates</Text>
 
       {renderFilters()}
 
@@ -307,6 +413,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     padding: 16,
+    paddingBottom: 100, // Space for fixed bottom tab bar
   },
   centerContainer: {
     flex: 1,
@@ -575,5 +682,89 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  backButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  myPlansSection: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 12,
+  },
+  userPlanCard: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: 12,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  userPlanContent: {
+    padding: 16,
+    flex: 1,
+  },
+  userPlanHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  userPlanName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 1)',
+    flex: 1,
+  },
+  userPlanWeek: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3B82F6',
+  },
+  userPlanSubtext: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  userPlanActions: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(59, 130, 246, 0.2)',
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#EF4444',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: 20,
+  },
+  browsePlansTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 16,
   },
 });

@@ -163,32 +163,39 @@ RacePrep has successfully completed Phase 1 MVP and Phase 2 Core Features with c
 **Status**: Training Plan Engine foundation complete (Database schema, types, API service layer)
 **Removed from scope**: Social Features (deferred indefinitely)
 
-### **Training Plan Engine** ✅ FOUNDATION COMPLETE
+### **Training Plan Engine** ✅ CORE FEATURES COMPLETE
 **Objective**: Structured workout planning and periodization
 
 **Completed (Initial Implementation)**:
-- ✅ Database schema (4 tables: templates, user_plans, workouts, completions)
+- ✅ Database schema (5 tables: templates, user_plans, workouts, completions, strava_activities)
 - ✅ 3 pre-built training plan templates with 280+ workouts
   - Sprint Beginner (12 weeks, 84 workouts)
   - Sprint Intermediate (12 weeks, 84 workouts)
   - Olympic Beginner (16 weeks, 112 workouts)
 - ✅ TypeScript types and interfaces
-- ✅ Comprehensive API service layer (23 functions, 790 lines)
+- ✅ Comprehensive API service layer (26 functions, 1099 lines)
   - Template browsing and filtering
   - User plan management (CRUD)
-  - Workout scheduling and tracking
+  - Workout scheduling and tracking with scheduled dates
   - Progress analytics and adherence calculation
-  - Strava activity auto-matching
+  - **NEW: Intelligent Strava activity matching** (January 2025)
+    - 100-point scoring algorithm
+    - Confidence-based grouping
+    - Match acceptance/rejection workflow
+- ✅ **UI Components** (January 2025)
+  - Training Plan selection screen
+  - Training Calendar with scheduled dates
+  - **NEW: Strava Match Review screen**
+  - Workout completion tracking
+  - Start date selection on plan creation
 
 **Remaining Work**:
-- UI components for plan selection and browsing
-- Weekly calendar view component
-- Workout completion tracking interface
 - Progress dashboard widgets
 - Plan customization tools
-- Integration with existing dashboard
+- Integration with main dashboard
+- Training stress metrics (TSS, CTL, ATL, TSB)
 
-**Estimated Time Remaining**: 25-30 hours
+**Estimated Time Remaining**: 15-20 hours
 
 ### **Advanced Performance Analytics**
 **Objective**: Deep insights into training and race performance

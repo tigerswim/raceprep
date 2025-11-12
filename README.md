@@ -26,6 +26,15 @@ RacePrep is a mobile-first triathlon tracking application designed for beginner 
 
 ### 🚴‍♂️ Training Integration & Analytics
 - **Strava Integration**: Automatic sync of swimming, cycling, and running activities
+- **Intelligent Workout Matching** ⭐ NEW: AI-powered matching between Strava activities and training plan workouts
+  - 100-point scoring algorithm analyzing date, discipline, duration, and distance
+  - Confidence-based grouping (high/medium/low confidence matches)
+  - User review and approval workflow with detailed match reasoning
+  - Automatic workout completion upon match acceptance
+- **Structured Training Plans**: Pre-built templates (Sprint/Olympic, Beginner/Intermediate)
+  - Weekly calendar view with scheduled workout dates
+  - Progress tracking and adherence metrics
+  - Start date customization for flexible planning
 - **Enhanced Performance Metrics**: Heart rate zones, power data, elevation gain, training stress
 - **Interactive Workout Details**: Click any workout for comprehensive performance breakdown
 - **Training Load Analysis**: Track weekly volume and intensity across all disciplines

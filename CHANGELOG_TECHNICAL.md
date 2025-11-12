@@ -1,6 +1,54 @@
 # Technical Changelog - RacePrep
 
-## Recent Updates (September 2024)
+## Recent Updates (January 2025)
+
+### 🚀 Training Plan & Strava Integration (January 12, 2025)
+
+#### Strava Workout Matching System
+- **ADDED**: Intelligent Strava-to-training-plan matching algorithm
+  - 100-point scoring system: 40pts date proximity, 30pts discipline match, 20pts duration similarity, 10pts distance similarity
+  - Confidence-based grouping: High (80-100%), Medium (50-79%), Low (40-49%)
+  - Prevents duplicate matches (one activity = one workout max)
+  - New service functions in `src/services/trainingPlanService.ts`:
+    - `findStravaMatches()`: Analyzes past N days of workouts and Strava activities
+    - `calculateMatchScore()`: Scores potential matches across multiple dimensions
+    - `acceptStravaMatch()`: Creates workout completion with Strava activity data
+- **ADDED**: Strava Match Review UI (`src/app/strava-match-review.tsx`)
+  - Custom dark-themed header matching Training Calendar design
+  - Side-by-side comparison of planned workout vs Strava activity
+  - Accept/reject individual matches with real-time feedback
+  - "Accept All High-Confidence Matches" batch processing
+  - Match reasons and warnings display for transparency
+  - Accessible via Strava icon button in Training Calendar header
+- **ADDED**: Database table `strava_activities`
+  - Migration: `supabase/migrations/015_create_strava_activities_table.sql`
+  - Caches Strava activity data for efficient matching
+  - Includes all performance metrics: distance, duration, elevation, heart rate, power, cadence
+  - Row Level Security (RLS) policies ensure users only see their own activities
+  - Indexes on user_id and start_date for optimized queries
+  - Unique constraint on (user_id, strava_activity_id) prevents duplicates
+- **ADDED**: New TypeScript interfaces in `src/types/trainingPlans.ts`
+  - `StravaActivity`: Complete activity data structure
+  - `WorkoutStravaMatch`: Match result with confidence and reasoning
+  - `StravaMatchResult`: Grouped matches by confidence level
+
+#### Training Calendar Enhancements
+- **FIXED**: Scheduled dates now display on workout cards
+  - Updated `getScheduledWorkouts()` in `trainingPlanService.ts` to include `scheduled_date` field
+  - Training Calendar now shows "Jan 12" format dates for each workout
+  - Helps users track progress and know where they are in their plan
+- **IMPROVED**: Training Calendar header
+  - Added Strava sync button (orange Strava icon) for quick access to matches
+  - Maintains custom dark-themed header design
+  - Consistent back button styling across Training Calendar and Strava Matches pages
+
+#### Training Plan Creation
+- **VERIFIED**: Start date selection already implemented
+  - Users can set plan start date when creating new training plans
+  - Default start date automatically set to next Monday
+  - Implementation in `src/app/create-training-plan.tsx`
+
+## Previous Updates (September 2024)
 
 ### 🚀 Major Improvements
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'expo-router';
 import { AuthGuard } from '../../src/components/AuthGuard';
 import { dbHelpers } from '../../src/services/supabase';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { api } from '../../src/store/api';
+import { TrainingPlanSelectionScreen } from '../../src/screens/Training/TrainingPlanSelectionScreen';
 import {
   TbSwimming,
   TbBike,
@@ -237,6 +239,7 @@ function getFilteredWorkouts(workouts: WorkoutLog[], activityFilter: string, dat
 
 const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   const { user } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [trainingEvents, setTrainingEvents] = useState<TrainingEvent[]>([]);
   const [trainingArticles, setTrainingArticles] = useState<TrainingArticle[]>([]);
@@ -285,6 +288,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: 'TbChartBar' },
+    { id: 'plans', label: 'Training Plans', icon: 'TbCalendarEvent' },
     { id: 'workouts', label: 'Log Workout', icon: 'TbEdit' },
     { id: 'events', label: 'Training Events', icon: 'TbCalendar' },
     { id: 'articles', label: 'Training Tips', icon: 'TbBook' },
@@ -2042,6 +2046,11 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
           {/* Tab Content */}
           <div>
             {activeTab === 'overview' && renderOverview()}
+            {activeTab === 'plans' && (
+              <TrainingPlanSelectionScreen
+                onSelectPlan={(template) => router.push(`/create-training-plan?templateId=${template.id}`)}
+              />
+            )}
             {activeTab === 'workouts' && renderWorkoutLogger()}
             {activeTab === 'events' && renderTrainingEvents()}
             {activeTab === 'articles' && renderTrainingArticles()}

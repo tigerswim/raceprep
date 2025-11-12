@@ -714,3 +714,67 @@ export interface TrainingPlanDetailResponse {
   /** Upcoming workouts (next 7 days) */
   upcoming_workouts: WorkoutWithCompletion[];
 }
+
+// =====================================================
+// Strava Matching Types
+// =====================================================
+
+/**
+ * Represents a Strava activity from the strava_activities table
+ */
+export interface StravaActivity {
+  id: string;
+  user_id: string;
+  strava_activity_id: number;
+  name: string;
+  type: string;
+  sport_type: string;
+  start_date: string;
+  distance_meters: number;
+  moving_time_seconds: number;
+  elapsed_time_seconds: number;
+  total_elevation_gain_meters: number;
+  average_speed_mps: number;
+  max_speed_mps: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
+  average_watts?: number;
+  kilojoules?: number;
+  device_watts?: boolean;
+  has_heartrate: boolean;
+  trainer: boolean;
+  commute: boolean;
+  manual: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Potential match between a Strava activity and a training plan workout
+ */
+export interface WorkoutStravaMatch {
+  /** The planned workout */
+  workout: WorkoutWithCompletion;
+  /** The Strava activity */
+  activity: StravaActivity;
+  /** Confidence score (0-100) */
+  confidence: number;
+  /** Reasons for the match */
+  matchReasons: string[];
+  /** Potential issues with the match */
+  warnings?: string[];
+}
+
+/**
+ * Result of the matching process
+ */
+export interface StravaMatchResult {
+  /** Potential matches grouped by confidence */
+  highConfidence: WorkoutStravaMatch[]; // 80-100%
+  mediumConfidence: WorkoutStravaMatch[]; // 50-79%
+  lowConfidence: WorkoutStravaMatch[]; // 0-49%
+  /** Strava activities that couldn't be matched */
+  unmatchedActivities: StravaActivity[];
+  /** Workouts that couldn't be matched */
+  unmatchedWorkouts: WorkoutWithCompletion[];
+}
