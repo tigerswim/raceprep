@@ -2,7 +2,30 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
-## [Unreleased] - 2024-12-09
+## [Unreleased] - 2025-01-18
+
+### Fixed
+- **Race Discovery - City Search**: City names now work in race search
+  - Added Google Maps geocoding to convert city names to zip codes
+  - "Chattanooga", "Atlanta", etc. now return results
+  - Falls back gracefully to city/state parameters if geocoding unavailable
+  - Enhanced search reliability for non-zip code locations
+
+- **Race Distance Updates**: User's distance selection now persists correctly
+  - Fixed data loading priority to respect user's choice over external race defaults
+  - Distance changes (e.g., Sprint → Olympic) now save and display properly
+  - Resolved issue where user_planned_races.distance_type was being overridden
+
+### Technical Details
+- **Files Modified**:
+  - `app/(tabs)/races.tsx`: Added geocoding integration and fixed distance_type priority
+  - `src/components/ImportedRaceUpdateModal.tsx`: Enhanced debug logging
+- **Geocoding Integration**: Uses Google Maps API via local proxy to extract postal codes
+- **Database**: Corrected data loading order to prioritize user preferences
+
+---
+
+## [Previous Release] - 2024-12-09
 
 ### Added
 - **Multi-Agent Development System**: Implemented specialized AI agents for frontend, backend, and code review

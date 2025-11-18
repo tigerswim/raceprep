@@ -382,6 +382,11 @@ Built with ❤️ for the triathlon community
 ---
 
 **Recent Updates:**
+- **Race Discovery & Management Improvements (January 18, 2025)**
+  - ✅ Fixed city-based race search - "Chattanooga", "Atlanta", etc. now work via Google Maps geocoding
+  - ✅ Fixed distance type persistence - user's race distance selection now saves and displays correctly
+  - ✅ Enhanced search reliability with automatic zip code conversion for city names
+  - ✅ Corrected data loading priority to respect user preferences over external race defaults
 - **Dashboard Widget Icon Fix (January 2025)**
   - ✅ Resolved React Error #130 in UpcomingRacesWidget caused by react-icons bundling in production
   - ✅ Replaced problematic react-icons with Lucide React Native icons in UpcomingRacesWidget
