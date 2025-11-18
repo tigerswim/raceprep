@@ -303,7 +303,8 @@ function RacesScreenContent() {
           name: externalRace?.name || plannedRace.race_name || 'Unknown Race',
           location: externalRace?.location || plannedRace.race_location || 'Location TBD',
           date: externalRace?.date || plannedRace.race_date || new Date().toISOString(),
-          distance_type: externalRace?.distance_type || plannedRace.distance_type || 'triathlon',
+          // CRITICAL FIX: Prioritize user's distance choice over external race default
+          distance_type: plannedRace.distance_type || externalRace?.distance_type || 'triathlon',
           status: plannedRace.status || 'interested',
           description: externalRace?.description || plannedRace.description || '',
           source: 'Saved Race',
