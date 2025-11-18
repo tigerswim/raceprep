@@ -59,6 +59,9 @@ const getStateAbbreviation = (state: string): string => {
 // Major city to zip code mapping for fallback searches
 const CITY_ZIP_CODES: { [key: string]: string } = {
   // Major cities that might not work with city/state searches
+  'chattanooga': '37341',
+  'chattanooga,tn': '37341',
+  'chattanooga,tennessee': '37341',
   'charlotte,nc': '28202',
   'charlotte,north carolina': '28202',
   'atlanta,ga': '30309',
@@ -408,69 +411,114 @@ function RacesScreenContent() {
 
   const discoverRaces = async () => {
     if (isSyncing) return;
-    
+
     // Check cache first
     const cacheKey = generateCacheKey(locationQuery, searchRadius, raceDistance);
     const cached = raceCache[cacheKey];
     const now = Date.now();
-    
+
     if (cached && (now - cached.timestamp) < CACHE_DURATION_MS) {
       // Using cached race data (debug log removed)
       setDiscoveredRaces(cached.data);
       return;
     }
-    
+
     setIsSyncing(true);
     try {
       // Discovering races from RunSignup API (debug log removed)
-      
+
       const params = new URLSearchParams({
         results_per_page: '100',
         start_date: new Date().toISOString().split('T')[0],
         event_type: 'triathlon'
       });
-      
+
       if (locationQuery.trim()) {
         const location = locationQuery.trim();
         // Check if location looks like a zip code (5 digits)
         if (/^\d{5}$/.test(location)) {
           params.append('zipcode', location);
         } else {
-          // For city, state format, try to parse and use specific parameters
-          // First try to match "City, ST" (2-letter abbreviation)
-          const cityStateMatch = location.match(/^(.+),\s*([A-Z]{2})$/i);
-          if (cityStateMatch) {
-            // Format: "City, ST"
-            params.append('city', cityStateMatch[1].trim());
-            params.append('state', cityStateMatch[2].trim().toUpperCase());
-          } else {
-            // Try to match "City, StateName" (full state name)
-            const cityFullStateMatch = location.match(/^(.+),\s*(.+)$/i);
-            if (cityFullStateMatch) {
-              const cityName = cityFullStateMatch[1].trim();
-              const statePart = cityFullStateMatch[2].trim();
-              const stateAbbrev = getStateAbbreviation(statePart);
+          // For non-zip code locations, try geocoding to get a zip code
+          // This significantly improves search results for city names
+          let useZipCodeFallback = false;
+          let zipCodeToUse = '';
 
-              // Only use this format if we successfully converted a known state name
-              if (stateAbbrev !== statePart.toUpperCase() || statePart.length === 2) {
-                params.append('city', cityName);
-                params.append('state', stateAbbrev);
-              } else {
-                // If state conversion failed, treat the whole thing as a city search
-                params.append('city', location);
+          // Try geocoding the location to get lat/long, then reverse geocode to zip
+          try {
+            const geocodeUrl = `http://localhost:3001/api/maps/geocode?address=${encodeURIComponent(location)}`;
+            const geoResponse = await fetch(geocodeUrl);
+
+            if (geoResponse.ok) {
+              const geoData = await geoResponse.json();
+              if (geoData.results && geoData.results.length > 0) {
+                // Extract zip code from geocoding results
+                const addressComponents = geoData.results[0].address_components;
+                const zipComponent = addressComponents.find((comp: any) =>
+                  comp.types.includes('postal_code')
+                );
+
+                if (zipComponent) {
+                  zipCodeToUse = zipComponent.short_name;
+                  useZipCodeFallback = true;
+                  console.log(`Geocoded "${location}" to zip code: ${zipCodeToUse}`);
+                }
               }
-            } else if (location.match(/^[A-Z]{2}$/i)) {
-              // Just a state abbreviation
-              params.append('state', location.toUpperCase());
+            }
+          } catch (geocodeError) {
+            console.warn('Geocoding failed, will try direct city/state search:', geocodeError);
+          }
+
+          // If we got a zip code from geocoding, use it
+          if (useZipCodeFallback && zipCodeToUse) {
+            params.append('zipcode', zipCodeToUse);
+          } else {
+            // Fall back to city/state parameter parsing
+            // First try to match "City, ST" (2-letter abbreviation)
+            const cityStateMatch = location.match(/^(.+),\s*([A-Z]{2})$/i);
+            if (cityStateMatch) {
+              // Format: "City, ST"
+              params.append('city', cityStateMatch[1].trim());
+              params.append('state', cityStateMatch[2].trim().toUpperCase());
             } else {
-              // Check if it's just a full state name
-              const stateAbbrev = getStateAbbreviation(location);
-              if (stateAbbrev !== location.toUpperCase()) {
-                // It was a recognized state name
-                params.append('state', stateAbbrev);
+              // Try to match "City, StateName" (full state name)
+              const cityFullStateMatch = location.match(/^(.+),\s*(.+)$/i);
+              if (cityFullStateMatch) {
+                const cityName = cityFullStateMatch[1].trim();
+                const statePart = cityFullStateMatch[2].trim();
+                const stateAbbrev = getStateAbbreviation(statePart);
+
+                // Only use this format if we successfully converted a known state name
+                if (stateAbbrev !== statePart.toUpperCase() || statePart.length === 2) {
+                  params.append('city', cityName);
+                  params.append('state', stateAbbrev);
+                } else {
+                  // If state conversion failed, treat the whole thing as a city search
+                  params.append('city', location);
+                }
+              } else if (location.match(/^[A-Z]{2}$/i)) {
+                // Just a state abbreviation
+                params.append('state', location.toUpperCase());
               } else {
-                // City name only or other text - use city parameter
-                params.append('city', location);
+                // Check if it's just a full state name
+                const stateAbbrev = getStateAbbreviation(location);
+                if (stateAbbrev !== location.toUpperCase()) {
+                  // It was a recognized state name
+                  params.append('state', stateAbbrev);
+                } else {
+                  // City name only or other text - try geocoding it to get a zip
+                  // Check the CITY_ZIP_CODES mapping first
+                  const cityKey = location.toLowerCase();
+                  const mappedZip = CITY_ZIP_CODES[cityKey] || CITY_ZIP_CODES[`${cityKey},`];
+
+                  if (mappedZip) {
+                    console.log(`Using mapped zip code for "${location}": ${mappedZip}`);
+                    params.append('zipcode', mappedZip);
+                  } else {
+                    // Last resort: use city parameter alone
+                    params.append('city', location);
+                  }
+                }
               }
             }
           }

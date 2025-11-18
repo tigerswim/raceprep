@@ -319,7 +319,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         }
       } else {
         // For imported races, use the userPlannedRaces helper
-        const updateData = {
+        const updateData: any = {
           status: formData.status,
           distance_type: validDistanceType,
           notes: formData.notes.trim() || null
@@ -338,8 +338,11 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           updateData.user_run_distance = null;
         }
 
-        console.log('Updating imported race with data:', updateData); // Debug log
+        console.log('🔧 DISTANCE UPDATE: Updating imported race with data:', updateData);
+        console.log('🔧 DISTANCE UPDATE: Race ID:', race.id);
+        console.log('🔧 DISTANCE UPDATE: validDistanceType:', validDistanceType);
         result = await dbHelpers.userPlannedRaces.update(race.id, updateData);
+        console.log('🔧 DISTANCE UPDATE: Update result:', result);
       }
 
       console.log('Database update result:', result); // Debug log
