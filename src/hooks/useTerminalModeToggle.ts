@@ -62,6 +62,9 @@ export const useTerminalModeToggle = () => {
       const newState = toggleTerminalMode();
       setTerminalModeEnabled(newState);
 
+      // Force re-render by dispatching a custom event
+      window.dispatchEvent(new CustomEvent('terminalModeChanged', { detail: { enabled: newState } }));
+
       // Show visual feedback
       if (newState) {
         console.log('%c🖥️ TERMINAL MODE ENABLED', 'background: #FFD866; color: #0A0E14; font-size: 16px; font-weight: bold; padding: 8px;');

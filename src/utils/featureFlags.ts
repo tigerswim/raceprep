@@ -12,6 +12,8 @@
  * - This enables ALL terminal widgets for quick testing
  */
 
+import { useState, useEffect } from 'react';
+
 // Runtime toggle for testing (controlled by keyboard shortcut)
 let terminalModeOverride: boolean | null = null;
 
@@ -82,6 +84,23 @@ export const getTerminalModeState = (): boolean => {
 export const useTerminalDesign = (
   component: keyof typeof featureFlags.useTerminalWidgets
 ): boolean => {
+  // State to force re-render when terminal mode changes
+  const [, forceUpdate] = useState({});
+
+  // Listen for terminal mode changes
+  useEffect(() => {
+    const handleTerminalModeChange = () => {
+      forceUpdate({}); // Force re-render
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('terminalModeChanged', handleTerminalModeChange);
+      return () => {
+        window.removeEventListener('terminalModeChanged', handleTerminalModeChange);
+      };
+    }
+  }, []);
+
   // If keyboard shortcut override is active, use that state for ALL widgets
   if (terminalModeOverride !== null) {
     return terminalModeOverride;
