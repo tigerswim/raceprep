@@ -2,6 +2,35 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
+## [Unreleased] - 2025-01-25
+
+### Added (In Development)
+- **Split-Flap Terminal Design System - Phase 1 Foundation** 🚧
+  - New retro-futuristic terminal design system (airport departure board aesthetic)
+  - Feature flag system for safe gradual rollout
+  - Terminal color palette: deep navy-black background, cream white text, cyan/coral/turquoise discipline colors
+  - Base components: TerminalCard, TerminalButton, ScanLineOverlay
+  - All features disabled by default - no visual changes yet
+  - See `PHASE_1_COMPLETION_SUMMARY.md` for full details
+
+### Technical Details (Phase 1)
+- **Branch**: `feature/split-flap-terminal-design`
+- **Files Created**:
+  - `src/utils/featureFlags.ts`: Feature flag system with master switch and individual widget controls
+  - `src/components/ui/terminal/TerminalCard.tsx`: Hard-edged card component
+  - `src/components/ui/terminal/TerminalButton.tsx`: Monospace button component
+  - `src/components/ui/terminal/ScanLineOverlay.tsx`: Subtle scan line effect (web-only)
+  - `src/components/ui/terminal/index.ts`: Barrel exports
+  - `PHASE_1_COMPLETION_SUMMARY.md`: Complete phase 1 documentation
+- **Files Modified**:
+  - `tailwind.config.js`: Added terminal color palette and updated monospace font stack
+  - `app/_layout.tsx`: Added terminal background and scan line overlay (controlled by flags)
+  - `TERMINAL_DESIGN_CHECKLIST.md`: Updated with Phase 1 completion status
+- **Status**: Foundation complete, ready for widget migration
+- **Next**: Phase 2 - Dashboard widget migration
+
+---
+
 ## [Unreleased] - 2025-01-18
 
 ### Fixed
