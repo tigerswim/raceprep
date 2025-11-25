@@ -4,11 +4,13 @@ This guide explains how to test the terminal design system that was implemented 
 
 ## Quick Start: Keyboard Shortcut
 
-The fastest way to test terminal mode is using the keyboard shortcut:
+The fastest way to test terminal mode is using one of these keyboard shortcuts:
 
-### Press: `Ctrl+Shift+T` (Windows/Linux) or `Cmd+Shift+T` (Mac)
+### Method 1 (Recommended): `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux)
 
-This will:
+### Method 2 (Alternative): `Shift+D+D` (tap D twice while holding Shift)
+
+Both methods will:
 - ✅ **Enable ALL terminal widgets** instantly
 - 🔄 **Toggle back to legacy design** when pressed again
 - 📢 **Show status in console** with visual indicators
@@ -20,14 +22,16 @@ This will:
 ```
 🖥️ TERMINAL MODE ENABLED
 All dashboard widgets are now using the Split-Flap Terminal design.
-Press Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle again.
+Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle again.
+Or press Shift+D+D (tap D twice while holding Shift)
 ```
 
 **Second Press** - Terminal Mode OFF:
 ```
 ❌ TERMINAL MODE DISABLED
 All dashboard widgets are now using the default glassmorphism design.
-Press Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle again.
+Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle again.
+Or press Shift+D+D (tap D twice while holding Shift)
 ```
 
 ## Step-by-Step Testing
@@ -49,8 +53,12 @@ The dashboard is the home screen (`/(tabs)/index`).
 
 ### 3. Press the Keyboard Shortcut
 
-**Mac**: `Cmd+Shift+T`
-**Windows/Linux**: `Ctrl+Shift+T`
+**Method 1 (Recommended)**:
+- **Mac**: `Cmd+K`
+- **Windows/Linux**: `Ctrl+K`
+
+**Method 2 (Alternative)**:
+- **Any platform**: `Shift+D+D` (tap D twice while holding Shift)
 
 ### 4. Observe the Changes
 
@@ -165,7 +173,8 @@ Watch the browser console for helpful messages:
 ### On Page Load:
 ```
 Terminal Mode Toggle Active
-Press Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle terminal design on/off
+Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle terminal design
+Alternative: Press Shift+D+D (tap D twice while holding Shift)
 ```
 
 ### On Toggle:
@@ -263,4 +272,6 @@ If you encounter issues:
 
 **Happy Testing! 🖥️**
 
-Press `Ctrl+Shift+T` (`Cmd+Shift+T` on Mac) to see the magic! ✨
+Press `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) to see the magic! ✨
+
+Or press `Shift+D+D` (tap D twice while holding Shift) for a fun alternative!

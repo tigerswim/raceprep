@@ -7,7 +7,8 @@
  * Emergency Rollback: Set useTerminalDesign to false to disable everything.
  *
  * TESTING:
- * - Press Ctrl+Shift+T (or Cmd+Shift+T on Mac) to toggle terminal mode on/off
+ * - Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle terminal mode on/off
+ * - Alternative: Press Shift+D+D (tap D twice while holding Shift)
  * - This enables ALL terminal widgets for quick testing
  */
 
@@ -60,7 +61,8 @@ export const toggleTerminalMode = (): boolean => {
   }
 
   console.log(`[TERMINAL MODE] ${terminalModeOverride ? 'ENABLED ✓' : 'DISABLED ✗'}`);
-  console.log('Press Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle');
+  console.log('Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle');
+  console.log('Or press Shift+D+D (tap D twice while holding Shift)');
 
   return terminalModeOverride;
 };
