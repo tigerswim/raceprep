@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
 import { TbTrophy, TbFlame, TbClock, TbCalendar, TbChartBar } from 'react-icons/tb';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { PersonalBestsWidgetTerminal } from './PersonalBestsWidget.terminal';
 
 interface PersonalBest {
   distance_type: string;
@@ -26,6 +28,14 @@ interface PersonalBests {
 }
 
 export const PersonalBestsWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('personalBests');
+
+  if (useTerminal) {
+    return <PersonalBestsWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [personalBests, setPersonalBests] = useState<PersonalBests>({});
