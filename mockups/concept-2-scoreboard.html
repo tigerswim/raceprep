@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RacePrep - Stadium Scoreboard Concept</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Stadium Scoreboard Color Palette */
+            --bg-black: #000000;
+            --led-red: #FF0000;
+            --led-green: #00FF00;
+            --led-amber: #FFA500;
+            --led-white: #FFFFFF;
+            --swim-blue: #00BFFF;
+            --bike-orange: #FF6600;
+            --run-lime: #7FFF00;
+            --panel-border: #333333;
+
+            /* Typography */
+            --font-display: 'Impact', 'Arial Black', sans-serif;
+            --font-condensed: 'Arial Narrow', 'Arial', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-condensed);
+            background-color: var(--bg-black);
+            color: var(--led-white);
+            line-height: 1.4;
+            position: relative;
+        }
+
+        /* Dot Matrix Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 8px 8px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 20px 20px 0;
+            background: var(--bg-black);
+        }
+
+        .nav-tab {
+            font-family: var(--font-display);
+            font-size: 16px;
+            text-transform: uppercase;
+            padding: 16px 32px;
+            background: #1a1a1a;
+            color: #666;
+            border: 4px solid var(--panel-border);
+            border-radius: 16px 16px 0 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-tab.active {
+            background: var(--led-amber);
+            color: var(--bg-black);
+            border-bottom-color: var(--led-amber);
+            text-shadow: none;
+        }
+
+        .nav-tab:hover {
+            background: #2a2a2a;
+            color: var(--led-white);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Widget Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Panel Base */
+        .panel {
+            background: #0a0a0a;
+            border: 6px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 28px;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+
+        .panel-header {
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .panel-heading {
+            font-family: var(--font-display);
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--led-white);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* LED Countdown */
+        .led-countdown {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .led-group {
+            text-align: center;
+        }
+
+        .led-number {
+            font-family: var(--font-display);
+            font-size: 80px;
+            font-weight: bold;
+            color: var(--led-amber);
+            text-shadow:
+                0 0 20px var(--led-amber),
+                0 0 40px var(--led-amber),
+                0 0 60px rgba(255, 165, 0, 0.5);
+            line-height: 1;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .led-label {
+            font-family: var(--font-condensed);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #666;
+        }
+
+        /* Status Blocks */
+        .status-blocks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .status-block {
+            background: #1a1a1a;
+            border: 4px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .status-dot.green {
+            background: var(--led-green);
+            color: var(--led-green);
+        }
+
+        .status-dot.amber {
+            background: var(--led-amber);
+            color: var(--led-amber);
+        }
+
+        .status-dot.red {
+            background: var(--led-red);
+            color: var(--led-red);
+        }
+
+        .status-value {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--led-white);
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .status-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #888;
+        }
+
+        /* Chunky Color Blocks */
+        .color-blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .color-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .block-label {
+            font-family: var(--font-display);
+            font-size: 16px;
+            text-transform: uppercase;
+            min-width: 60px;
+            color: #888;
+        }
+
+        .block-bar {
+            flex: 1;
+            height: 48px;
+            border: 4px solid var(--panel-border);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+
+        .block-fill {
+            height: 100%;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .block-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 16px currentColor;
+        }
+
+        .block-value {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: bold;
+            min-width: 70px;
+            text-align: right;
+            color: var(--led-white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* T1/T2 Split Panels */
+        .split-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .split-panel {
+            background: #1a1a1a;
+            border: 6px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .split-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .split-time {
+            font-family: var(--font-display);
+            font-size: 52px;
+            font-weight: bold;
+            color: var(--led-amber);
+            text-shadow:
+                0 0 20px var(--led-amber),
+                0 0 40px var(--led-amber);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .split-subtitle {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #666;
+        }
+
+        /* Leaderboard Table */
+        .leaderboard {
+            background: #0a0a0a;
+            border: 6px solid var(--panel-border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .leaderboard-header {
+            background: #1a1a1a;
+            padding: 16px 24px;
+            border-bottom: 4px solid var(--panel-border);
+        }
+
+        .leaderboard-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--led-white);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .race-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 4px solid var(--panel-border);
+            background: #0a0a0a;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .race-row:hover {
+            background: #1a1a1a;
+        }
+
+        .race-row:last-child {
+            border-bottom: none;
+        }
+
+        .race-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .race-name {
+            font-family: var(--font-display);
+            font-size: 18px;
+            text-transform: uppercase;
+            color: var(--led-white);
+            letter-spacing: 0.05em;
+        }
+
+        .race-date {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 0.1em;
+        }
+
+        .race-badge {
+            font-family: var(--font-display);
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 3px solid var(--panel-border);
+            border-radius: 8px;
+            color: var(--led-amber);
+            text-align: center;
+            align-self: start;
+            letter-spacing: 0.1em;
+        }
+
+        .race-time {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--led-white);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            text-align: right;
+            align-self: center;
+        }
+
+        /* Stats Grid */
+        .stats-mega {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-mega {
+            background: #1a1a1a;
+            border: 4px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-mega-value {
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--led-white);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-mega-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #888;
+        }
+
+        /* Tip Panel */
+        .tip-panel {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 4px solid var(--led-amber);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .tip-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px var(--led-amber));
+        }
+
+        .tip-title {
+            font-family: var(--font-display);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--led-amber);
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px var(--led-amber);
+        }
+
+        .tip-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .led-countdown {
+                gap: 16px;
+            }
+
+            .led-number {
+                font-size: 60px;
+            }
+
+            .split-panels {
+                grid-template-columns: 1fr;
+            }
+
+            .race-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .race-time {
+                text-align: left;
+            }
+        }
+
+        /* Loading Animation */
+        .block-fill {
+            animation: slideIn 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('dashboard')">DASHBOARD</button>
+        <button class="nav-tab" onclick="switchTab('races')">RACES</button>
+        <button class="nav-tab">TRAINING</button>
+        <button class="nav-tab">PROFILE</button>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <!-- Next Race Panel -->
+                <div class="panel" style="grid-column: span 2;">
+                    <div class="panel-header">
+                        <div class="panel-title">NEXT RACE</div>
+                        <div class="panel-heading">CHATTANOOGA 70.3</div>
+                    </div>
+
+                    <div class="led-countdown">
+                        <div class="led-group">
+                            <div class="led-number">45</div>
+                            <div class="led-label">DAYS</div>
+                        </div>
+                        <div class="led-group">
+                            <div class="led-number">12</div>
+                            <div class="led-label">HOURS</div>
+                        </div>
+                        <div class="led-group">
+                            <div class="led-number">37</div>
+                            <div class="led-label">MINS</div>
+                        </div>
+                    </div>
+
+                    <div class="status-blocks">
+                        <div class="status-block">
+                            <div class="status-dot green"></div>
+                            <div class="status-value">65%</div>
+                            <div class="status-label">TRAINING</div>
+                        </div>
+                        <div class="status-block">
+                            <div class="status-dot green"></div>
+                            <div class="status-value">✓</div>
+                            <div class="status-label">NUTRITION</div>
+                        </div>
+                        <div class="status-block">
+                            <div class="status-dot amber"></div>
+                            <div class="status-value">⏳</div>
+                            <div class="status-label">GEAR</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transition Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">TRANSITION TIMES</div>
+                    </div>
+
+                    <div class="split-panels">
+                        <div class="split-panel">
+                            <div class="split-title">T1</div>
+                            <div class="split-time">2:15</div>
+                            <div class="split-subtitle">AVERAGE</div>
+                        </div>
+                        <div class="split-panel">
+                            <div class="split-title">T2</div>
+                            <div class="split-time">1:30</div>
+                            <div class="split-subtitle">AVERAGE</div>
+                        </div>
+                    </div>
+
+                    <div class="tip-panel">
+                        <div class="tip-icon">💡</div>
+                        <div class="tip-title">PRO TIP</div>
+                        <div class="tip-text">Practice helmet removal and shoe mounting to improve T2 by 15-20 seconds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Volume Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">TRAINING VOLUME</div>
+                    <div class="panel-heading">LAST 7 DAYS</div>
+                </div>
+
+                <div class="color-blocks">
+                    <div class="color-block">
+                        <div class="block-label">SWIM</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 53%; background: var(--swim-blue); color: var(--swim-blue);"></div>
+                        </div>
+                        <div class="block-value">5.3H</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">BIKE</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 95%; background: var(--bike-orange); color: var(--bike-orange); animation-delay: 0.2s;"></div>
+                        </div>
+                        <div class="block-value">9.5H</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">RUN</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 55%; background: var(--run-lime); color: var(--run-lime); animation-delay: 0.4s;"></div>
+                        </div>
+                        <div class="block-value">5.5H</div>
+                    </div>
+                </div>
+
+                <div class="stats-mega">
+                    <div class="stat-mega">
+                        <div class="stat-mega-value" style="color: var(--swim-blue);">5.3H</div>
+                        <div class="stat-mega-label">SWIM</div>
+                    </div>
+                    <div class="stat-mega">
+                        <div class="stat-mega-value" style="color: var(--bike-orange);">9.5H</div>
+                        <div class="stat-mega-label">BIKE</div>
+                    </div>
+                    <div class="stat-mega">
+                        <div class="stat-mega-value" style="color: var(--run-lime);">5.5H</div>
+                        <div class="stat-mega-label">RUN</div>
+                    </div>
+                    <div class="stat-mega">
+                        <div class="stat-mega-value" style="color: var(--led-green);">+12%</div>
+                        <div class="stat-mega-label">VS LAST WEEK</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Races Tab -->
+        <div id="races" class="tab-content">
+            <div class="leaderboard">
+                <div class="leaderboard-header">
+                    <div class="leaderboard-title">RACE HISTORY</div>
+                </div>
+
+                <div class="race-row">
+                    <div class="race-info">
+                        <div class="race-name">CHATTANOOGA 70.3</div>
+                        <div class="race-date">MAY 19, 2024</div>
+                    </div>
+                    <div class="race-badge">70.3</div>
+                    <div class="race-time">5:28:45</div>
+                </div>
+
+                <div class="race-row">
+                    <div class="race-info">
+                        <div class="race-name">ATLANTA TRIATHLON</div>
+                        <div class="race-date">APRIL 12, 2024</div>
+                    </div>
+                    <div class="race-badge">OLYMPIC</div>
+                    <div class="race-time">2:42:18</div>
+                </div>
+
+                <div class="race-row">
+                    <div class="race-info">
+                        <div class="race-name">NASHVILLE SPRINT</div>
+                        <div class="race-date">SEPT 8, 2023</div>
+                    </div>
+                    <div class="race-badge">SPRINT</div>
+                    <div class="race-time">1:15:32</div>
+                </div>
+
+                <div class="race-row">
+                    <div class="race-info">
+                        <div class="race-name">GULF COAST 70.3</div>
+                        <div class="race-date">MAY 7, 2023</div>
+                    </div>
+                    <div class="race-badge">70.3</div>
+                    <div class="race-time">5:45:12</div>
+                </div>
+            </div>
+
+            <!-- Race Detail Panel (example expanded view) -->
+            <div class="panel" style="margin-top: 24px;">
+                <div class="panel-header">
+                    <div class="panel-title">RACE BREAKDOWN</div>
+                    <div class="panel-heading">CHATTANOOGA 70.3</div>
+                </div>
+
+                <div class="color-blocks">
+                    <div class="color-block">
+                        <div class="block-label">SWIM</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 45%; background: var(--swim-blue); color: var(--swim-blue);"></div>
+                        </div>
+                        <div class="block-value">32:15</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">T1</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 8%; background: var(--led-amber); color: var(--led-amber);"></div>
+                        </div>
+                        <div class="block-value">1:45</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">BIKE</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 88%; background: var(--bike-orange); color: var(--bike-orange);"></div>
+                        </div>
+                        <div class="block-value">2:48:30</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">T2</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 6%; background: var(--led-amber); color: var(--led-amber);"></div>
+                        </div>
+                        <div class="block-value">1:10</div>
+                    </div>
+                    <div class="color-block">
+                        <div class="block-label">RUN</div>
+                        <div class="block-bar">
+                            <div class="block-fill" style="width: 65%; background: var(--run-lime); color: var(--run-lime);"></div>
+                        </div>
+                        <div class="block-value">1:52:00</div>
+                    </div>
+                </div>
+
+                <div class="stats-mega" style="margin-top: 32px;">
+                    <div class="stat-mega">
+                        <div class="stat-mega-value">127</div>
+                        <div class="stat-mega-label">OVERALL PLACE</div>
+                    </div>
+                    <div class="stat-mega">
+                        <div class="stat-mega-value">12</div>
+                        <div class="stat-mega-label">AGE GROUP</div>
+                    </div>
+                    <div class="stat-mega">
+                        <div class="stat-mega-value">450</div>
+                        <div class="stat-mega-label">TOTAL RACERS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Pulsing LED effect
+        setInterval(() => {
+            document.querySelectorAll('.led-number').forEach(num => {
+                num.style.textShadow = '0 0 40px var(--led-amber), 0 0 80px var(--led-amber)';
+                setTimeout(() => {
+                    num.style.textShadow = '0 0 20px var(--led-amber), 0 0 40px var(--led-amber), 0 0 60px rgba(255, 165, 0, 0.5)';
+                }, 500);
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

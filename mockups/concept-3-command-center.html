@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RacePrep - Race Command Center Concept</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Command Center Color Palette */
+            --bg-space: #0B0E11;
+            --bg-panel: #14181D;
+            --bg-elevated: #1C2127;
+            --tech-blue: #60A5FA;
+            --swim-cyan: #06B6D4;
+            --bike-orange: #F97316;
+            --run-green: #22C55E;
+            --border-default: #2A3139;
+            --border-accent: #3B4856;
+            --text-primary: #E5E7EB;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-space);
+            color: var(--text-primary);
+            line-height: 1.5;
+            position: relative;
+            font-size: 14px;
+        }
+
+        /* Grid Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(96, 165, 250, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(96, 165, 250, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Subtle Noise Texture */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=');
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-default);
+            position: relative;
+            z-index: 10;
+        }
+
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2px;
+            padding: 0 20px;
+        }
+
+        .nav-tab {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 16px 24px;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--tech-blue);
+            transform: scaleX(0);
+            transition: transform 0.15s;
+        }
+
+        .nav-tab.active {
+            color: var(--tech-blue);
+        }
+
+        .nav-tab.active::before {
+            transform: scaleX(1);
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Panel System */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(96, 165, 250, 0.2) 50%,
+                transparent
+            );
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .panel-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        .panel-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-radius: 4px;
+            color: var(--tech-blue);
+            letter-spacing: 0.05em;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: currentColor;
+            opacity: 0.3;
+        }
+
+        .metric-value {
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .metric-delta {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            margin-top: 6px;
+            padding: 4px 8px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 4px;
+            color: var(--run-green);
+            display: inline-block;
+        }
+
+        /* Countdown Display */
+        .countdown-display {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .countdown-unit {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-radius: 6px;
+            padding: 20px 24px;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .countdown-value {
+            font-family: var(--font-mono);
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--tech-blue);
+            margin-bottom: 8px;
+        }
+
+        .countdown-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        /* Gantt Timeline */
+        .gantt-timeline {
+            margin: 20px 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .gantt-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .gantt-label {
+            width: 80px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .gantt-track {
+            flex: 1;
+            height: 32px;
+            background: var(--bg-space);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gantt-bar {
+            height: 100%;
+            border-radius: 3px;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gantt-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Heatmap Grid */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: auto repeat(7, 1fr);
+            gap: 4px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .heatmap-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Telemetry Panel */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .telemetry-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-left: 3px solid currentColor;
+            border-radius: 4px;
+            padding: 16px;
+        }
+
+        .telemetry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .telemetry-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+        }
+
+        .telemetry-status {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            padding: 2px 6px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--run-green);
+            border-radius: 3px;
+            color: var(--run-green);
+        }
+
+        .telemetry-value {
+            font-family: var(--font-mono);
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .telemetry-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Race Table */
+        .race-table {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .race-table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 12px 20px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-accent);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .race-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-default);
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .race-table-row:hover {
+            background: var(--bg-elevated);
+        }
+
+        .race-table-row:last-child {
+            border-bottom: none;
+        }
+
+        .race-name-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .race-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .race-date {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .race-distance-badge {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 6px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-accent);
+            border-radius: 4px;
+            color: var(--tech-blue);
+            text-align: center;
+            align-self: start;
+        }
+
+        .race-time {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            align-self: center;
+        }
+
+        .race-rank {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+            align-self: center;
+        }
+
+        /* Progress Indicators */
+        .progress-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .progress-label {
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .progress-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .panel-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .countdown-display {
+                gap: 12px;
+            }
+
+            .countdown-unit {
+                min-width: 80px;
+                padding: 16px;
+            }
+
+            .countdown-value {
+                font-size: 36px;
+            }
+
+            .race-table-header,
+            .race-table-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .telemetry-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utility Classes */
+        .span-6 { grid-column: span 6; }
+        .span-8 { grid-column: span 8; }
+        .span-12 { grid-column: span 12; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-container">
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('races')">Races</button>
+            <button class="nav-tab">Training</button>
+            <button class="nav-tab">Profile</button>
+        </nav>
+    </div>
+
+    <div class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Top Row: Next Race -->
+            <div class="panel-grid">
+                <div class="panel span-8">
+                    <div class="panel-header">
+                        <div class="panel-title">Next Race Event</div>
+                        <div class="panel-badge">70.3</div>
+                    </div>
+
+                    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">Chattanooga 70.3</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">May 19, 2025 • Chattanooga, TN</p>
+
+                    <div class="countdown-display">
+                        <div class="countdown-unit">
+                            <div class="countdown-value">45</div>
+                            <div class="countdown-label">Days</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value">12</div>
+                            <div class="countdown-label">Hours</div>
+                        </div>
+                        <div class="countdown-unit">
+                            <div class="countdown-value">37</div>
+                            <div class="countdown-label">Minutes</div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-box" style="color: var(--run-green);">
+                            <div class="metric-value">65%</div>
+                            <div class="metric-label">Training</div>
+                        </div>
+                        <div class="metric-box" style="color: var(--tech-blue);">
+                            <div class="metric-value">✓</div>
+                            <div class="metric-label">Nutrition</div>
+                        </div>
+                        <div class="metric-box" style="color: var(--bike-orange);">
+                            <div class="metric-value">⏳</div>
+                            <div class="metric-label">Gear Ready</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" style="grid-column: span 4;">
+                    <div class="panel-header">
+                        <div class="panel-title">Transition Telemetry</div>
+                        <div class="panel-badge">OPTIMIZE</div>
+                    </div>
+
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item" style="color: var(--bike-orange);">
+                            <div class="telemetry-header">
+                                <div class="telemetry-title">T1 Average</div>
+                                <div class="telemetry-status" style="background: rgba(249, 115, 22, 0.1); border-color: var(--bike-orange); color: var(--bike-orange);">REVIEW</div>
+                            </div>
+                            <div class="telemetry-value" style="color: var(--bike-orange);">2:15</div>
+                            <div class="telemetry-detail">Target: &lt;2:00</div>
+                        </div>
+
+                        <div class="telemetry-item" style="color: var(--run-green);">
+                            <div class="telemetry-header">
+                                <div class="telemetry-title">T2 Average</div>
+                                <div class="telemetry-status">GOOD</div>
+                            </div>
+                            <div class="telemetry-value" style="color: var(--run-green);">1:30</div>
+                            <div class="telemetry-detail">Target: &lt;1:30</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px; padding: 12px; background: var(--bg-elevated); border-left: 3px solid var(--tech-blue); border-radius: 4px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--tech-blue); margin-bottom: 6px;">Optimization Tip</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Practice helmet removal and shoe mounting to improve T2 by 15-20 seconds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Volume Panel -->
+            <div class="panel-grid">
+                <div class="panel span-12">
+                    <div class="panel-header">
+                        <div class="panel-title">Training Volume Analysis</div>
+                        <div class="panel-badge">LAST 7 DAYS</div>
+                    </div>
+
+                    <div class="gantt-timeline">
+                        <div class="gantt-row">
+                            <div class="gantt-label">MONDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 75%; background: var(--swim-cyan); color: var(--swim-cyan);">3.2h Swim</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">TUESDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 45%; background: var(--run-green); color: var(--run-green);">1.5h Run</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">WEDNESDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 85%; background: var(--bike-orange); color: var(--bike-orange);">4.0h Bike</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">THURSDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 55%; background: var(--swim-cyan); color: var(--swim-cyan);">2.1h Swim</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">FRIDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 35%; background: var(--run-green); color: var(--run-green);">1.2h Run</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">SATURDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 95%; background: var(--bike-orange); color: var(--bike-orange);">5.5h Bike</div>
+                            </div>
+                        </div>
+                        <div class="gantt-row">
+                            <div class="gantt-label">SUNDAY</div>
+                            <div class="gantt-track">
+                                <div class="gantt-bar" style="left: 0; width: 65%; background: var(--run-green); color: var(--run-green);">2.8h Run</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid" style="margin-top: 24px;">
+                        <div class="metric-box" style="color: var(--swim-cyan);">
+                            <div class="metric-value">5.3h</div>
+                            <div class="metric-label">Swim Total</div>
+                        </div>
+                        <div class="metric-box" style="color: var(--bike-orange);">
+                            <div class="metric-value">9.5h</div>
+                            <div class="metric-label">Bike Total</div>
+                        </div>
+                        <div class="metric-box" style="color: var(--run-green);">
+                            <div class="metric-value">5.5h</div>
+                            <div class="metric-label">Run Total</div>
+                        </div>
+                        <div class="metric-box" style="color: var(--run-green);">
+                            <div class="metric-value">+12%</div>
+                            <div class="metric-label">vs Last Week</div>
+                            <div class="metric-delta">↑ Improving</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Races Tab -->
+        <div id="races" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Race History Database</div>
+                    <div class="panel-badge">5 EVENTS</div>
+                </div>
+
+                <div class="race-table">
+                    <div class="race-table-header">
+                        <div>Event</div>
+                        <div>Distance</div>
+                        <div>Time</div>
+                        <div>Placement</div>
+                    </div>
+
+                    <div class="race-table-row">
+                        <div class="race-name-cell">
+                            <div class="race-name">Chattanooga 70.3</div>
+                            <div class="race-date">MAY 19, 2024</div>
+                        </div>
+                        <div class="race-distance-badge">70.3</div>
+                        <div class="race-time">5:28:45</div>
+                        <div class="race-rank">127 / 450</div>
+                    </div>
+
+                    <div class="race-table-row">
+                        <div class="race-name-cell">
+                            <div class="race-name">Atlanta Triathlon</div>
+                            <div class="race-date">APRIL 12, 2024</div>
+                        </div>
+                        <div class="race-distance-badge">OLYMPIC</div>
+                        <div class="race-time">2:42:18</div>
+                        <div class="race-rank">45 / 230</div>
+                    </div>
+
+                    <div class="race-table-row">
+                        <div class="race-name-cell">
+                            <div class="race-name">Nashville Sprint</div>
+                            <div class="race-date">SEPT 8, 2023</div>
+                        </div>
+                        <div class="race-distance-badge">SPRINT</div>
+                        <div class="race-time">1:15:32</div>
+                        <div class="race-rank">23 / 180</div>
+                    </div>
+
+                    <div class="race-table-row">
+                        <div class="race-name-cell">
+                            <div class="race-name">Gulf Coast 70.3</div>
+                            <div class="race-date">MAY 7, 2023</div>
+                        </div>
+                        <div class="race-distance-badge">70.3</div>
+                        <div class="race-time">5:45:12</div>
+                        <div class="race-rank">156 / 480</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Race Detail Panel -->
+            <div class="panel" style="margin-top: 16px;">
+                <div class="panel-header">
+                    <div class="panel-title">Race Analysis</div>
+                    <div class="panel-badge">CHATTANOOGA 70.3</div>
+                </div>
+
+                <div class="progress-stack">
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Swim</span>
+                            <span class="progress-value">32:15</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%; background: var(--swim-cyan); color: var(--swim-cyan);"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">T1</span>
+                            <span class="progress-value">1:45</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 8%; background: var(--bike-orange); color: var(--bike-orange);"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Bike</span>
+                            <span class="progress-value">2:48:30</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88%; background: var(--bike-orange); color: var(--bike-orange);"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">T2</span>
+                            <span class="progress-value">1:10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 6%; background: var(--run-green); color: var(--run-green);"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span class="progress-label">Run</span>
+                            <span class="progress-value">1:52:00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%; background: var(--run-green); color: var(--run-green);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid" style="margin-top: 24px;">
+                    <div class="metric-box">
+                        <div class="metric-value">127</div>
+                        <div class="metric-label">Overall</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">12</div>
+                        <div class="metric-label">Age Group</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">450</div>
+                        <div class="metric-label">Total Field</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">73%</div>
+                        <div class="metric-label">Percentile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Smooth countdown animation
+        function animateCountdown() {
+            const units = document.querySelectorAll('.countdown-value');
+            units.forEach(unit => {
+                unit.style.transform = 'scale(1.05)';
+                unit.style.transition = 'transform 0.2s';
+                setTimeout(() => {
+                    unit.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        setInterval(animateCountdown, 5000);
+    </script>
+</body>
+</html>

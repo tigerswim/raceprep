@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RacePrep - Split-Flap Terminal Concept</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Split-Flap Terminal Color Palette */
+            --bg-primary: #0A0E14;
+            --text-primary: #F8F8F2;
+            --text-secondary: #B4B8C5;
+            --accent-yellow: #FFD866;
+            --swim-cyan: #00D4FF;
+            --bike-coral: #FF6B35;
+            --run-turquoise: #4ECDC4;
+            --border-color: #1C2127;
+            --panel-bg: #0F1419;
+
+            /* Typography */
+            --font-mono: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-system);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Scan Line Effect - More Subtle */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.01) 2px,
+                rgba(255, 255, 255, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            padding: 20px 20px 0;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .nav-tab {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 12px 24px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            color: var(--accent-yellow);
+            border-bottom-color: var(--accent-yellow);
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Widget Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Widget Base */
+        .widget {
+            background: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            position: relative;
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .widget-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #B4B8C5;
+            margin-bottom: 0;
+        }
+
+        /* Flip Card Countdown */
+        .flip-countdown {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .flip-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flip-cards {
+            display: flex;
+            gap: 4px;
+        }
+
+        .flip-card {
+            width: 36px;
+            height: 52px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-yellow);
+            text-shadow: 0 0 10px rgba(255, 216, 102, 0.3);
+            position: relative;
+        }
+
+        .flip-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .flip-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        /* 7-Segment Display */
+        .segment-display {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .segment-number {
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--swim-cyan);
+            text-shadow: 0 0 10px currentColor;
+            letter-spacing: 0.05em;
+            min-width: 70px;
+        }
+
+        .segment-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #B4B8C5;
+        }
+
+        /* Terminal-Style Training Bars */
+        .terminal-chart {
+            margin: 20px 0;
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .chart-label {
+            width: 40px;
+            color: #B4B8C5;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            height: 24px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar {
+            height: 100%;
+            transition: width 1s ease-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .chart-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 100%;
+            background: currentColor;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .chart-value {
+            min-width: 50px;
+            text-align: right;
+            color: #F8F8F2;
+            font-weight: 700;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 32px;
+            font-weight: 700;
+            color: #F8F8F2;
+            margin-bottom: 6px;
+            text-shadow: 0 0 1px rgba(248, 248, 242, 0.5);
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #B4B8C5;
+        }
+
+        /* Race List */
+        .race-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .race-card {
+            background: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .race-card:hover {
+            border-color: var(--accent-yellow);
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .race-name {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            color: #F8F8F2;
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        .race-date {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: #B4B8C5;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .race-distance {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 4px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--accent-yellow);
+        }
+
+        .race-splits {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+
+        .split-item {
+            text-align: center;
+            padding: 8px 4px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .split-label {
+            color: #B4B8C5;
+            text-transform: uppercase;
+            font-size: 9px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: 0.08em;
+        }
+
+        .split-time {
+            color: #F8F8F2;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .split-item.swim .split-time { color: var(--swim-cyan); }
+        .split-item.bike .split-time { color: var(--bike-coral); }
+        .split-item.run .split-time { color: var(--run-turquoise); }
+        .split-item.t1 .split-time,
+        .split-item.t2 .split-time { color: var(--accent-yellow); }
+
+        /* Tips Section */
+        .tips-section {
+            background: var(--bg-primary);
+            border-left: 3px solid var(--accent-yellow);
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .tips-title {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-yellow);
+            margin-bottom: 6px;
+        }
+
+        .tips-text {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flip-countdown {
+                justify-content: center;
+            }
+
+            .race-splits {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Loading Animation */
+        .chart-bar {
+            animation: slideIn 1s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+        <button class="nav-tab" onclick="switchTab('races')">Races</button>
+        <button class="nav-tab">Training</button>
+        <button class="nav-tab">Profile</button>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <!-- Upcoming Race Widget -->
+                <div class="widget" style="grid-column: span 2;">
+                    <div class="widget-header">
+                        <div>
+                            <div class="widget-title">Next Race</div>
+                            <h2 style="font-family: var(--font-mono); font-size: 20px; color: var(--text-primary);">CHATTANOOGA 70.3</h2>
+                        </div>
+                    </div>
+
+                    <div class="flip-countdown">
+                        <div class="flip-group">
+                            <div class="flip-cards">
+                                <div class="flip-card">4</div>
+                                <div class="flip-card">5</div>
+                            </div>
+                            <div class="flip-label">Days</div>
+                        </div>
+                        <div class="flip-group">
+                            <div class="flip-cards">
+                                <div class="flip-card">1</div>
+                                <div class="flip-card">2</div>
+                            </div>
+                            <div class="flip-label">Hours</div>
+                        </div>
+                        <div class="flip-group">
+                            <div class="flip-cards">
+                                <div class="flip-card">3</div>
+                                <div class="flip-card">7</div>
+                            </div>
+                            <div class="flip-label">Minutes</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" style="color: var(--run-turquoise);">65%</div>
+                            <div class="stat-label">Training Progress</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" style="color: var(--swim-cyan);">1.2</div>
+                            <div class="stat-label">Swim (Mi)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" style="color: var(--bike-coral);">56</div>
+                            <div class="stat-label">Bike (Mi)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" style="color: var(--run-turquoise);">13.1</div>
+                            <div class="stat-label">Run (Mi)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transition Analytics Widget -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-title">Transition Analytics</div>
+                    </div>
+
+                    <div class="segment-display">
+                        <div>
+                            <div class="segment-number" style="color: var(--accent-yellow);">2:15</div>
+                            <div class="segment-label">Avg T1</div>
+                        </div>
+                    </div>
+
+                    <div class="segment-display">
+                        <div>
+                            <div class="segment-number" style="color: var(--accent-yellow);">1:30</div>
+                            <div class="segment-label">Avg T2</div>
+                        </div>
+                    </div>
+
+                    <div class="tips-section">
+                        <div class="tips-title">Optimization Tip</div>
+                        <div class="tips-text">Practice helmet removal and shoe mounting to improve T2 by 15-20 seconds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Overview Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">Training Volume — Last 7 Days</div>
+                </div>
+
+                <div class="terminal-chart">
+                    <div class="chart-row">
+                        <div class="chart-label">MON</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 50%; background: var(--swim-cyan); color: var(--swim-cyan);"></div>
+                            <div class="chart-bar" style="width: 65%; background: var(--bike-coral); color: var(--bike-coral); margin-left: 50%;"></div>
+                        </div>
+                        <div class="chart-value">7.2h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">TUE</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 45%; background: var(--run-turquoise); color: var(--run-turquoise);"></div>
+                        </div>
+                        <div class="chart-value">1.5h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">WED</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 85%; background: var(--bike-coral); color: var(--bike-coral);"></div>
+                        </div>
+                        <div class="chart-value">4.0h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">THU</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 55%; background: var(--swim-cyan); color: var(--swim-cyan);"></div>
+                        </div>
+                        <div class="chart-value">2.1h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">FRI</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 35%; background: var(--run-turquoise); color: var(--run-turquoise);"></div>
+                        </div>
+                        <div class="chart-value">1.2h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">SAT</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 95%; background: var(--bike-coral); color: var(--bike-coral);"></div>
+                        </div>
+                        <div class="chart-value">5.5h</div>
+                    </div>
+                    <div class="chart-row">
+                        <div class="chart-label">SUN</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: 65%; background: var(--run-turquoise); color: var(--run-turquoise);"></div>
+                        </div>
+                        <div class="chart-value">2.8h</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-top: 24px;">
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: var(--swim-cyan);">5.3h</div>
+                        <div class="stat-label">Swim</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: var(--bike-coral);">9.5h</div>
+                        <div class="stat-label">Bike</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: var(--run-turquoise);">5.5h</div>
+                        <div class="stat-label">Run</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: var(--accent-yellow);">+12%</div>
+                        <div class="stat-label">vs Last Week</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Races Tab -->
+        <div id="races" class="tab-content">
+            <div style="margin-bottom: 20px;">
+                <h2 style="font-family: var(--font-mono); font-size: 18px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.1em;">Race History</h2>
+            </div>
+
+            <div class="race-list">
+                <div class="race-card">
+                    <div class="race-header">
+                        <div>
+                            <div class="race-name">CHATTANOOGA 70.3</div>
+                            <div class="race-date">May 19, 2024</div>
+                        </div>
+                        <div class="race-distance">70.3</div>
+                    </div>
+                    <div class="race-splits">
+                        <div class="split-item swim">
+                            <div class="split-label">Swim</div>
+                            <div class="split-time">32:15</div>
+                        </div>
+                        <div class="split-item t1">
+                            <div class="split-label">T1</div>
+                            <div class="split-time">1:45</div>
+                        </div>
+                        <div class="split-item bike">
+                            <div class="split-label">Bike</div>
+                            <div class="split-time">2:48:30</div>
+                        </div>
+                        <div class="split-item t2">
+                            <div class="split-label">T2</div>
+                            <div class="split-time">1:10</div>
+                        </div>
+                        <div class="split-item run">
+                            <div class="split-label">Run</div>
+                            <div class="split-time">1:52:00</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px;">
+                        <div style="color: var(--text-secondary);">Overall: 127/450</div>
+                        <div style="color: var(--text-secondary);">Age Group: 12/45</div>
+                        <div style="color: var(--accent-yellow);">5:28:45</div>
+                    </div>
+                </div>
+
+                <div class="race-card">
+                    <div class="race-header">
+                        <div>
+                            <div class="race-name">ATLANTA TRIATHLON</div>
+                            <div class="race-date">April 12, 2024</div>
+                        </div>
+                        <div class="race-distance">OLYMPIC</div>
+                    </div>
+                    <div class="race-splits">
+                        <div class="split-item swim">
+                            <div class="split-label">Swim</div>
+                            <div class="split-time">28:12</div>
+                        </div>
+                        <div class="split-item t1">
+                            <div class="split-label">T1</div>
+                            <div class="split-time">2:05</div>
+                        </div>
+                        <div class="split-item bike">
+                            <div class="split-label">Bike</div>
+                            <div class="split-time">1:18:30</div>
+                        </div>
+                        <div class="split-item t2">
+                            <div class="split-label">T2</div>
+                            <div class="split-time">1:28</div>
+                        </div>
+                        <div class="split-item run">
+                            <div class="split-label">Run</div>
+                            <div class="split-time">52:03</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px;">
+                        <div style="color: var(--text-secondary);">Overall: 45/230</div>
+                        <div style="color: var(--text-secondary);">Age Group: 8/28</div>
+                        <div style="color: var(--accent-yellow);">2:42:18</div>
+                    </div>
+                </div>
+
+                <div class="race-card">
+                    <div class="race-header">
+                        <div>
+                            <div class="race-name">NASHVILLE SPRINT</div>
+                            <div class="race-date">September 8, 2023</div>
+                        </div>
+                        <div class="race-distance">SPRINT</div>
+                    </div>
+                    <div class="race-splits">
+                        <div class="split-item swim">
+                            <div class="split-label">Swim</div>
+                            <div class="split-time">12:45</div>
+                        </div>
+                        <div class="split-item t1">
+                            <div class="split-label">T1</div>
+                            <div class="split-time">1:52</div>
+                        </div>
+                        <div class="split-item bike">
+                            <div class="split-label">Bike</div>
+                            <div class="split-time">38:15</div>
+                        </div>
+                        <div class="split-item t2">
+                            <div class="split-label">T2</div>
+                            <div class="split-time">1:35</div>
+                        </div>
+                        <div class="split-item run">
+                            <div class="split-label">Run</div>
+                            <div class="split-time">21:05</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px;">
+                        <div style="color: var(--text-secondary);">Overall: 23/180</div>
+                        <div style="color: var(--text-secondary);">Age Group: 5/22</div>
+                        <div style="color: var(--accent-yellow);">1:15:32</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all nav buttons
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Activate nav button
+            event.target.classList.add('active');
+        }
+
+        // Simulate flip animation on countdown
+        setInterval(() => {
+            const cards = document.querySelectorAll('.flip-card');
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            randomCard.style.transform = 'rotateX(90deg)';
+            setTimeout(() => {
+                randomCard.style.transform = 'rotateX(0deg)';
+            }, 150);
+        }, 5000);
+    </script>
+</body>
+</html>

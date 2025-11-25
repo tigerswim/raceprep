@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
 import { CalendarClock, Target, AlertCircle } from 'lucide-react-native';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { UpcomingRacesWidgetTerminal } from './UpcomingRacesWidget.terminal';
 
 interface UpcomingRace {
   id: string;
@@ -45,6 +47,14 @@ interface LocalStorageRace {
 }
 
 export const UpcomingRacesWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('upcomingRaces');
+
+  if (useTerminal) {
+    return <UpcomingRacesWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   // ALL HOOKS MUST EXECUTE BEFORE ANY CONDITIONAL RETURNS
   // This ensures React's Rules of Hooks are followed
   const router = useRouter();
