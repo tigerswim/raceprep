@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
 import { TbClock, TbTrendingUp, TbTarget, TbAlertCircle, TbCheck } from 'react-icons/tb';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { TransitionAnalyticsWidgetTerminal } from './TransitionAnalyticsWidget.terminal';
 
 interface TransitionData {
   t1_time: string | null;
@@ -25,6 +27,14 @@ interface TransitionStats {
 }
 
 export const TransitionAnalyticsWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('transitions');
+
+  if (useTerminal) {
+    return <TransitionAnalyticsWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TransitionStats | null>(null);
