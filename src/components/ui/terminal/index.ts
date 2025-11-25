@@ -13,3 +13,4 @@ export { TerminalButton } from './TerminalButton';
 export { ScanLineOverlay } from './ScanLineOverlay';
 export { SevenSegmentDisplay } from './SevenSegmentDisplay';
 export { FlipCard } from './FlipCard';
+export { TerminalBarChart } from './TerminalBarChart';

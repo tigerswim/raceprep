@@ -7,6 +7,8 @@ import {
   TbBike,
   TbRun
 } from 'react-icons/tb';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { PerformanceOverviewWidgetTerminal } from './PerformanceOverviewWidget.terminal';
 
 interface DailyTrainingData {
   date: string;
@@ -41,6 +43,14 @@ interface TrainingStats {
 }
 
 export const PerformanceOverviewWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('performance');
+
+  if (useTerminal) {
+    return <PerformanceOverviewWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TrainingStats | null>(null);
