@@ -7,6 +7,8 @@ import {
   TbBike,
   TbRun
 } from 'react-icons/tb';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { WeatherWidgetTerminal } from './WeatherWidget.terminal';
 
 interface WeatherData {
   current: {
@@ -37,6 +39,14 @@ interface WeatherData {
 }
 
 export const WeatherWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('weather');
+
+  if (useTerminal) {
+    return <WeatherWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [weather, setWeather] = useState<WeatherData | null>(null);
