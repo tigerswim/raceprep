@@ -11,11 +11,7 @@ import { View, StyleSheet, Platform } from 'react-native';
  * - Covers entire screen
  *
  * Usage:
- * Add to root layout (_layout.tsx):
- * <View style={{ flex: 1 }}>
- *   {/* App content */}
- *   <ScanLineOverlay />
- * </View>
+ * Add to root layout in _layout.tsx after app content
  *
  * Performance Notes:
  * - If performance issues on low-end devices, can be disabled via feature flag
