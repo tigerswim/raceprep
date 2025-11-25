@@ -162,11 +162,12 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
     }
   }, []);
 
-  const getStatusLabel = (status: string): string => {
+  const getStatusLabel = (status?: string): string => {
+    if (!status) return 'UNKNOWN';
     return status.replace('_', ' ').toUpperCase();
   };
 
-  const getStatusColor = (status: string): string => {
+  const getStatusColor = (status?: string): string => {
     switch (status) {
       case 'achieved': return 'text-discipline-run';
       case 'in_progress': return 'text-accent-yellow';
@@ -176,7 +177,8 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
     }
   };
 
-  const getCategoryLabel = (category: string): string => {
+  const getCategoryLabel = (category?: string): string => {
+    if (!category) return 'GOAL';
     return category.toUpperCase().substring(0, 4);
   };
 
@@ -315,7 +317,7 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
                     [{getCategoryLabel(goal.category)}]
                   </Text>
                   <Text className="font-mono text-xs text-text-primary flex-1">
-                    {goal.title.toUpperCase()}
+                    {goal.title?.toUpperCase() || 'GOAL'}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-2">
