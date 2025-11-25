@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
 import { TbTrophy, TbTarget, TbCalendarTime, TbTrendingUp, TbAlertTriangle, TbCheck, TbClock, TbFlame } from 'react-icons/tb';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { GoalsProgressWidgetTerminal } from './GoalsProgressWidget.terminal';
 
 interface Goal {
   id: string;
@@ -66,6 +68,14 @@ interface GoalNotification {
 }
 
 export const GoalsProgressWidget: React.FC = () => {
+  // Check if terminal design is enabled for this widget
+  const useTerminal = useTerminalDesign('goalsProgress');
+
+  if (useTerminal) {
+    return <GoalsProgressWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
