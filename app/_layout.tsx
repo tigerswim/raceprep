@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Provider } from 'react-redux';
+import { View } from 'react-native';
 import 'react-native-reanimated';
 import '../global.css';
 
@@ -10,6 +11,8 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '../src/contexts/AuthContext';
 import { RacesProvider } from '../src/contexts/RacesContext';
 import { store } from '../src/store';
+import { ScanLineOverlay } from '../src/components/ui/terminal';
+import { featureFlags } from '../src/utils/featureFlags';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -22,19 +25,26 @@ export default function RootLayout() {
     return null;
   }
 
+  const terminalBackground = featureFlags.useTerminalDesign
+    ? { backgroundColor: '#0A0E14', flex: 1 }
+    : { flex: 1 };
+
   return (
     <Provider store={store}>
       <AuthProvider>
         <RacesProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="strava-callback" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <View style={terminalBackground}>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="strava-callback" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+            {featureFlags.useTerminalDesign && <ScanLineOverlay />}
+          </View>
         </RacesProvider>
       </AuthProvider>
     </Provider>
