@@ -5,7 +5,14 @@
  * Start with all flags disabled, then enable one widget at a time for testing.
  *
  * Emergency Rollback: Set useTerminalDesign to false to disable everything.
+ *
+ * TESTING:
+ * - Press Ctrl+Shift+T (or Cmd+Shift+T on Mac) to toggle terminal mode on/off
+ * - This enables ALL terminal widgets for quick testing
  */
+
+// Runtime toggle for testing (controlled by keyboard shortcut)
+let terminalModeOverride: boolean | null = null;
 
 export const featureFlags = {
   // Master switch - set to false to disable all terminal design features
@@ -40,6 +47,32 @@ export const featureFlags = {
 };
 
 /**
+ * Toggle terminal mode on/off (for testing)
+ * Call this from keyboard shortcut handler
+ */
+export const toggleTerminalMode = (): boolean => {
+  if (terminalModeOverride === null) {
+    // First toggle: enable all widgets
+    terminalModeOverride = true;
+  } else {
+    // Subsequent toggles: flip the state
+    terminalModeOverride = !terminalModeOverride;
+  }
+
+  console.log(`[TERMINAL MODE] ${terminalModeOverride ? 'ENABLED ✓' : 'DISABLED ✗'}`);
+  console.log('Press Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle');
+
+  return terminalModeOverride;
+};
+
+/**
+ * Get current terminal mode state
+ */
+export const getTerminalModeState = (): boolean => {
+  return terminalModeOverride !== null ? terminalModeOverride : false;
+};
+
+/**
  * Hook to check if a specific widget should use terminal design
  * @param component - The widget name from featureFlags.useTerminalWidgets
  * @returns boolean - Whether to render terminal version
@@ -47,6 +80,12 @@ export const featureFlags = {
 export const useTerminalDesign = (
   component: keyof typeof featureFlags.useTerminalWidgets
 ): boolean => {
+  // If keyboard shortcut override is active, use that state for ALL widgets
+  if (terminalModeOverride !== null) {
+    return terminalModeOverride;
+  }
+
+  // Otherwise, use individual widget flags
   return featureFlags.useTerminalDesign && featureFlags.useTerminalWidgets[component];
 };
 

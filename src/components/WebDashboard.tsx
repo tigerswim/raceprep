@@ -17,6 +17,7 @@ import {
   TbCrystalBall,
   TbRun
 } from 'react-icons/tb';
+import { useTerminalModeToggle } from '../hooks/useTerminalModeToggle';
 
 interface Course {
   id: string;
@@ -59,6 +60,10 @@ interface PerformanceStats {
 export const WebDashboard: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
+
+  // Enable keyboard shortcut: Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle terminal mode
+  useTerminalModeToggle();
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [races, setRaces] = useState<Race[]>([]);
   const [userRaceResults, setUserRaceResults] = useState<UserRaceResult[]>([]);
