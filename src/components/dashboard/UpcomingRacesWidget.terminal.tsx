@@ -161,6 +161,16 @@ export const UpcomingRacesWidgetTerminal: React.FC = () => {
     try {
       setIsLoading(true);
 
+      // Check if plannedRaces helper exists
+      if (!dbHelpers.plannedRaces) {
+        console.warn('plannedRaces helper not available');
+        const sampleRaces = getSampleUpcomingRaces();
+        setUpcomingRaces(sampleRaces);
+        setCachedRaces(sampleRaces);
+        setLastCacheUpdate(Date.now());
+        return;
+      }
+
       const { data: plannedRaces, error } = await dbHelpers.plannedRaces.getAll();
 
       if (error) {
