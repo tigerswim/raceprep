@@ -278,7 +278,7 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
             </Text>
           </View>
           <Text className="font-mono text-sm font-semibold text-text-primary mb-3">
-            {summary.nextMilestone.title.toUpperCase()}
+            {summary.nextMilestone.title?.toUpperCase() || 'NEXT MILESTONE'}
           </Text>
 
           {/* Terminal Progress Bar */}
