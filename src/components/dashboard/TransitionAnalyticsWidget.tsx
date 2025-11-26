@@ -34,6 +34,12 @@ export const TransitionAnalyticsWidget: React.FC = () => {
   const [stats, setStats] = useState<TransitionStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Check if terminal design is enabled AFTER useState but BEFORE useEffect
+  if (useTerminal) {
+    return <TransitionAnalyticsWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   useEffect(() => {
     if (user) {
       loadTransitionData();
@@ -41,13 +47,6 @@ export const TransitionAnalyticsWidget: React.FC = () => {
       setIsLoading(false);
     }
   }, [user]);
-
-  // Check if terminal design is enabled AFTER all hooks are defined
-  if (useTerminal) {
-    return <TransitionAnalyticsWidgetTerminal />;
-  }
-
-  // Legacy implementation below
 
   const timeToSeconds = (timeStr: string | null): number => {
     if (!timeStr) return 0;

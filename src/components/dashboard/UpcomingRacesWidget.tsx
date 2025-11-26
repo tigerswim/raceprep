@@ -269,6 +269,12 @@ export const UpcomingRacesWidget: React.FC = () => {
   // NOTE: cachedRaces and lastCacheUpdate are intentionally omitted to prevent infinite loops.
   // They are read for caching logic but should not trigger function recreation.
 
+  // Check if terminal design is enabled AFTER hooks but BEFORE useEffect
+  if (useTerminal) {
+    return <UpcomingRacesWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   useEffect(() => {
     if (user) {
       loadUpcomingRaces();
@@ -382,13 +388,6 @@ export const UpcomingRacesWidget: React.FC = () => {
     return 'low';
   }, []);
 
-  // ALL HOOKS HAVE NOW EXECUTED - SAFE TO ADD CONDITIONAL RETURNS
-  // Check if terminal design is enabled AFTER all hooks are defined
-  if (useTerminal) {
-    return <UpcomingRacesWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   if (!user && !isLoading) {
     return (
       <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">

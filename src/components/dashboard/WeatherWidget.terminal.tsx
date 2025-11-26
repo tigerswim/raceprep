@@ -190,7 +190,7 @@ export const WeatherWidgetTerminal: React.FC = () => {
             <Text className="font-mono text-xs uppercase tracking-wider text-discipline-run">
               [RUN]
             </Text>
-            <Text className="font-mono text-xs font-semibold ${getConditionColor(weather.conditions.run)}">
+            <Text className={`font-mono text-xs font-semibold ${getConditionColor(weather.conditions.run)}`}>
               {getConditionLabel(weather.conditions.run)}
             </Text>
           </View>
