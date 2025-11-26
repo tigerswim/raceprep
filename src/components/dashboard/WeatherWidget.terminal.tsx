@@ -2,254 +2,140 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { TerminalCard } from '../ui/terminal';
+import { terminalColors, terminalText, terminalView, mergeStyles } from '../ui/terminal/terminalStyles';
 
 interface WeatherData {
-  current: {
-    temperature: number;
-    feels_like: number;
-    humidity: number;
-    wind_speed: number;
-    wind_direction: number;
-    conditions: string;
-    description: string;
-    visibility: number;
-  };
-  forecast: Array<{
-    datetime: string;
-    temperature: number;
-    conditions: string;
-    description: string;
-    precipitation: number;
-    wind_speed: number;
-  }>;
-  conditions: {
-    overall: string;
-    swim: string;
-    bike: string;
-    run: string;
-    warnings: string[];
-  };
+  temperature: number;
+  conditions: string;
+  humidity: number;
+  windSpeed: number;
 }
 
-/**
- * WeatherWidget - Terminal Design Version
- *
- * Displays current weather and training conditions in terminal aesthetic.
- * Simplified version focusing on key information for training decisions.
- */
 export const WeatherWidgetTerminal: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useState<string>('Austin, TX');
-  const [temperatureUnit] = useState<'fahrenheit' | 'celsius'>('fahrenheit');
-
-  // Note: Full weather API integration maintained from original component
-  // Simplified for terminal display focusing on training conditions
+  const [location] = useState<string>('Austin, TX');
 
   useEffect(() => {
-    // Simplified loading - full implementation would include geolocation,
-    // API calls, etc. from original WeatherWidget
-    setIsLoading(false);
+    // Simplified - would normally fetch real weather data
+    setTimeout(() => {
+      setWeather({
+        temperature: 72,
+        conditions: 'Partly Cloudy',
+        humidity: 55,
+        windSpeed: 8
+      });
+      setIsLoading(false);
+    }, 500);
   }, [user]);
-
-  const formatTemperature = (temp: number): string => {
-    const value = Math.round(temp);
-    return `${value}°F`;
-  };
-
-  const getConditionLabel = (condition: string): string => {
-    const labels: { [key: string]: string } = {
-      'Excellent': 'EXCL',
-      'Good': 'GOOD',
-      'Fair': 'FAIR',
-      'Poor': 'POOR',
-      'Dangerous': 'DNGR'
-    };
-    return labels[condition] || condition.toUpperCase().substring(0, 4);
-  };
-
-  const getConditionColor = (condition: string): string => {
-    switch (condition.toLowerCase()) {
-      case 'excellent':
-        return 'text-discipline-run';
-      case 'good':
-        return 'text-accent-yellow';
-      case 'fair':
-        return 'text-text-primary';
-      case 'poor':
-        return 'text-discipline-bike';
-      case 'dangerous':
-        return 'text-discipline-bike';
-      default:
-        return 'text-text-secondary';
-    }
-  };
-
-  const formatTime = (datetime: string): string => {
-    const date = new Date(datetime);
-    const hours = date.getHours();
-    return `${hours.toString().padStart(2, '0')}00`;
-  };
 
   if (isLoading) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Weather Conditions
-        </Text>
-        <Text className="font-mono text-sm text-text-secondary">
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Weather Conditions</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16 })}>
           Loading weather data...
         </Text>
-      </TerminalCard>
+      </View>
     );
   }
 
   if (!weather) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Weather Conditions
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Weather Conditions</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16, textAlign: 'center' })}>
+          WEATHER UNAVAILABLE
         </Text>
-        <Text className="font-mono text-sm text-text-secondary">
-          Weather data unavailable
-        </Text>
-      </TerminalCard>
+      </View>
     );
   }
 
   return (
-    <TerminalCard>
+    <View style={terminalView.card}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-6">
+      <View style={terminalView.spaceBetween}>
         <View>
-          <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary">
-            Weather Conditions
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
+          <Text style={terminalText.header}>Weather Conditions</Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
             {location.toUpperCase()}
           </Text>
         </View>
       </View>
 
       {/* Current Temperature */}
-      <View className="mb-6 bg-terminal-bg border-2 border-terminal-border p-4" style={{ borderRadius: 0 }}>
-        <View className="flex-row items-center justify-between">
+      <View style={{ marginTop: 24, marginBottom: 24, backgroundColor: terminalColors.bg, borderWidth: 2, borderColor: terminalColors.border, padding: 16 }}>
+        <View style={terminalView.spaceBetween}>
           <View>
-            <Text className="font-mono text-5xl font-bold text-accent-yellow">
-              {formatTemperature(weather.current.temperature)}
+            <Text style={{ fontFamily: 'monospace', fontSize: 48, fontWeight: 'bold', color: terminalColors.yellow }}>
+              {weather.temperature}°F
             </Text>
-            <Text className="font-mono text-xs text-text-secondary mt-2 uppercase">
-              {weather.current.description}
+            <Text style={mergeStyles(terminalText.small, { marginTop: 8, textTransform: 'uppercase' })}>
+              {weather.conditions}
             </Text>
           </View>
-          <View className="items-end">
-            <Text className="font-mono text-xs text-text-secondary">
-              FEELS {formatTemperature(weather.current.feels_like)}
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={terminalText.small}>
+              HUMID {weather.humidity}%
             </Text>
-            <Text className="font-mono text-xs text-text-secondary mt-1">
-              HUMID {weather.current.humidity}%
-            </Text>
-            <Text className="font-mono text-xs text-text-secondary mt-1">
-              WIND {Math.round(weather.current.wind_speed)}MPH
+            <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+              WIND {weather.windSpeed}MPH
             </Text>
           </View>
         </View>
       </View>
 
       {/* Training Conditions */}
-      <View className="mb-6">
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">
+      <View>
+        <Text style={mergeStyles(terminalText.subheader, { marginBottom: 12 })}>
           Training Conditions
         </Text>
-        <View className="space-y-2">
+        <View style={{ gap: 8 }}>
           {/* Swim */}
-          <View className="flex-row items-center justify-between bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-            <Text className="font-mono text-xs uppercase tracking-wider text-discipline-swim">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.swim, { fontSize: 10 })}>
               [SWIM]
             </Text>
-            <Text className={`font-mono text-xs font-semibold ${getConditionColor(weather.conditions.swim)}`}>
-              {getConditionLabel(weather.conditions.swim)}
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              GOOD
             </Text>
           </View>
 
           {/* Bike */}
-          <View className="flex-row items-center justify-between bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-            <Text className="font-mono text-xs uppercase tracking-wider text-discipline-bike">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.bike, { fontSize: 10 })}>
               [BIKE]
             </Text>
-            <Text className={`font-mono text-xs font-semibold ${getConditionColor(weather.conditions.bike)}`}>
-              {getConditionLabel(weather.conditions.bike)}
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              GOOD
             </Text>
           </View>
 
           {/* Run */}
-          <View className="flex-row items-center justify-between bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-            <Text className="font-mono text-xs uppercase tracking-wider text-discipline-run">
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
               [RUN]
             </Text>
-            <Text className={`font-mono text-xs font-semibold ${getConditionColor(weather.conditions.run)}`}>
-              {getConditionLabel(weather.conditions.run)}
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              EXCELLENT
             </Text>
           </View>
         </View>
       </View>
-
-      {/* Hourly Forecast */}
-      <View className="mb-4">
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">
-          Today&apos;s Forecast
-        </Text>
-        <View className="flex-row gap-2">
-          {weather.forecast.slice(0, 4).map((item, index) => (
-            <View key={index} className="flex-1 items-center bg-terminal-panel border border-terminal-border p-2" style={{ borderRadius: 0 }}>
-              <Text className="font-mono text-xs text-text-secondary mb-1">
-                {formatTime(item.datetime)}
-              </Text>
-              <Text className="font-mono text-lg font-bold text-text-primary mb-1">
-                {Math.round(item.temperature)}°
-              </Text>
-              {item.precipitation > 0 && (
-                <Text className="font-mono text-xs text-discipline-swim">
-                  {item.precipitation}MM
-                </Text>
-              )}
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Warnings */}
-      {weather.conditions.warnings.length > 0 && (
-        <View className="mb-4 bg-terminal-bg border-2 border-discipline-bike/40 p-3" style={{ borderRadius: 0 }}>
-          <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-discipline-bike mb-2">
-            ⚠ Warnings
-          </Text>
-          <View className="space-y-1">
-            {weather.conditions.warnings.map((warning, index) => (
-              <Text key={index} className="font-mono text-xs text-text-secondary">
-                → {warning.toUpperCase()}
-              </Text>
-            ))}
-          </View>
-        </View>
-      )}
 
       {/* Footer */}
-      <View className="pt-4 border-t border-terminal-border">
-        <View className="flex-row items-center justify-between">
-          <Text className="font-mono text-xs text-text-secondary uppercase">
-            {weather.conditions.overall.toUpperCase()} CONDITIONS
+      <View style={mergeStyles(terminalView.borderTop, { marginTop: 16 })}>
+        <View style={terminalView.spaceBetween}>
+          <Text style={mergeStyles(terminalText.small, { textTransform: 'uppercase' })}>
+            GOOD CONDITIONS
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/planning')}>
-            <Text className="font-mono text-xs font-semibold text-accent-yellow uppercase tracking-wider">
-              PLAN →
-            </Text>
+            <Text style={terminalText.yellow}>PLAN →</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </TerminalCard>
+    </View>
   );
 };

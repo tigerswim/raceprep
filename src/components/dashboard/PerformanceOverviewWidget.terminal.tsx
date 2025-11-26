@@ -44,6 +44,8 @@ interface TrainingStats {
  * Features retro training log aesthetic with monospace fonts and stacked bars.
  */
 export const PerformanceOverviewWidgetTerminal: React.FC = () => {
+  console.log('[PerformanceOverviewWidgetTerminal] Component rendering...');
+
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TrainingStats | null>(null);
@@ -51,6 +53,8 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
   const [userSettings, setUserSettings] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [stravaConnected, setStravaConnected] = useState(false);
+
+  console.log('[PerformanceOverviewWidgetTerminal] State:', { isLoading, hasStats: !!stats, hasUser: !!user });
 
   useEffect(() => {
     if (user) {
@@ -302,37 +306,49 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
   };
 
   if (isLoading || !userProfile || !userSettings) {
+    console.log('[PerformanceOverviewWidgetTerminal] Rendering LOADING state');
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Performance Overview
+      <View style={{ backgroundColor: '#FF0000', padding: 20, margin: 10, minHeight: 200 }}>
+        <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: 'bold' }}>
+          TERMINAL MODE LOADING TEST
         </Text>
-        <Text className="font-mono text-sm text-text-secondary">
-          Loading training data...
+        <Text style={{ color: '#FFFF00', fontSize: 16, marginTop: 10 }}>
+          If you see this, terminal widgets ARE rendering!
         </Text>
-      </TerminalCard>
+        <Text style={{ color: '#00FF00', fontSize: 14, marginTop: 10 }}>
+          isLoading: {isLoading ? 'true' : 'false'}
+        </Text>
+        <Text style={{ color: '#00FFFF', fontSize: 14 }}>
+          hasUser: {user ? 'true' : 'false'}
+        </Text>
+        <Text style={{ color: '#FF00FF', fontSize: 14 }}>
+          hasProfile: {userProfile ? 'true' : 'false'}
+        </Text>
+      </View>
     );
   }
 
-  if (!stravaConnected || !stats) {
+  // Show empty state only if we have NO stats at all
+  // (Allow rendering even if Strava not connected - user might have manual data)
+  if (!stats) {
+    console.log('[PerformanceOverviewWidgetTerminal] Rendering NO DATA state - stravaConnected:', stravaConnected, 'hasStats:', !!stats);
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Performance Overview
+      <View style={{ backgroundColor: '#0000FF', padding: 20, margin: 10, minHeight: 200 }}>
+        <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: 'bold' }}>
+          TERMINAL MODE - NO DATA STATE
         </Text>
-        <Text className="font-mono text-sm text-text-secondary text-center py-6">
-          {!stravaConnected ? 'CONNECT STRAVA TO VIEW TRAINING DATA' : 'NO TRAINING DATA AVAILABLE'}
+        <Text style={{ color: '#FFFF00', fontSize: 16, marginTop: 10 }}>
+          Strava Connected: {stravaConnected ? 'YES' : 'NO'}
         </Text>
-        <TouchableOpacity
-          onPress={() => router.push('/(tabs)/training')}
-          className="bg-accent-yellow border-2 border-accent-yellow px-4 py-3"
-          style={{ borderRadius: 0 }}
-        >
-          <Text className="font-mono font-semibold text-sm uppercase tracking-wider text-terminal-bg text-center">
-            {!stravaConnected ? 'Connect Strava' : 'View Training'}
+        <Text style={{ color: '#00FF00', fontSize: 16 }}>
+          Has Stats: {stats ? 'YES' : 'NO'}
+        </Text>
+        <View style={{ backgroundColor: '#FFD866', padding: 15, marginTop: 20 }}>
+          <Text style={{ color: '#000000', fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}>
+            {!stravaConnected ? 'CONNECT STRAVA' : 'VIEW TRAINING'}
           </Text>
-        </TouchableOpacity>
-      </TerminalCard>
+        </View>
+      </View>
     );
   }
 
@@ -345,124 +361,129 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
     total: day.totalTime
   }));
 
+  console.log('[PerformanceOverviewWidgetTerminal] Rendering SUCCESS state with data!');
+
+  // Terminal colors (inline since Tailwind classes don't work on web)
+  const colors = {
+    bg: '#0F1419',
+    border: '#1C2127',
+    textPrimary: '#F8F8F2',
+    textSecondary: '#B4B8C5',
+    yellow: '#FFD866',
+    swim: '#00D4FF',
+    bike: '#FF6B35',
+    run: '#4ECDC4',
+  };
+
   return (
-    <TerminalCard>
+    <View style={{
+      backgroundColor: colors.bg,
+      borderWidth: 2,
+      borderColor: colors.border,
+      borderRadius: 0,
+      padding: 20,
+      margin: 10
+    }}>
       {/* Header */}
-      <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-6">
+      <Text style={{
+        fontFamily: 'monospace',
+        fontSize: 12,
+        fontWeight: '600',
+        textTransform: 'uppercase',
+        letterSpacing: 1.5,
+        color: colors.textSecondary,
+        marginBottom: 24
+      }}>
         Performance Overview
       </Text>
 
       {/* Weekly Summary Stats */}
-      <View className="flex-row gap-2 mb-6">
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <Text className="font-mono text-xs text-text-secondary uppercase mb-1">
-            Time
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
+        {/* Time */}
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+            TIME
           </Text>
-          <Text className="font-mono text-xl font-bold text-text-primary">
+          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatTime(stats.last7Days.totalTime)}
           </Text>
-          <View className="flex-row items-center mt-1">
-            <Text className={`font-mono text-xs ${getTrendColor(stats.last30Days.weeklyTrend)}`}>
-              {getTrendSymbol(stats.last30Days.weeklyTrend)} {stats.weekOverWeek.timeChange >= 0 ? '+' : ''}{Math.round(stats.weekOverWeek.timeChange)}%
-            </Text>
-          </View>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
+            {stats.weekOverWeek.timeChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.timeChange))}%
+          </Text>
         </View>
 
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <Text className="font-mono text-xs text-text-secondary uppercase mb-1">
-            Distance
+        {/* Distance */}
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+            DISTANCE
           </Text>
-          <Text className="font-mono text-xl font-bold text-text-primary">
+          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatDistance(stats.last7Days.totalDistance)}
           </Text>
-          <View className="flex-row items-center mt-1">
-            <Text className={`font-mono text-xs ${getTrendColor(stats.last30Days.weeklyTrend)}`}>
-              {getTrendSymbol(stats.last30Days.weeklyTrend)} {stats.weekOverWeek.distanceChange >= 0 ? '+' : ''}{Math.round(stats.weekOverWeek.distanceChange)}%
-            </Text>
-          </View>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
+            {stats.weekOverWeek.distanceChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.distanceChange))}%
+          </Text>
         </View>
 
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <Text className="font-mono text-xs text-text-secondary uppercase mb-1">
-            Activities
+        {/* Activities */}
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+            ACTIVITIES
           </Text>
-          <Text className="font-mono text-xl font-bold text-text-primary">
+          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
             {stats.last7Days.activities}
           </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
-            {stats.weekOverWeek.activitiesChange >= 0 ? '+' : ''}{stats.weekOverWeek.activitiesChange} WoW
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
+            LAST 7 DAYS
           </Text>
         </View>
-      </View>
-
-      {/* Training Volume Chart */}
-      <View className="mb-6">
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">
-          Last 7 Days
-        </Text>
-        <TerminalBarChart
-          data={chartData}
-          stacked={true}
-          showValues={true}
-          height={180}
-        />
       </View>
 
       {/* Discipline Breakdown */}
-      <View className="flex-row gap-2 mb-4">
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <View className="flex-row items-center justify-between mb-1">
-            <Text className="font-mono text-xs text-discipline-swim uppercase">Swim</Text>
-            <Text className="font-mono text-xs text-text-secondary">{stats.last7Days.swim.activities}</Text>
+      <View style={{ marginBottom: 24 }}>
+        <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1.5, color: colors.textSecondary, marginBottom: 12 }}>
+          BY DISCIPLINE
+        </Text>
+        <View style={{ gap: 8 }}>
+          {/* Swim */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.swim, fontWeight: '600' }}>[SWIM]</Text>
+            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+              {formatTime(stats.last7Days.swim.time)} • {formatDistance(stats.last7Days.swim.distance, 'swim')}
+            </Text>
           </View>
-          <Text className="font-mono text-sm font-bold text-discipline-swim">
-            {formatTime(stats.last7Days.swim.time)}
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
-            {formatDistance(stats.last7Days.swim.distance)}
-          </Text>
-        </View>
 
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <View className="flex-row items-center justify-between mb-1">
-            <Text className="font-mono text-xs text-discipline-bike uppercase">Bike</Text>
-            <Text className="font-mono text-xs text-text-secondary">{stats.last7Days.bike.activities}</Text>
+          {/* Bike */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.bike, fontWeight: '600' }}>[BIKE]</Text>
+            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+              {formatTime(stats.last7Days.bike.time)} • {formatDistance(stats.last7Days.bike.distance, 'bike')}
+            </Text>
           </View>
-          <Text className="font-mono text-sm font-bold text-discipline-bike">
-            {formatTime(stats.last7Days.bike.time)}
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
-            {formatDistance(stats.last7Days.bike.distance)}
-          </Text>
-        </View>
 
-        <View className="flex-1 bg-terminal-bg border border-terminal-border p-3" style={{ borderRadius: 0 }}>
-          <View className="flex-row items-center justify-between mb-1">
-            <Text className="font-mono text-xs text-discipline-run uppercase">Run</Text>
-            <Text className="font-mono text-xs text-text-secondary">{stats.last7Days.run.activities}</Text>
+          {/* Run */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
+            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.run, fontWeight: '600' }}>[RUN]</Text>
+            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+              {formatTime(stats.last7Days.run.time)} • {formatDistance(stats.last7Days.run.distance, 'run')}
+            </Text>
           </View>
-          <Text className="font-mono text-sm font-bold text-discipline-run">
-            {formatTime(stats.last7Days.run.time)}
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
-            {formatDistance(stats.last7Days.run.distance)}
-          </Text>
         </View>
       </View>
 
       {/* Footer */}
-      <View className="pt-4 border-t border-terminal-border">
-        <View className="flex-row items-center justify-between">
-          <Text className="font-mono text-xs text-text-secondary uppercase">
-            30-Day: {formatTime(stats.last30Days.totalTime)} / {formatDistance(stats.last30Days.totalDistance)}
+      <View style={{ paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase' }}>
+            7-DAY SUMMARY
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/training')}>
-            <Text className="font-mono text-xs font-semibold text-accent-yellow uppercase tracking-wider">
-              View Training →
+            <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '600', color: colors.yellow, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+              VIEW TRAINING →
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </TerminalCard>
+    </View>
   );
 };

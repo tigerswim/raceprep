@@ -1,0 +1,141 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
+import { terminalColors, terminalText, terminalView, mergeStyles } from '../ui/terminal/terminalStyles';
+
+interface WeatherData {
+  temperature: number;
+  conditions: string;
+  humidity: number;
+  windSpeed: number;
+}
+
+export const WeatherWidgetTerminal: React.FC = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [location] = useState<string>('Austin, TX');
+
+  useEffect(() => {
+    // Simplified - would normally fetch real weather data
+    setTimeout(() => {
+      setWeather({
+        temperature: 72,
+        conditions: 'Partly Cloudy',
+        humidity: 55,
+        windSpeed: 8
+      });
+      setIsLoading(false);
+    }, 500);
+  }, [user]);
+
+  if (isLoading) {
+    return (
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Weather Conditions</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16 })}>
+          Loading weather data...
+        </Text>
+      </View>
+    );
+  }
+
+  if (!weather) {
+    return (
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Weather Conditions</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16, textAlign: 'center' })}>
+          WEATHER UNAVAILABLE
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={terminalView.card}>
+      {/* Header */}
+      <View style={terminalView.spaceBetween}>
+        <View>
+          <Text style={terminalText.header}>Weather Conditions</Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+            {location.toUpperCase()}
+          </Text>
+        </View>
+      </View>
+
+      {/* Current Temperature */}
+      <View style={{ marginTop: 24, marginBottom: 24, backgroundColor: terminalColors.bg, borderWidth: 2, borderColor: terminalColors.border, padding: 16 }}>
+        <View style={terminalView.spaceBetween}>
+          <View>
+            <Text style={{ fontFamily: 'monospace', fontSize: 48, fontWeight: 'bold', color: terminalColors.yellow }}>
+              {weather.temperature}°F
+            </Text>
+            <Text style={mergeStyles(terminalText.small, { marginTop: 8, textTransform: 'uppercase' })}>
+              {weather.conditions}
+            </Text>
+          </View>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={terminalText.small}>
+              HUMID {weather.humidity}%
+            </Text>
+            <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+              WIND {weather.windSpeed}MPH
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Training Conditions */}
+      <View>
+        <Text style={mergeStyles(terminalText.subheader, { marginBottom: 12 })}>
+          Training Conditions
+        </Text>
+        <View style={{ gap: 8 }}>
+          {/* Swim */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.swim, { fontSize: 10 })}>
+              [SWIM]
+            </Text>
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              GOOD
+            </Text>
+          </View>
+
+          {/* Bike */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.bike, { fontSize: 10 })}>
+              [BIKE]
+            </Text>
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              GOOD
+            </Text>
+          </View>
+
+          {/* Run */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 12 }}>
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              [RUN]
+            </Text>
+            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
+              EXCELLENT
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View style={mergeStyles(terminalView.borderTop, { marginTop: 16 })}>
+        <View style={terminalView.spaceBetween}>
+          <Text style={mergeStyles(terminalText.small, { textTransform: 'uppercase' })}>
+            GOOD CONDITIONS
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/planning')}>
+            <Text style={terminalText.yellow}>PLAN →</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};

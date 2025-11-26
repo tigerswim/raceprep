@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
-import { TerminalCard } from '../ui/terminal';
+import { terminalColors, terminalText, terminalView, mergeStyles } from '../ui/terminal/terminalStyles';
 
 interface Goal {
   id: string;
@@ -14,35 +14,18 @@ interface Goal {
   target_date?: string;
   achievement_status: 'not_started' | 'in_progress' | 'achieved' | 'missed';
   progress_percentage: number;
-  category: 'performance' | 'training' | 'racing';
-  distance_type?: string;
-}
-
-interface UserGoal {
-  id: string;
-  title: string;
-  type: 'race_count' | 'race_time' | 'training_volume' | 'transition_time' | 'other';
-  target_value: string;
-  current_value: string;
-  target_date?: string;
-  achievement_status: 'not_started' | 'in_progress' | 'achieved' | 'missed';
-  distance_type?: string;
 }
 
 interface GoalSummary {
   total: number;
   achieved: number;
   inProgress: number;
-  notStarted: number;
   achievementRate: number;
-  nextMilestone?: Goal;
 }
 
 /**
- * GoalsProgressWidget - Terminal Design Version
- *
- * Displays user goals and progress with terminal aesthetics.
- * Features monospace fonts, hard-edged progress bars, and terminal colors.
+ * GoalsProgressWidget - Terminal Design Version (Simplified for Web)
+ * Uses inline styles instead of Tailwind classes
  */
 export const GoalsProgressWidgetTerminal: React.FC = () => {
   const router = useRouter();
@@ -51,65 +34,17 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
   const [summary, setSummary] = useState<GoalSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const calculateProgressPercentage = useCallback((goal: UserGoal): number => {
-    const current = parseFloat(goal.current_value) || 0;
-    const target = parseFloat(goal.target_value) || 1;
-
-    if (goal.type === 'race_time' || goal.type === 'transition_time') {
-      const currentSeconds = parseTimeToSeconds(goal.current_value);
-      const targetSeconds = parseTimeToSeconds(goal.target_value);
-      if (currentSeconds <= targetSeconds) return 100;
-      const improvement = Math.max(0, (currentSeconds - targetSeconds) / currentSeconds);
-      return Math.min(99, Math.max(0, (1 - improvement) * 100));
+  useEffect(() => {
+    if (user) {
+      loadGoals();
     } else {
-      return Math.min(100, (current / target) * 100);
+      setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
-  const parseTimeToSeconds = useCallback((timeStr: string): number => {
-    if (!timeStr) return 0;
-    const parts = timeStr.split(':').map(Number);
-    if (parts.length === 2) return parts[0] * 60 + parts[1];
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    return parseFloat(timeStr) || 0;
-  }, []);
-
-  const categorizeGoal = useCallback((type: string): 'performance' | 'training' | 'racing' => {
-    switch (type) {
-      case 'race_count': return 'racing';
-      case 'training_volume': return 'training';
-      case 'race_time':
-      case 'transition_time':
-        return 'performance';
-      default: return 'performance';
-    }
-  }, []);
-
-  const calculateSummary = useCallback((goals: Goal[]): GoalSummary => {
-    const total = goals.length;
-    const achieved = goals.filter(g => g.achievement_status === 'achieved').length;
-    const inProgress = goals.filter(g => g.achievement_status === 'in_progress').length;
-    const notStarted = goals.filter(g => g.achievement_status === 'not_started').length;
-    const achievementRate = total > 0 ? (achieved / total) * 100 : 0;
-
-    const nextMilestone = goals
-      .filter(g => g.achievement_status !== 'achieved')
-      .sort((a, b) => b.progress_percentage - a.progress_percentage)[0];
-
-    return {
-      total,
-      achieved,
-      inProgress,
-      notStarted,
-      achievementRate,
-      nextMilestone
-    };
-  }, []);
-
-  const loadGoals = useCallback(async () => {
+  const loadGoals = async () => {
     try {
       setIsLoading(true);
-
       const { data: userGoals, error } = await dbHelpers.userGoals.getAll();
 
       if (error || !userGoals || userGoals.length === 0) {
@@ -118,17 +53,9 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
         return;
       }
 
-      const processedGoals: Goal[] = userGoals.map((goal: UserGoal) => ({
-        id: goal.id,
-        title: goal.title,
-        type: goal.type,
-        target_value: goal.target_value,
-        current_value: goal.current_value || '0',
-        target_date: goal.target_date,
-        achievement_status: goal.achievement_status,
-        progress_percentage: calculateProgressPercentage(goal),
-        category: categorizeGoal(goal.type),
-        distance_type: goal.distance_type
+      const processedGoals: Goal[] = userGoals.map(g => ({
+        ...g,
+        progress_percentage: calculateProgressPercentage(g),
       }));
 
       setGoals(processedGoals);
@@ -140,239 +67,136 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [calculateProgressPercentage, categorizeGoal, calculateSummary]);
-
-  useEffect(() => {
-    if (user) {
-      loadGoals();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user, loadGoals]);
-
-  const formatGoalValue = useCallback((goal: Goal): { current: string; target: string } => {
-    if (goal.type === 'race_count') {
-      return { current: goal.current_value, target: goal.target_value };
-    } else if (goal.type === 'race_time' || goal.type === 'transition_time') {
-      return { current: goal.current_value, target: goal.target_value };
-    } else if (goal.type === 'training_volume') {
-      return { current: `${goal.current_value}H`, target: `${goal.target_value}H/WK` };
-    } else {
-      return { current: goal.current_value, target: goal.target_value };
-    }
-  }, []);
-
-  const getStatusLabel = (status?: string): string => {
-    if (!status) return 'UNKNOWN';
-    return status.replace('_', ' ').toUpperCase();
   };
 
-  const getStatusColor = (status?: string): string => {
-    switch (status) {
-      case 'achieved': return 'text-discipline-run';
-      case 'in_progress': return 'text-accent-yellow';
-      case 'not_started': return 'text-text-secondary';
-      case 'missed': return 'text-discipline-bike';
-      default: return 'text-text-secondary';
-    }
+  const calculateProgressPercentage = (goal: any): number => {
+    const current = parseFloat(goal.current_value) || 0;
+    const target = parseFloat(goal.target_value) || 1;
+    return Math.min(100, (current / target) * 100);
   };
 
-  const getCategoryLabel = (category?: string): string => {
-    if (!category) return 'GOAL';
-    return category.toUpperCase().substring(0, 4);
+  const calculateSummary = (goals: Goal[]): GoalSummary => {
+    const total = goals.length;
+    const achieved = goals.filter(g => g.achievement_status === 'achieved').length;
+    const inProgress = goals.filter(g => g.achievement_status === 'in_progress').length;
+    const achievementRate = total > 0 ? (achieved / total) * 100 : 0;
+
+    return { total, achieved, inProgress, achievementRate };
   };
 
   if (isLoading) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Goals Progress
-        </Text>
-        <Text className="font-mono text-sm text-text-secondary">
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Goals Progress</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16 })}>
           Loading goals...
         </Text>
-      </TerminalCard>
+      </View>
     );
   }
 
-  if (goals.length === 0) {
+  if (!summary || goals.length === 0) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Goals Progress
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Goals Progress</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16, textAlign: 'center' })}>
+          NO GOALS SET
         </Text>
-        <View className="py-6">
-          <Text className="font-mono text-sm text-text-secondary text-center mb-4">
-            NO GOALS SET
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/profile')}
+          style={{ backgroundColor: terminalColors.yellow, padding: 12, marginTop: 16 }}
+        >
+          <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, textAlign: 'center', fontWeight: 'bold' })}>
+            SET GOALS
           </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(tabs)/profile')}
-            className="bg-accent-yellow border-2 border-accent-yellow px-4 py-3"
-            style={{ borderRadius: 0 }}
-          >
-            <Text className="font-mono font-semibold text-sm uppercase tracking-wider text-terminal-bg text-center">
-              Set Goals
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </TerminalCard>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
-    <TerminalCard>
+    <View style={terminalView.card}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-6">
+      <View style={terminalView.spaceBetween}>
         <View>
-          <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary">
-            Goals Progress
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
+          <Text style={terminalText.header}>Goals Progress</Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
             {goals.length} ACTIVE
           </Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
-          <Text className="font-mono text-xs font-semibold text-accent-yellow uppercase tracking-wider">
-            MANAGE →
-          </Text>
+          <Text style={terminalText.yellow}>MANAGE →</Text>
         </TouchableOpacity>
       </View>
 
       {/* Summary Stats */}
-      {summary && (
-        <View className="flex-row mb-6 border-2 border-terminal-border" style={{ borderRadius: 0 }}>
-          <View className="flex-1 items-center py-3 bg-terminal-panel border-r-2 border-terminal-border">
-            <Text className="font-mono text-2xl font-bold text-discipline-run">
-              {summary.achieved}
-            </Text>
-            <Text className="font-mono text-xs text-text-secondary uppercase">
-              Done
-            </Text>
-          </View>
-          <View className="flex-1 items-center py-3 bg-terminal-panel border-r-2 border-terminal-border">
-            <Text className="font-mono text-2xl font-bold text-accent-yellow">
-              {summary.inProgress}
-            </Text>
-            <Text className="font-mono text-xs text-text-secondary uppercase">
-              Active
-            </Text>
-          </View>
-          <View className="flex-1 items-center py-3 bg-terminal-panel">
-            <Text className="font-mono text-2xl font-bold text-text-primary">
-              {Math.round(summary.achievementRate)}%
-            </Text>
-            <Text className="font-mono text-xs text-text-secondary uppercase">
-              Rate
-            </Text>
-          </View>
-        </View>
-      )}
-
-      {/* Next Milestone */}
-      {summary?.nextMilestone && (
-        <View className="bg-terminal-bg border-2 border-accent-yellow/40 p-4 mb-4" style={{ borderRadius: 0 }}>
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-accent-yellow">
-              Next Milestone
-            </Text>
-            <Text className="font-mono text-sm font-bold text-accent-yellow">
-              {Math.round(summary.nextMilestone.progress_percentage)}%
-            </Text>
-          </View>
-          <Text className="font-mono text-sm font-semibold text-text-primary mb-3">
-            {summary.nextMilestone.title?.toUpperCase() || 'NEXT MILESTONE'}
+      <View style={{ flexDirection: 'row', marginTop: 24, marginBottom: 24, borderWidth: 2, borderColor: terminalColors.border }}>
+        <View style={{ flex: 1, alignItems: 'center', padding: 12, backgroundColor: terminalColors.panel, borderRightWidth: 2, borderRightColor: terminalColors.border }}>
+          <Text style={mergeStyles(terminalText.large, { color: terminalColors.run })}>
+            {summary.achieved}
           </Text>
-
-          {/* Terminal Progress Bar */}
-          <View className="h-6 border-2 border-terminal-border bg-terminal-bg mb-2" style={{ borderRadius: 0 }}>
-            <View
-              className="h-full bg-accent-yellow"
-              style={{
-                width: `${summary.nextMilestone.progress_percentage}%`,
-                borderRadius: 0
-              }}
-            />
-          </View>
-
-          <View className="flex-row justify-between">
-            <Text className="font-mono text-xs text-text-secondary">
-              {formatGoalValue(summary.nextMilestone).current}
-            </Text>
-            <Text className="font-mono text-xs text-text-secondary">
-              {formatGoalValue(summary.nextMilestone).target}
-            </Text>
-          </View>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+            DONE
+          </Text>
         </View>
-      )}
+        <View style={{ flex: 1, alignItems: 'center', padding: 12, backgroundColor: terminalColors.panel, borderRightWidth: 2, borderRightColor: terminalColors.border }}>
+          <Text style={mergeStyles(terminalText.large, { color: terminalColors.yellow })}>
+            {summary.inProgress}
+          </Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+            ACTIVE
+          </Text>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center', padding: 12, backgroundColor: terminalColors.panel }}>
+          <Text style={terminalText.large}>
+            {Math.round(summary.achievementRate)}%
+          </Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+            RATE
+          </Text>
+        </View>
+      </View>
 
-      {/* Goals List */}
-      <View className="space-y-3 mb-4">
-        {goals.slice(0, 4).map((goal) => (
-          <View key={goal.id} className="bg-terminal-bg border-2 border-terminal-border p-3" style={{ borderRadius: 0 }}>
-            {/* Goal Header */}
-            <View className="flex-row items-start justify-between mb-2">
-              <View className="flex-1">
-                <View className="flex-row items-center mb-1">
-                  <Text className="font-mono text-xs text-accent-yellow uppercase mr-2">
-                    [{getCategoryLabel(goal.category)}]
-                  </Text>
-                  <Text className="font-mono text-xs text-text-primary flex-1">
-                    {goal.title?.toUpperCase() || 'GOAL'}
-                  </Text>
-                </View>
-                <View className="flex-row items-center gap-2">
-                  <Text className={`font-mono text-xs ${getStatusColor(goal.achievement_status)}`}>
-                    {getStatusLabel(goal.achievement_status)}
-                  </Text>
-                  <Text className="font-mono text-xs text-text-secondary">
-                    {formatGoalValue(goal).current} / {formatGoalValue(goal).target}
-                  </Text>
-                </View>
+      {/* Active Goals (top 3) */}
+      <View>
+        <Text style={mergeStyles(terminalText.subheader, { marginBottom: 12 })}>
+          ACTIVE GOALS
+        </Text>
+        <View style={{ gap: 8 }}>
+          {goals.slice(0, 3).map((goal) => (
+            <View key={goal.id} style={mergeStyles(terminalView.panel, { padding: 12 })}>
+              <View style={terminalView.spaceBetween}>
+                <Text style={mergeStyles(terminalText.primary, { fontSize: 12, flex: 1 })}>
+                  {goal.title}
+                </Text>
+                <Text style={mergeStyles(terminalText.secondary, { fontSize: 12, marginLeft: 8 })}>
+                  {Math.round(goal.progress_percentage)}%
+                </Text>
               </View>
-              <Text className="font-mono text-sm font-bold text-text-primary">
-                {Math.round(goal.progress_percentage)}%
-              </Text>
-            </View>
-
-            {/* Progress Bar */}
-            <View className="h-4 border border-terminal-border bg-terminal-panel" style={{ borderRadius: 0 }}>
-              <View
-                className={`h-full ${
-                  goal.achievement_status === 'achieved' ? 'bg-discipline-run' :
-                  goal.category === 'performance' ? 'bg-discipline-swim' :
-                  goal.category === 'training' ? 'bg-discipline-run' :
-                  'bg-discipline-bike'
-                }`}
-                style={{
+              {/* Progress bar */}
+              <View style={{ height: 4, backgroundColor: terminalColors.border, marginTop: 8 }}>
+                <View style={{
+                  height: 4,
                   width: `${goal.progress_percentage}%`,
-                  borderRadius: 0
-                }}
-              />
+                  backgroundColor: goal.achievement_status === 'achieved' ? terminalColors.run : terminalColors.yellow
+                }} />
+              </View>
             </View>
-
-            {/* Goal Insight */}
-            {goal.progress_percentage > 80 && goal.achievement_status !== 'achieved' && (
-              <Text className="font-mono text-xs text-discipline-run mt-2">
-                → ALMOST THERE!
-              </Text>
-            )}
-          </View>
-        ))}
+          ))}
+        </View>
       </View>
 
       {/* Footer */}
-      <View className="pt-4 border-t border-terminal-border">
-        <View className="flex-row items-center justify-between">
-          <Text className="font-mono text-xs text-text-secondary uppercase">
-            {goals.length} GOAL{goals.length !== 1 ? 'S' : ''}
+      <View style={mergeStyles(terminalView.borderTop, { marginTop: 16 })}>
+        <View style={terminalView.spaceBetween}>
+          <Text style={terminalText.small}>
+            {summary.total} TOTAL GOALS
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
-            <Text className="font-mono text-xs font-semibold text-accent-yellow uppercase tracking-wider">
-              VIEW ALL →
-            </Text>
+            <Text style={terminalText.yellow}>VIEW ALL →</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </TerminalCard>
+    </View>
   );
 };

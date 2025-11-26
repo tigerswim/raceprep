@@ -11,19 +11,21 @@ interface TerminalCardProps {
 /**
  * TerminalCard - Base card component for Split-Flap Terminal design system
  *
+ * UPDATED FOR WEB: Uses inline styles instead of Tailwind classes
+ * since NativeWind className props don't work reliably on web.
+ *
  * Features:
  * - Hard rectangles (no rounded corners)
  * - Terminal color palette
  * - Two variants: default and highlighted
- * - NativeWind styling support
  *
  * Usage:
  * <TerminalCard>
- *   <Text className="font-mono text-text-primary">Content</Text>
+ *   <Text style={{ fontFamily: 'monospace', color: '#F8F8F2' }}>Content</Text>
  * </TerminalCard>
  *
  * <TerminalCard variant="highlighted">
- *   <Text className="font-mono text-text-primary">Highlighted content</Text>
+ *   <Text style={{ fontFamily: 'monospace', color: '#F8F8F2' }}>Highlighted content</Text>
  * </TerminalCard>
  */
 export const TerminalCard: React.FC<TerminalCardProps> = ({
@@ -32,15 +34,34 @@ export const TerminalCard: React.FC<TerminalCardProps> = ({
   className = '',
   style
 }) => {
-  const variantClasses = {
-    default: 'bg-terminal-panel border-terminal-border',
-    highlighted: 'bg-terminal-panel border-accent-yellow/30'
+  // Terminal color palette (matching tailwind.config.js)
+  const colors = {
+    panel: '#0F1419',
+    border: '#1C2127',
+    borderHighlight: 'rgba(255, 216, 102, 0.3)', // accent-yellow/30
   };
+
+  const variantStyles: ViewStyle = variant === 'highlighted'
+    ? {
+        backgroundColor: colors.panel,
+        borderColor: colors.borderHighlight,
+      }
+    : {
+        backgroundColor: colors.panel,
+        borderColor: colors.border,
+      };
 
   return (
     <View
-      className={`border-2 p-5 ${variantClasses[variant]} ${className}`}
-      style={[{ borderRadius: 0 }, style]}
+      style={[
+        {
+          borderWidth: 2,
+          borderRadius: 0, // Hard edges
+          padding: 20,
+        },
+        variantStyles,
+        style
+      ]}
     >
       {children}
     </View>

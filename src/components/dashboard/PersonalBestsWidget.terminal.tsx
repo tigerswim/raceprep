@@ -3,40 +3,19 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
-import { TerminalCard } from '../ui/terminal';
+import { terminalColors, terminalText, terminalView, mergeStyles } from '../ui/terminal/terminalStyles';
 
 interface PersonalBest {
   distance_type: string;
-  overall_time: string;
+  time: string;
   race_name: string;
   race_date: string;
-  swim_time?: string;
-  bike_time?: string;
-  run_time?: string;
-  t1_time?: string;
-  t2_time?: string;
-  overall_placement?: number;
-  age_group_placement?: number;
 }
 
-interface PersonalBests {
-  sprint?: PersonalBest;
-  olympic?: PersonalBest;
-  '70.3'?: PersonalBest;
-  ironman?: PersonalBest;
-}
-
-/**
- * PersonalBestsWidget - Terminal Design Version
- *
- * Displays user's fastest times for each triathlon distance
- * in Split-Flap Terminal aesthetic with monospace fonts and hard edges.
- */
 export const PersonalBestsWidgetTerminal: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const [personalBests, setPersonalBests] = useState<PersonalBests>({});
-  const [recentPRs, setRecentPRs] = useState<PersonalBest[]>([]);
+  const [personalBests, setPersonalBests] = useState<PersonalBest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -47,310 +26,143 @@ export const PersonalBestsWidgetTerminal: React.FC = () => {
     }
   }, [user]);
 
-  const timeToSeconds = (timeStr: string | null | undefined): number => {
-    if (!timeStr) return 0;
-    const parts = timeStr.split(':').map(p => parseInt(p) || 0);
-    if (parts.length === 2) {
-      return parts[0] * 60 + parts[1]; // MM:SS
-    } else if (parts.length === 3) {
-      return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
-    }
-    return 0;
-  };
-
   const loadPersonalBests = async () => {
     try {
       setIsLoading(true);
-
-      // Get all user race results
       const { data: results, error } = await dbHelpers.userRaceResults.getAll();
 
-      if (error || !results || results.length === 0) {
-        setPersonalBests({});
-        setRecentPRs([]);
+      if (error || !results) {
+        setPersonalBests([]);
         return;
       }
 
-      // Group results by distance type and find best times
-      const bestsByDistance: PersonalBests = {};
-      const distanceTypes = ['sprint', 'olympic', '70.3', 'ironman'];
+      const bestsByDistance: { [key: string]: PersonalBest } = {};
 
-      distanceTypes.forEach(distanceType => {
-        const distanceResults = results.filter(
-          r => r.race?.distance_type === distanceType && r.overall_time
-        );
+      results.forEach((result: any) => {
+        const distanceType = result.distance_type;
+        const time = result.total_time;
 
-        if (distanceResults.length > 0) {
-          // Sort by overall time (ascending) to find fastest
-          const sorted = distanceResults.sort((a, b) => {
-            const timeA = timeToSeconds(a.overall_time);
-            const timeB = timeToSeconds(b.overall_time);
-            return timeA - timeB;
-          });
+        if (!distanceType || !time) return;
 
-          const best = sorted[0];
-          bestsByDistance[distanceType as keyof PersonalBests] = {
+        const existing = bestsByDistance[distanceType];
+        if (!existing || time < existing.time) {
+          bestsByDistance[distanceType] = {
             distance_type: distanceType,
-            overall_time: best.overall_time!,
-            race_name: best.race?.name || 'Unknown Race',
-            race_date: best.race?.date || 'Unknown Date',
-            swim_time: best.swim_time,
-            bike_time: best.bike_time,
-            run_time: best.run_time,
-            t1_time: best.t1_time,
-            t2_time: best.t2_time,
-            overall_placement: best.overall_placement,
-            age_group_placement: best.age_group_placement
+            time: time,
+            race_name: result.race_name || 'Unknown Race',
+            race_date: result.race_date || ''
           };
         }
       });
 
-      setPersonalBests(bestsByDistance);
+      const bests = Object.values(bestsByDistance)
+        .sort((a, b) => {
+          const order = ['sprint', 'olympic', '70.3', 'ironman'];
+          return order.indexOf(a.distance_type) - order.indexOf(b.distance_type);
+        });
 
-      // Find recent PRs (races from last 90 days that are personal bests)
-      const ninetyDaysAgo = new Date();
-      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-
-      const recent = results
-        .filter(r => {
-          const raceDate = new Date(r.race?.date || '');
-          return raceDate >= ninetyDaysAgo && r.overall_time;
-        })
-        .filter(r => {
-          const distanceType = r.race?.distance_type;
-          const best = distanceType ? bestsByDistance[distanceType as keyof PersonalBests] : null;
-          return best && best.overall_time === r.overall_time;
-        })
-        .map(r => ({
-          distance_type: r.race?.distance_type || 'unknown',
-          overall_time: r.overall_time!,
-          race_name: r.race?.name || 'Unknown Race',
-          race_date: r.race?.date || 'Unknown Date',
-          swim_time: r.swim_time,
-          bike_time: r.bike_time,
-          run_time: r.run_time,
-          overall_placement: r.overall_placement,
-          age_group_placement: r.age_group_placement
-        }))
-        .slice(0, 3);
-
-      setRecentPRs(recent);
+      setPersonalBests(bests);
     } catch (error) {
       console.error('Error loading personal bests:', error);
-      setPersonalBests({});
-      setRecentPRs([]);
+      setPersonalBests([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getDistanceLabel = (distanceType: string): string => {
-    switch (distanceType) {
-      case 'sprint':
-        return 'SPRINT';
-      case 'olympic':
-        return 'OLYMPIC';
-      case '70.3':
-        return '70.3';
-      case 'ironman':
-        return 'IRONMAN';
-      default:
-        return distanceType.toUpperCase();
+  const formatTime = (timeStr: string): string => {
+    const parts = timeStr.split(':');
+    if (parts.length === 3) {
+      return `${parts[0]}:${parts[1]}:${parts[2]}`;
     }
+    return timeStr;
   };
 
-  const formatDate = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-    const day = date.getDate();
-    const year = date.getFullYear().toString().slice(-2);
-    return `${month} ${day} '${year}`;
+  const getDistanceLabel = (type: string): string => {
+    const labels: { [key: string]: string } = {
+      'sprint': 'SPRINT',
+      'olympic': 'OLYMPIC',
+      '70.3': 'HALF IRON',
+      'ironman': 'FULL IRON'
+    };
+    return labels[type] || type.toUpperCase();
   };
 
   if (isLoading) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Personal Bests
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Personal Bests</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16 })}>
+          Loading personal records...
         </Text>
-        <Text className="font-mono text-sm text-text-secondary">
-          Loading records...
-        </Text>
-      </TerminalCard>
+      </View>
     );
   }
 
-  const pbCount = Object.keys(personalBests).length;
-
-  if (pbCount === 0) {
+  if (personalBests.length === 0) {
     return (
-      <TerminalCard>
-        <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">
-          Personal Bests
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>Personal Bests</Text>
+        <Text style={mergeStyles(terminalText.secondary, { marginTop: 16, textAlign: 'center' })}>
+          NO RACE RESULTS YET
         </Text>
-        <View className="py-6">
-          <Text className="font-mono text-sm text-text-secondary text-center mb-4">
-            NO RECORDS FOUND
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/races')}
+          style={{ backgroundColor: terminalColors.yellow, padding: 12, marginTop: 16 }}
+        >
+          <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, textAlign: 'center', fontWeight: 'bold' })}>
+            ADD RESULTS
           </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(tabs)/races')}
-            className="bg-accent-yellow border-2 border-accent-yellow px-4 py-3"
-            style={{ borderRadius: 0 }}
-          >
-            <Text className="font-mono font-semibold text-sm uppercase tracking-wider text-terminal-bg text-center">
-              Add Results
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </TerminalCard>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
-    <TerminalCard>
+    <View style={terminalView.card}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-6">
+      <View style={terminalView.spaceBetween}>
         <View>
-          <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-text-secondary">
-            Personal Bests
-          </Text>
-          <Text className="font-mono text-xs text-text-secondary mt-1">
-            {pbCount} DISTANCE{pbCount === 1 ? '' : 'S'}
+          <Text style={terminalText.header}>Personal Bests</Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+            {personalBests.length} RECORDS
           </Text>
         </View>
-        {recentPRs.length > 0 && (
-          <View className="bg-discipline-run/20 border border-discipline-run/40 px-3 py-1" style={{ borderRadius: 0 }}>
-            <Text className="font-mono text-xs font-semibold text-discipline-run uppercase tracking-wider">
-              {recentPRs.length} RECENT PR{recentPRs.length > 1 ? 'S' : ''}
-            </Text>
-          </View>
-        )}
+        <TouchableOpacity onPress={() => router.push('/(tabs)/races')}>
+          <Text style={terminalText.yellow}>VIEW ALL →</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Personal Bests by Distance */}
-      <View className="space-y-3 mb-6">
-        {Object.entries(personalBests).map(([distanceType, pb]) => (
-          <TouchableOpacity
-            key={distanceType}
-            onPress={() => router.push('/(tabs)/races')}
-            className="bg-terminal-bg border-2 border-terminal-border p-4"
-            style={{ borderRadius: 0 }}
-            activeOpacity={0.8}
-          >
-            {/* Distance and Time */}
-            <View className="flex-row items-center justify-between mb-3">
-              <View className="flex-1">
-                <Text className="font-mono text-sm font-semibold uppercase tracking-wider text-text-primary">
-                  {getDistanceLabel(distanceType)}
-                </Text>
-                <Text className="font-mono text-xs text-text-secondary mt-1">
-                  {pb.race_name}
-                </Text>
-              </View>
-              <View className="items-end">
-                <Text className="font-mono text-2xl font-bold text-accent-yellow">
-                  {pb.overall_time}
-                </Text>
-                <Text className="font-mono text-xs text-text-secondary mt-1">
-                  {formatDate(pb.race_date)}
-                </Text>
-              </View>
+      {/* Personal Bests List */}
+      <View style={{ marginTop: 24, gap: 8 }}>
+        {personalBests.map((pb, index) => (
+          <View key={index} style={mergeStyles(terminalView.panel, { padding: 12 })}>
+            <View style={terminalView.spaceBetween}>
+              <Text style={mergeStyles(terminalText.swim, { fontSize: 10 })}>
+                [{getDistanceLabel(pb.distance_type)}]
+              </Text>
+              <Text style={mergeStyles(terminalText.large, { fontSize: 20 })}>
+                {formatTime(pb.time)}
+              </Text>
             </View>
-
-            {/* Split Times */}
-            {(pb.swim_time || pb.bike_time || pb.run_time) && (
-              <View className="flex-row gap-2 pt-3 border-t border-terminal-border">
-                {pb.swim_time && (
-                  <View className="flex-1 items-center py-2 bg-terminal-panel">
-                    <Text className="font-mono text-xs uppercase text-discipline-swim mb-1">
-                      SWIM
-                    </Text>
-                    <Text className="font-mono text-sm font-bold text-text-primary">
-                      {pb.swim_time}
-                    </Text>
-                  </View>
-                )}
-                {pb.bike_time && (
-                  <View className="flex-1 items-center py-2 bg-terminal-panel">
-                    <Text className="font-mono text-xs uppercase text-discipline-bike mb-1">
-                      BIKE
-                    </Text>
-                    <Text className="font-mono text-sm font-bold text-text-primary">
-                      {pb.bike_time}
-                    </Text>
-                  </View>
-                )}
-                {pb.run_time && (
-                  <View className="flex-1 items-center py-2 bg-terminal-panel">
-                    <Text className="font-mono text-xs uppercase text-discipline-run mb-1">
-                      RUN
-                    </Text>
-                    <Text className="font-mono text-sm font-bold text-text-primary">
-                      {pb.run_time}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* Placements */}
-            {(pb.overall_placement || pb.age_group_placement) && (
-              <View className="flex-row gap-3 pt-3 border-t border-terminal-border">
-                {pb.overall_placement && (
-                  <Text className="font-mono text-xs text-text-secondary">
-                    OVERALL: #{pb.overall_placement}
-                  </Text>
-                )}
-                {pb.age_group_placement && (
-                  <Text className="font-mono text-xs text-text-secondary">
-                    AG: #{pb.age_group_placement}
-                  </Text>
-                )}
-              </View>
-            )}
-          </TouchableOpacity>
+            <Text style={mergeStyles(terminalText.small, { marginTop: 8 })}>
+              {pb.race_name}
+            </Text>
+          </View>
         ))}
       </View>
 
-      {/* Recent PRs Section */}
-      {recentPRs.length > 0 && (
-        <View className="bg-terminal-bg border-2 border-discipline-run/40 p-4 mb-4" style={{ borderRadius: 0 }}>
-          <Text className="font-mono text-xs font-semibold uppercase tracking-wider text-discipline-run mb-3">
-            Recent Personal Records
-          </Text>
-          <View className="space-y-2">
-            {recentPRs.map((pr, index) => (
-              <View key={index} className="flex-row items-center justify-between">
-                <Text className="font-mono text-sm text-text-primary">
-                  {getDistanceLabel(pr.distance_type)}
-                </Text>
-                <View className="flex-row items-center gap-3">
-                  <Text className="font-mono text-sm font-bold text-discipline-run">
-                    {pr.overall_time}
-                  </Text>
-                  <Text className="font-mono text-xs text-text-secondary">
-                    {formatDate(pr.race_date)}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
-
       {/* Footer */}
-      <View className="pt-4 border-t border-terminal-border">
-        <View className="flex-row items-center justify-between">
-          <Text className="font-mono text-xs text-text-secondary uppercase">
-            {pbCount} RECORD{pbCount !== 1 ? 'S' : ''}
+      <View style={mergeStyles(terminalView.borderTop, { marginTop: 16 })}>
+        <View style={terminalView.spaceBetween}>
+          <Text style={terminalText.small}>
+            FASTEST TIMES
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/races')}>
-            <Text className="font-mono text-xs font-semibold text-accent-yellow uppercase tracking-wider">
-              VIEW ALL →
-            </Text>
+            <Text style={terminalText.yellow}>RESULTS →</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </TerminalCard>
+    </View>
   );
 };
