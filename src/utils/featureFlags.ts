@@ -66,6 +66,11 @@ export const toggleTerminalMode = (): boolean => {
   console.log('Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle');
   console.log('Or press Shift+D+D (tap D twice while holding Shift)');
 
+  // Dispatch custom event to notify all widgets to re-render
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('terminalModeChanged'));
+  }
+
   return terminalModeOverride;
 };
 
