@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,6 +19,8 @@ import {
   TbRun
 } from 'react-icons/tb';
 import { useTerminalModeToggle } from '../hooks/useTerminalModeToggle';
+import { terminalColors, terminalText, terminalView, mergeStyles } from './ui/terminal/terminalStyles';
+import { getTerminalModeState } from '../utils/featureFlags';
 
 interface Course {
   id: string;
@@ -64,6 +67,9 @@ export const WebDashboard: React.FC = () => {
   // Enable keyboard shortcut: Ctrl+Shift+T (Cmd+Shift+T on Mac) to toggle terminal mode
   useTerminalModeToggle();
 
+  // Track terminal mode state for inline sections
+  const [useTerminal, setUseTerminal] = useState(getTerminalModeState());
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [races, setRaces] = useState<Race[]>([]);
   const [userRaceResults, setUserRaceResults] = useState<UserRaceResult[]>([]);
@@ -75,6 +81,20 @@ export const WebDashboard: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Listen for terminal mode changes
+  useEffect(() => {
+    const handleTerminalModeChange = () => {
+      setUseTerminal(getTerminalModeState());
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('terminalModeChanged', handleTerminalModeChange);
+      return () => {
+        window.removeEventListener('terminalModeChanged', handleTerminalModeChange);
+      };
+    }
+  }, []);
 
   // Add caching for dashboard data
   const [dashboardCache, setDashboardCache] = useState<{
@@ -476,7 +496,7 @@ export const WebDashboard: React.FC = () => {
           </div>
 
           {/* Race Analysis Section */}
-          {userRaceResults.length > 0 && (
+          {userRaceResults.length > 0 && !useTerminal && (
             <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6 shadow-2xl mb-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -531,60 +551,209 @@ export const WebDashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Quick Actions */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6 shadow-2xl mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <button
-                onClick={() => setShowAddResultModal(true)}
-                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
-              >
-                <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbClock className="w-5 h-5" /> Add Race Result</div>
-                <div className="text-sm opacity-90">Log your race times</div>
-              </button>
-              <button
-                onClick={() => {
-                  if (userRaceResults.length >= 2) {
-                    // Pre-select the first two races for comparison
-                    const raceIds = userRaceResults.slice(0, 2).map(result => result.race_id || result.id);
-                    setComparingRaces(raceIds);
-                    setShowComparisonModal(true);
-                  }
-                }}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
-                disabled={userRaceResults.length < 2}
-              >
-                <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbVs className="w-5 h-5" /> Compare Races</div>
-                <div className="text-sm opacity-90">
-                  {userRaceResults.length < 2 ? 'Need 2+ races' : 'Compare your performances'}
-                </div>
-              </button>
-              <button
-                onClick={() => {
-                  if (courses.length > 0) {
-                    setSelectedCourse(courses[0]);
-                    setShowPredictionModal(true);
-                  }
-                }}
-                className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
-                disabled={courses.length === 0}
-              >
-                <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbCrystalBall className="w-5 h-5" /> Race Prediction</div>
-                <div className="text-sm opacity-90">
-                  {courses.length === 0 ? 'No courses available' : 'Predict your race time'}
-                </div>
-              </button>
-              <button
-                onClick={() => {
-                  router.push('/(tabs)/training');
-                }}
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
-              >
-                <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbRun className="w-5 h-5" /> Training</div>
-                <div className="text-sm opacity-90">Log workouts & track progress</div>
-              </button>
+          {/* Latest Race Performance - Terminal Version */}
+          {userRaceResults.length > 0 && useTerminal && (
+            <View style={mergeStyles(terminalView.card, { marginBottom: 32 })}>
+              {/* Header */}
+              <View style={terminalView.spaceBetween}>
+                <View>
+                  <Text style={terminalText.header}>Latest Race Performance</Text>
+                  <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+                    {performanceStats.latestRace?.race_name?.toUpperCase()} • {formatDate(performanceStats.latestRace?.race_date).toUpperCase()}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (userRaceResults.length > 0) {
+                      setSelectedResult(userRaceResults[0]);
+                      setShowAnalysisModal(true);
+                    }
+                  }}
+                  style={{ backgroundColor: terminalColors.yellow, padding: 12 }}
+                >
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold' })}>
+                    ANALYZE →
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Stats Grid */}
+              <View style={{ flexDirection: 'row', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+                <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                  <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                    {performanceStats.latestRace?.overall_time || 'N/A'}
+                  </Text>
+                  <Text style={terminalText.small}>OVERALL TIME</Text>
+                </View>
+                {performanceStats.latestRace?.overall_rank && (
+                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                      #{performanceStats.latestRace.overall_rank}
+                    </Text>
+                    <Text style={terminalText.small}>OVERALL PLACE</Text>
+                  </View>
+                )}
+                {performanceStats.latestRace?.age_group_rank && (
+                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                      #{performanceStats.latestRace.age_group_rank}
+                    </Text>
+                    <Text style={terminalText.small}>AGE GROUP</Text>
+                  </View>
+                )}
+                <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                  <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                    {performanceStats.latestRace?.distance_type?.charAt(0).toUpperCase()}{performanceStats.latestRace?.distance_type?.slice(1) || 'RACE'}
+                  </Text>
+                  <Text style={terminalText.small}>DISTANCE</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Quick Actions - Legacy Version */}
+          {!useTerminal && (
+            <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6 shadow-2xl mb-8">
+              <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button
+                  onClick={() => setShowAddResultModal(true)}
+                  className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
+                >
+                  <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbClock className="w-5 h-5" /> Add Race Result</div>
+                  <div className="text-sm opacity-90">Log your race times</div>
+                </button>
+                <button
+                  onClick={() => {
+                    if (userRaceResults.length >= 2) {
+                      // Pre-select the first two races for comparison
+                      const raceIds = userRaceResults.slice(0, 2).map(result => result.race_id || result.id);
+                      setComparingRaces(raceIds);
+                      setShowComparisonModal(true);
+                    }
+                  }}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
+                  disabled={userRaceResults.length < 2}
+                >
+                  <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbVs className="w-5 h-5" /> Compare Races</div>
+                  <div className="text-sm opacity-90">
+                    {userRaceResults.length < 2 ? 'Need 2+ races' : 'Compare your performances'}
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    if (courses.length > 0) {
+                      setSelectedCourse(courses[0]);
+                      setShowPredictionModal(true);
+                    }
+                  }}
+                  className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
+                  disabled={courses.length === 0}
+                >
+                  <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbCrystalBall className="w-5 h-5" /> Race Prediction</div>
+                  <div className="text-sm opacity-90">
+                    {courses.length === 0 ? 'No courses available' : 'Predict your race time'}
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    router.push('/(tabs)/training');
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-center"
+                >
+                  <div className="text-lg font-bold mb-1 flex items-center justify-center gap-2"><TbRun className="w-5 h-5" /> Training</div>
+                  <div className="text-sm opacity-90">Log workouts & track progress</div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Quick Actions - Terminal Version */}
+          {useTerminal && (
+            <View style={mergeStyles(terminalView.card, { marginBottom: 32 })}>
+              <Text style={mergeStyles(terminalText.header, { marginBottom: 16 })}>Quick Actions</Text>
+              <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
+                {/* Add Race Result */}
+                <TouchableOpacity
+                  onPress={() => setShowAddResultModal(true)}
+                  style={{ flex: 1, minWidth: 140, backgroundColor: terminalColors.run, padding: 16, alignItems: 'center' }}
+                >
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
+                    [+] ADD RESULT
+                  </Text>
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                    LOG RACE TIMES
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Compare Races */}
+                <TouchableOpacity
+                  onPress={() => {
+                    if (userRaceResults.length >= 2) {
+                      const raceIds = userRaceResults.slice(0, 2).map(result => result.race_id || result.id);
+                      setComparingRaces(raceIds);
+                      setShowComparisonModal(true);
+                    }
+                  }}
+                  disabled={userRaceResults.length < 2}
+                  style={{
+                    flex: 1,
+                    minWidth: 140,
+                    backgroundColor: userRaceResults.length < 2 ? terminalColors.border : terminalColors.bike,
+                    padding: 16,
+                    alignItems: 'center',
+                    opacity: userRaceResults.length < 2 ? 0.5 : 1
+                  }}
+                >
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
+                    [VS] COMPARE
+                  </Text>
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                    {userRaceResults.length < 2 ? 'NEED 2+ RACES' : 'RACE COMPARISON'}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Race Prediction */}
+                <TouchableOpacity
+                  onPress={() => {
+                    if (courses.length > 0) {
+                      setSelectedCourse(courses[0]);
+                      setShowPredictionModal(true);
+                    }
+                  }}
+                  disabled={courses.length === 0}
+                  style={{
+                    flex: 1,
+                    minWidth: 140,
+                    backgroundColor: courses.length === 0 ? terminalColors.border : terminalColors.swim,
+                    padding: 16,
+                    alignItems: 'center',
+                    opacity: courses.length === 0 ? 0.5 : 1
+                  }}
+                >
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
+                    [?] PREDICT
+                  </Text>
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                    {courses.length === 0 ? 'NO COURSES' : 'PREDICT TIME'}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Training */}
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/training')}
+                  style={{ flex: 1, minWidth: 140, backgroundColor: terminalColors.yellow, padding: 16, alignItems: 'center' }}
+                >
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
+                    [>] TRAINING
+                  </Text>
+                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                    LOG WORKOUTS
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
         </div>
       </div>
