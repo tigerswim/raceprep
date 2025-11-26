@@ -398,13 +398,13 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       </Text>
 
       {/* Weekly Summary Stats */}
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
+      <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
         {/* Time */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
             TIME
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatTime(stats.last7Days.totalTime)}
           </Text>
           <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
@@ -413,11 +413,11 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
         </View>
 
         {/* Distance */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
             DIST
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatDistance(stats.last7Days.totalDistance)}
           </Text>
           <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
@@ -426,11 +426,11 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
         </View>
 
         {/* Activities */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
             ACT
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
             {stats.last7Days.activities}
           </Text>
           <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>

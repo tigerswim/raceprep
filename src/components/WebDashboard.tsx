@@ -489,6 +489,65 @@ export const WebDashboard: React.FC = () => {
             <UpcomingRacesWidget />
             <TrainingPlanProgressWidget />
             <GoalsProgressWidget />
+            {/* Latest Race Performance - Terminal Version (in grid) */}
+            {userRaceResults.length > 0 && useTerminal && (
+              <View style={mergeStyles(terminalView.card, { marginBottom: 0 })}>
+                {/* Header */}
+                <View style={terminalView.spaceBetween}>
+                  <View>
+                    <Text style={terminalText.header}>Latest Race Performance</Text>
+                    <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+                      {performanceStats.latestRace?.race_name?.toUpperCase()} • {formatDate(performanceStats.latestRace?.race_date).toUpperCase()}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (userRaceResults.length > 0) {
+                        setSelectedResult(userRaceResults[0]);
+                        setShowAnalysisModal(true);
+                      }
+                    }}
+                    style={{ backgroundColor: terminalColors.yellow, padding: 12 }}
+                  >
+                    <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold' })}>
+                      ANALYZE →
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Stats Grid */}
+                <View style={{ flexDirection: 'row', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                      {performanceStats.latestRace?.overall_time || 'N/A'}
+                    </Text>
+                    <Text style={terminalText.small}>OVERALL TIME</Text>
+                  </View>
+                  {performanceStats.latestRace?.overall_rank && (
+                    <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                      <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                        #{performanceStats.latestRace.overall_rank}
+                      </Text>
+                      <Text style={terminalText.small}>OVERALL PLACE</Text>
+                    </View>
+                  )}
+                  {performanceStats.latestRace?.age_group_rank && (
+                    <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                      <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                        #{performanceStats.latestRace.age_group_rank}
+                      </Text>
+                      <Text style={terminalText.small}>AGE GROUP</Text>
+                    </View>
+                  )}
+                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
+                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                      {performanceStats.latestRace?.distance_type?.charAt(0).toUpperCase()}{performanceStats.latestRace?.distance_type?.slice(1) || 'RACE'}
+                    </Text>
+                    <Text style={terminalText.small}>DISTANCE</Text>
+                  </View>
+                </View>
+              </View>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -549,66 +608,6 @@ export const WebDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Latest Race Performance - Terminal Version */}
-          {userRaceResults.length > 0 && useTerminal && (
-            <View style={mergeStyles(terminalView.card, { marginBottom: 32 })}>
-              {/* Header */}
-              <View style={terminalView.spaceBetween}>
-                <View>
-                  <Text style={terminalText.header}>Latest Race Performance</Text>
-                  <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
-                    {performanceStats.latestRace?.race_name?.toUpperCase()} • {formatDate(performanceStats.latestRace?.race_date).toUpperCase()}
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (userRaceResults.length > 0) {
-                      setSelectedResult(userRaceResults[0]);
-                      setShowAnalysisModal(true);
-                    }
-                  }}
-                  style={{ backgroundColor: terminalColors.yellow, padding: 12 }}
-                >
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold' })}>
-                    ANALYZE →
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Stats Grid */}
-              <View style={{ flexDirection: 'row', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
-                <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                  <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
-                    {performanceStats.latestRace?.overall_time || 'N/A'}
-                  </Text>
-                  <Text style={terminalText.small}>OVERALL TIME</Text>
-                </View>
-                {performanceStats.latestRace?.overall_rank && (
-                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
-                      #{performanceStats.latestRace.overall_rank}
-                    </Text>
-                    <Text style={terminalText.small}>OVERALL PLACE</Text>
-                  </View>
-                )}
-                {performanceStats.latestRace?.age_group_rank && (
-                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
-                      #{performanceStats.latestRace.age_group_rank}
-                    </Text>
-                    <Text style={terminalText.small}>AGE GROUP</Text>
-                  </View>
-                )}
-                <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                  <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
-                    {performanceStats.latestRace?.distance_type?.charAt(0).toUpperCase()}{performanceStats.latestRace?.distance_type?.slice(1) || 'RACE'}
-                  </Text>
-                  <Text style={terminalText.small}>DISTANCE</Text>
-                </View>
-              </View>
-            </View>
           )}
 
           {/* Quick Actions - Legacy Version */}
