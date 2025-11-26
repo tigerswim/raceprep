@@ -400,41 +400,41 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       {/* Weekly Summary Stats */}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 24 }}>
         {/* Time */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
             TIME
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatTime(stats.last7Days.totalTime)}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
             {stats.weekOverWeek.timeChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.timeChange))}%
           </Text>
         </View>
 
         {/* Distance */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
-            DISTANCE
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+            DIST
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
             {formatDistance(stats.last7Days.totalDistance)}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
             {stats.weekOverWeek.distanceChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.distanceChange))}%
           </Text>
         </View>
 
         {/* Activities */}
-        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
-            ACTIVITIES
+        <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 8 }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+            ACT
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 20, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold', color: colors.textPrimary }}>
             {stats.last7Days.activities}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, marginTop: 4 }}>
-            LAST 7 DAYS
+          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
+            LAST 7D
           </Text>
         </View>
       </View>

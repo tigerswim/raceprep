@@ -124,9 +124,6 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
             {goals.length} ACTIVE
           </Text>
         </View>
-        <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
-          <Text style={terminalText.yellow}>MANAGE →</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Summary Stats */}
@@ -193,7 +190,7 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
             {summary.total} TOTAL GOALS
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
-            <Text style={terminalText.yellow}>VIEW ALL →</Text>
+            <Text style={terminalText.yellow}>MANAGE →</Text>
           </TouchableOpacity>
         </View>
       </View>

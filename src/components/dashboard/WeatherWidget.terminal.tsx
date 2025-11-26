@@ -16,7 +16,8 @@ export const WeatherWidgetTerminal: React.FC = () => {
   const { user } = useAuth();
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [location] = useState<string>('Austin, TX');
+  const [location, setLocation] = useState<string>('Austin, TX');
+  const [isGeolocating, setIsGeolocating] = useState(false);
 
   useEffect(() => {
     // Simplified - would normally fetch real weather data
@@ -30,6 +31,32 @@ export const WeatherWidgetTerminal: React.FC = () => {
       setIsLoading(false);
     }, 500);
   }, [user]);
+
+  const handleGeolocate = () => {
+    setIsGeolocating(true);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // In production, would fetch location name from coordinates
+          setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
+          setIsGeolocating(false);
+
+          // Would also fetch weather data for this location
+          console.log('[Weather] Location updated:', latitude, longitude);
+        },
+        (error) => {
+          console.error('[Weather] Geolocation error:', error);
+          setLocation('Austin, TX • Location unavailable');
+          setIsGeolocating(false);
+        }
+      );
+    } else {
+      setLocation('Austin, TX • Geolocation not supported');
+      setIsGeolocating(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -57,11 +84,27 @@ export const WeatherWidgetTerminal: React.FC = () => {
     <View style={terminalView.card}>
       {/* Header */}
       <View style={terminalView.spaceBetween}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={terminalText.header}>Weather Conditions</Text>
-          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
-            {location.toUpperCase()}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 8 }}>
+            <Text style={terminalText.small}>
+              {location.toUpperCase()}
+            </Text>
+            <TouchableOpacity
+              onPress={handleGeolocate}
+              disabled={isGeolocating}
+              style={{
+                backgroundColor: terminalColors.yellow,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                opacity: isGeolocating ? 0.5 : 1
+              }}
+            >
+              <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9, fontWeight: 'bold' })}>
+                {isGeolocating ? '[...]' : '[📍]'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
