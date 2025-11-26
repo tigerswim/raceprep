@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
@@ -48,6 +48,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
 
   const router = useRouter();
   const { user } = useAuth();
+  const { width } = useWindowDimensions();
   const [stats, setStats] = useState<TrainingStats | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [userSettings, setUserSettings] = useState<any>(null);
@@ -398,7 +399,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       </Text>
 
       {/* Weekly Summary Stats */}
-      <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
+      <View style={{ flexDirection: width < 768 ? 'column' : 'row', gap: 12, marginBottom: 24 }}>
         {/* Time */}
         <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
           <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
