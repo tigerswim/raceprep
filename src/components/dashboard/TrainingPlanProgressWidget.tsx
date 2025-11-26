@@ -11,8 +11,22 @@ import {
 import { trainingPlanService } from '../../services/trainingPlanService';
 import type { TrainingPlanProgress } from '../../types/trainingPlans';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTerminalDesign } from '../../utils/featureFlags';
+import { TrainingPlanProgressWidgetTerminal } from './TrainingPlanProgressWidget.terminal';
 
+// Wrapper component that handles terminal vs legacy rendering
 export const TrainingPlanProgressWidget: React.FC = () => {
+  const useTerminal = useTerminalDesign('trainingPlan');
+
+  if (useTerminal) {
+    return <TrainingPlanProgressWidgetTerminal />;
+  }
+
+  return <TrainingPlanProgressWidgetLegacy />;
+};
+
+// Legacy implementation
+const TrainingPlanProgressWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
