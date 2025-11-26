@@ -55,6 +55,13 @@ export const WeatherWidget: React.FC = () => {
   const [temperatureUnit, setTemperatureUnit] = useState<'fahrenheit' | 'celsius'>('fahrenheit');
   const [userProfile, setUserProfile] = useState<any>(null);
 
+  // Check if terminal design is enabled AFTER useState but BEFORE useEffect
+  if (useTerminal) {
+    return <WeatherWidgetTerminal />;
+  }
+
+  // Legacy implementation below
+
   useEffect(() => {
     try {
       loadUserPreferences();
@@ -86,13 +93,6 @@ export const WeatherWidget: React.FC = () => {
       loadWeatherData();
     }
   }, [coordinates, error]);
-
-  // Check if terminal design is enabled AFTER all hooks are defined
-  if (useTerminal) {
-    return <WeatherWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   const loadUserPreferences = async () => {
     try {
       if (user?.id) {

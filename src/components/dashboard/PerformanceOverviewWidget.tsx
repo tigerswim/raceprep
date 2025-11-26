@@ -54,26 +54,14 @@ export const PerformanceOverviewWidget: React.FC = () => {
   const [stravaConnected, setStravaConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      loadUserProfileAndStats();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  // Call checkStravaConnection after userProfile is loaded
-  useEffect(() => {
-    if (userProfile) {
-      checkStravaConnection();
-    }
-  }, [userProfile]);
-
-  // Check if terminal design is enabled AFTER all hooks are defined
+  // Check if terminal design is enabled AFTER state hooks but BEFORE effects
+  console.log('[PerformanceOverviewWidget] useTerminal value:', useTerminal, 'returning terminal?', useTerminal ? 'YES' : 'NO');
   if (useTerminal) {
+    console.log('[PerformanceOverviewWidget] Returning PerformanceOverviewWidgetTerminal');
     return <PerformanceOverviewWidgetTerminal />;
   }
 
+  console.log('[PerformanceOverviewWidget] Returning legacy widget');
   // Legacy implementation below
 
   const checkStravaConnection = () => {
