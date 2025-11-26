@@ -27,14 +27,8 @@ interface TransitionStats {
 }
 
 export const TransitionAnalyticsWidget: React.FC = () => {
-  // Check if terminal design is enabled for this widget
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('transitions');
-
-  if (useTerminal) {
-    return <TransitionAnalyticsWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TransitionStats | null>(null);
@@ -47,6 +41,13 @@ export const TransitionAnalyticsWidget: React.FC = () => {
       setIsLoading(false);
     }
   }, [user]);
+
+  // Check if terminal design is enabled AFTER all hooks are defined
+  if (useTerminal) {
+    return <TransitionAnalyticsWidgetTerminal />;
+  }
+
+  // Legacy implementation below
 
   const timeToSeconds = (timeStr: string | null): number => {
     if (!timeStr) return 0;

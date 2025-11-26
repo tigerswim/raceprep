@@ -47,16 +47,8 @@ interface LocalStorageRace {
 }
 
 export const UpcomingRacesWidget: React.FC = () => {
-  // Check if terminal design is enabled for this widget
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('upcomingRaces');
-
-  if (useTerminal) {
-    return <UpcomingRacesWidgetTerminal />;
-  }
-
-  // Legacy implementation below
-  // ALL HOOKS MUST EXECUTE BEFORE ANY CONDITIONAL RETURNS
-  // This ensures React's Rules of Hooks are followed
   const router = useRouter();
   const { user } = useAuth();
   const [upcomingRaces, setUpcomingRaces] = useState<UpcomingRace[]>([]);
@@ -391,7 +383,12 @@ export const UpcomingRacesWidget: React.FC = () => {
   }, []);
 
   // ALL HOOKS HAVE NOW EXECUTED - SAFE TO ADD CONDITIONAL RETURNS
-  // This ensures React's Rules of Hooks are followed
+  // Check if terminal design is enabled AFTER all hooks are defined
+  if (useTerminal) {
+    return <UpcomingRacesWidgetTerminal />;
+  }
+
+  // Legacy implementation below
   if (!user && !isLoading) {
     return (
       <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-2xl">

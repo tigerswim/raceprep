@@ -101,6 +101,7 @@ export const useTerminalDesign = (
     }
   }, []);
 
+  // Calculate result AFTER all hooks are called (to maintain consistent hook order)
   // If keyboard shortcut override is active, use that state for ALL widgets
   if (terminalModeOverride !== null) {
     return terminalModeOverride;

@@ -43,14 +43,8 @@ interface TrainingStats {
 }
 
 export const PerformanceOverviewWidget: React.FC = () => {
-  // Check if terminal design is enabled for this widget
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('performance');
-
-  if (useTerminal) {
-    return <PerformanceOverviewWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TrainingStats | null>(null);
@@ -74,6 +68,13 @@ export const PerformanceOverviewWidget: React.FC = () => {
       checkStravaConnection();
     }
   }, [userProfile]);
+
+  // Check if terminal design is enabled AFTER all hooks are defined
+  if (useTerminal) {
+    return <PerformanceOverviewWidgetTerminal />;
+  }
+
+  // Legacy implementation below
 
   const checkStravaConnection = () => {
     // Check if user profile has valid Strava token (same logic as Training tab)
