@@ -19,17 +19,17 @@ let terminalModeOverride: boolean | null = null;
 
 export const featureFlags = {
   // Master switch - set to false to disable all terminal design features
-  useTerminalDesign: true,
+  useTerminalDesign: false,
 
   // Individual widget flags - enable one at a time for testing
   useTerminalWidgets: {
-    personalBests: true,
-    goalsProgress: true,
-    trainingPlan: true,
-    weather: true,
-    transitions: true,
-    upcomingRaces: true,
-    performance: true,
+    personalBests: false,
+    goalsProgress: false,
+    trainingPlan: false,
+    weather: false,
+    transitions: false,
+    upcomingRaces: false,
+    performance: false,
   },
 
   // Screen-level flags
@@ -95,7 +95,6 @@ export const useTerminalDesign = (
   // Listen for terminal mode changes
   useEffect(() => {
     const handleTerminalModeChange = () => {
-      console.log(`[${component}] Terminal mode change event received, forcing re-render`);
       setForceUpdate({}); // Force re-render with new object reference
     };
 
@@ -109,13 +108,12 @@ export const useTerminalDesign = (
 
   // Calculate result AFTER all hooks are called (to maintain consistent hook order)
   // If keyboard shortcut override is active, use that state for ALL widgets
-  const result = terminalModeOverride !== null
-    ? terminalModeOverride
-    : featureFlags.useTerminalDesign && featureFlags.useTerminalWidgets[component];
+  if (terminalModeOverride !== null) {
+    return terminalModeOverride;
+  }
 
-  console.log(`[${component}] useTerminalDesign returning:`, result, '(override:', terminalModeOverride, ')');
-
-  return result;
+  // Otherwise, use individual widget flags
+  return featureFlags.useTerminalDesign && featureFlags.useTerminalWidgets[component];
 };
 
 /**

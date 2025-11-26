@@ -27,22 +27,24 @@ interface PersonalBests {
   ironman?: PersonalBest;
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const PersonalBestsWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  // This maintains consistent hook order regardless of terminal mode
   const useTerminal = useTerminalDesign('personalBests');
+
+  if (useTerminal) {
+    return <PersonalBestsWidgetTerminal />;
+  }
+
+  return <PersonalBestsWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const PersonalBestsWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [personalBests, setPersonalBests] = useState<PersonalBests>({});
   const [recentPRs, setRecentPRs] = useState<PersonalBest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Check if terminal design is enabled AFTER all hooks are defined
-  if (useTerminal) {
-    return <PersonalBestsWidgetTerminal />;
-  }
-
-  // Legacy implementation below
 
   useEffect(() => {
     if (user) {

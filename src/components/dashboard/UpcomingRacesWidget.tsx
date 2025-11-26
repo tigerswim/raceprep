@@ -46,9 +46,19 @@ interface LocalStorageRace {
   status?: string;
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const UpcomingRacesWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('upcomingRaces');
+
+  if (useTerminal) {
+    return <UpcomingRacesWidgetTerminal />;
+  }
+
+  return <UpcomingRacesWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const UpcomingRacesWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [upcomingRaces, setUpcomingRaces] = useState<UpcomingRace[]>([]);
@@ -269,12 +279,6 @@ export const UpcomingRacesWidget: React.FC = () => {
   // NOTE: cachedRaces and lastCacheUpdate are intentionally omitted to prevent infinite loops.
   // They are read for caching logic but should not trigger function recreation.
 
-  // Check if terminal design is enabled AFTER hooks but BEFORE useEffect
-  if (useTerminal) {
-    return <UpcomingRacesWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   useEffect(() => {
     if (user) {
       loadUpcomingRaces();

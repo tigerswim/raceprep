@@ -67,9 +67,19 @@ interface GoalNotification {
   isNew: boolean;
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const GoalsProgressWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('goalsProgress');
+
+  if (useTerminal) {
+    return <GoalsProgressWidgetTerminal />;
+  }
+
+  return <GoalsProgressWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const GoalsProgressWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -241,12 +251,6 @@ export const GoalsProgressWidget: React.FC = () => {
     setCountdowns(newCountdowns);
   }, [goals]);
 
-  // Check if terminal design is enabled AFTER all hooks but BEFORE useEffect
-  if (useTerminal) {
-    return <GoalsProgressWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   useEffect(() => {
     updateCountdowns();
     const interval = setInterval(updateCountdowns, 60000); // Update every minute

@@ -42,9 +42,19 @@ interface TrainingStats {
   };
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const PerformanceOverviewWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('performance');
+
+  if (useTerminal) {
+    return <PerformanceOverviewWidgetTerminal />;
+  }
+
+  return <PerformanceOverviewWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const PerformanceOverviewWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TrainingStats | null>(null);
@@ -53,16 +63,6 @@ export const PerformanceOverviewWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [stravaConnected, setStravaConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-
-  // Check if terminal design is enabled AFTER state hooks but BEFORE effects
-  console.log('[PerformanceOverviewWidget] useTerminal value:', useTerminal, 'returning terminal?', useTerminal ? 'YES' : 'NO');
-  if (useTerminal) {
-    console.log('[PerformanceOverviewWidget] Returning PerformanceOverviewWidgetTerminal');
-    return <PerformanceOverviewWidgetTerminal />;
-  }
-
-  console.log('[PerformanceOverviewWidget] Returning legacy widget');
-  // Legacy implementation below
 
   const checkStravaConnection = () => {
     // Check if user profile has valid Strava token (same logic as Training tab)

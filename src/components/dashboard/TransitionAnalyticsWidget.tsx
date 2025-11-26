@@ -26,20 +26,24 @@ interface TransitionStats {
   recentRaces: TransitionData[];
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const TransitionAnalyticsWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('transitions');
+
+  if (useTerminal) {
+    return <TransitionAnalyticsWidgetTerminal />;
+  }
+
+  return <TransitionAnalyticsWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const TransitionAnalyticsWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<TransitionStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if terminal design is enabled AFTER useState but BEFORE useEffect
-  if (useTerminal) {
-    return <TransitionAnalyticsWidgetTerminal />;
-  }
-
-  // Legacy implementation below
   useEffect(() => {
     if (user) {
       loadTransitionData();

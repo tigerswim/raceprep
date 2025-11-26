@@ -38,9 +38,19 @@ interface WeatherData {
   };
 }
 
+// Wrapper component that handles terminal vs legacy rendering
 export const WeatherWidget: React.FC = () => {
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const useTerminal = useTerminalDesign('weather');
+
+  if (useTerminal) {
+    return <WeatherWidgetTerminal />;
+  }
+
+  return <WeatherWidgetLegacy />;
+};
+
+// Legacy implementation (moved to separate component to avoid hook violations)
+const WeatherWidgetLegacy: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -54,13 +64,6 @@ export const WeatherWidget: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [temperatureUnit, setTemperatureUnit] = useState<'fahrenheit' | 'celsius'>('fahrenheit');
   const [userProfile, setUserProfile] = useState<any>(null);
-
-  // Check if terminal design is enabled AFTER useState but BEFORE useEffect
-  if (useTerminal) {
-    return <WeatherWidgetTerminal />;
-  }
-
-  // Legacy implementation below
 
   useEffect(() => {
     try {
