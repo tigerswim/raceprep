@@ -90,12 +90,12 @@ export const useTerminalDesign = (
   component: keyof typeof featureFlags.useTerminalWidgets
 ): boolean => {
   // State to force re-render when terminal mode changes
-  const [, forceUpdate] = useState({});
+  const [, setForceUpdate] = useState({});
 
   // Listen for terminal mode changes
   useEffect(() => {
     const handleTerminalModeChange = () => {
-      forceUpdate({}); // Force re-render
+      setForceUpdate({}); // Force re-render with new object reference
     };
 
     if (typeof window !== 'undefined') {
