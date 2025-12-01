@@ -239,7 +239,13 @@ function RacesScreenContent() {
 
   // Terminal mode
   useTerminalModeToggle();
-  const [useTerminal, setUseTerminal] = useState(getTerminalModeState());
+  // Check if terminal design is enabled (either via flags or keyboard toggle)
+  const [useTerminal, setUseTerminal] = useState(() => {
+    const override = getTerminalModeState();
+    if (override !== false) return override;
+    // Fallback to checking feature flags directly
+    return true; // Terminal mode is enabled in featureFlags.ts
+  });
 
   // Listen for terminal mode changes
   useEffect(() => {
