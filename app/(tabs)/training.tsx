@@ -2688,26 +2688,48 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   return (
     <div
-      className="bg-slate-900 relative overflow-auto"
+      className={
+        useTerminal
+          ? "bg-terminal-bg relative overflow-auto"
+          : "bg-slate-900 relative overflow-auto"
+      }
       style={{ minHeight: "100dvh" }}
     >
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-      </div>
+      {/* Background Effects - Hide in terminal mode */}
+      {!useTerminal && (
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>
+          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        </div>
+      )}
 
       <div className="relative z-10 p-6 pb-24">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div className="mb-4 sm:mb-0">
-            <h1 className="text-3xl font-bold text-white mb-2">Training</h1>
-            <p className="text-lg text-white/70">
-              Track workouts, training plans, and progress
-            </p>
+        {/* Header - Terminal Mode */}
+        {useTerminal && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 border-b-2 border-terminal-border pb-4">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-3xl font-bold text-text-primary font-mono tracking-wider mb-2">
+                TRAINING
+              </h1>
+              <p className="text-sm text-text-secondary font-mono uppercase tracking-wide">
+                TRACK WORKOUTS, TRAINING PLANS, AND PROGRESS
+              </p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Header - Legacy Mode */}
+        {!useTerminal && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-3xl font-bold text-white mb-2">Training</h1>
+              <p className="text-lg text-white/70">
+                Track workouts, training plans, and progress
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
@@ -2715,14 +2737,23 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
-                activeTab === tab.id
-                  ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30"
-                  : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-              }`}
+              className={
+                useTerminal
+                  ? `px-4 py-3 font-medium transition-colors flex items-center gap-2 font-mono text-sm ${
+                      activeTab === tab.id
+                        ? "bg-terminal-panel text-accent-yellow border-2 border-accent-yellow"
+                        : "bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary"
+                    }`
+                  : `px-4 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
+                      activeTab === tab.id
+                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
+                    }`
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
               {renderIcon(tab.icon, "w-5 h-5")}
-              {tab.label}
+              {useTerminal ? tab.label.toUpperCase() : tab.label}
             </button>
           ))}
         </div>
