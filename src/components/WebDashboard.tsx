@@ -323,10 +323,10 @@ export const WebDashboard: React.FC = () => {
     if (results.length >= 6) {
       const recentRaces = results.slice(0, 3);
       const olderRaces = results.slice(3, 6);
-      
+
       const recentAvg = recentRaces.reduce((sum, race) => sum + parseTimeString(race.overall_time), 0) / 3;
       const olderAvg = olderRaces.reduce((sum, race) => sum + parseTimeString(race.overall_time), 0) / 3;
-      
+
       const improvementSeconds = olderAvg - recentAvg;
       averageImprovement = formatTime(Math.abs(improvementSeconds), true);
     }
@@ -335,14 +335,14 @@ export const WebDashboard: React.FC = () => {
     const transitionTimes = results
       .filter(r => r.t1_time && r.t2_time)
       .map(r => parseTimeString(r.t1_time!) + parseTimeString(r.t2_time!));
-    
-    const avgTransitionTime = transitionTimes.length > 0 
+
+    const avgTransitionTime = transitionTimes.length > 0
       ? transitionTimes.reduce((a, b) => a + b, 0) / transitionTimes.length
       : 0;
-    
+
     // Convert to efficiency score (lower time = higher efficiency)
     // Assume good transition time is around 3 minutes total
-    const transitionEfficiency = Math.max(0, Math.min(100, 
+    const transitionEfficiency = Math.max(0, Math.min(100,
       100 - ((avgTransitionTime - 180) / 120) * 100
     ));
 
@@ -405,7 +405,7 @@ export const WebDashboard: React.FC = () => {
       };
 
       const { data, error } = await dbHelpers.raceResults.add(raceResultWithUser);
-      
+
       if (error) {
         console.error('Error adding race result:', error);
         alert('Failed to save race result. Please try again.');
@@ -414,7 +414,7 @@ export const WebDashboard: React.FC = () => {
 
       alert('Race result added successfully!');
       setShowAddResultModal(false);
-      
+
       // Reload dashboard data to show updated information
       loadDashboardData();
     } catch (error) {
@@ -437,7 +437,7 @@ export const WebDashboard: React.FC = () => {
         <div className="text-center">
           <div className="text-white text-lg mb-4">Unable to load dashboard</div>
           <div className="text-white/70 text-center mb-4">{error}</div>
-          <button 
+          <button
             onClick={loadDashboardData}
             className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
           >
@@ -449,39 +449,68 @@ export const WebDashboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-orange-900/20"></div>
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-full blur-3xl animate-pulse"></div>
-      </div>
+    <div className={useTerminal ? "bg-terminal-bg relative overflow-auto" : "bg-slate-900 relative overflow-auto"} style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      {/* Background Effects - Hide in terminal mode */}
+      {!useTerminal && (
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-orange-900/20"></div>
+          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-orange-500/5 rounded-full blur-3xl animate-pulse"></div>
+        </div>
+      )}
 
       <div className="relative z-10 overflow-y-auto">
         <div className="p-6 pb-24">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-2xl">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          {/* Header - Terminal Mode */}
+          {useTerminal && (
+            <div className="flex items-center justify-between mb-8 border-b-2 border-terminal-border pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-terminal-panel border-2 border-accent-yellow flex items-center justify-center">
+                  <svg className="w-6 h-6 text-accent-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-text-primary font-mono tracking-wider">RACEPREP</h1>
+                  <p className="text-xs text-text-secondary font-mono uppercase tracking-wide">PERFORMANCE ANALYTICS PLATFORM</p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push('/(tabs)/profile')}
+                className="w-10 h-10 bg-terminal-panel border-2 border-terminal-border flex items-center justify-center hover:border-accent-yellow transition-colors"
+              >
+                <svg className="w-5 h-5 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">RacePrep</h1>
-                <p className="text-sm text-blue-300">Performance Analytics Platform</p>
-              </div>
+              </button>
             </div>
-            <button
-              onClick={() => router.push('/(tabs)/profile')}
-              className="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-200"
-            >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </button>
-          </div>
+          )}
+
+          {/* Header - Legacy Mode */}
+          {!useTerminal && (
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-2xl">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-white">RacePrep</h1>
+                  <p className="text-sm text-blue-300">Performance Analytics Platform</p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push('/(tabs)/profile')}
+                className="w-10 h-10 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-200"
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Dashboard Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
