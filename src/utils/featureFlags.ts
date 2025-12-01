@@ -12,24 +12,24 @@
  * - This enables ALL terminal widgets for quick testing
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Runtime toggle for testing (controlled by keyboard shortcut)
 let terminalModeOverride: boolean | null = null;
 
 export const featureFlags = {
   // Master switch - set to false to disable all terminal design features
-  useTerminalDesign: false,
+  useTerminalDesign: true,
 
   // Individual widget flags - enable one at a time for testing
   useTerminalWidgets: {
-    personalBests: false,
-    goalsProgress: false,
-    trainingPlan: false,
-    weather: false,
-    transitions: false,
-    upcomingRaces: false,
-    performance: false,
+    personalBests: true,
+    goalsProgress: true,
+    trainingPlan: true,
+    weather: true,
+    transitions: true,
+    upcomingRaces: true,
+    performance: true,
   },
 
   // Screen-level flags
@@ -62,13 +62,15 @@ export const toggleTerminalMode = (): boolean => {
     terminalModeOverride = !terminalModeOverride;
   }
 
-  console.log(`[TERMINAL MODE] ${terminalModeOverride ? 'ENABLED ✓' : 'DISABLED ✗'}`);
-  console.log('Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle');
-  console.log('Or press Shift+D+D (tap D twice while holding Shift)');
+  console.log(
+    `[TERMINAL MODE] ${terminalModeOverride ? "ENABLED ✓" : "DISABLED ✗"}`,
+  );
+  console.log("Press Cmd+K (Mac) or Ctrl+K (Windows/Linux) to toggle");
+  console.log("Or press Shift+D+D (tap D twice while holding Shift)");
 
   // Dispatch custom event to notify all widgets to re-render
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('terminalModeChanged'));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("terminalModeChanged"));
   }
 
   return terminalModeOverride;
@@ -87,7 +89,7 @@ export const getTerminalModeState = (): boolean => {
  * @returns boolean - Whether to render terminal version
  */
 export const useTerminalDesign = (
-  component: keyof typeof featureFlags.useTerminalWidgets
+  component: keyof typeof featureFlags.useTerminalWidgets,
 ): boolean => {
   // State to force re-render when terminal mode changes
   const [, setForceUpdate] = useState({});
@@ -98,10 +100,13 @@ export const useTerminalDesign = (
       setForceUpdate({}); // Force re-render with new object reference
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('terminalModeChanged', handleTerminalModeChange);
+    if (typeof window !== "undefined") {
+      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
       return () => {
-        window.removeEventListener('terminalModeChanged', handleTerminalModeChange);
+        window.removeEventListener(
+          "terminalModeChanged",
+          handleTerminalModeChange,
+        );
       };
     }
   }, [component]);
@@ -113,7 +118,9 @@ export const useTerminalDesign = (
   }
 
   // Otherwise, use individual widget flags
-  return featureFlags.useTerminalDesign && featureFlags.useTerminalWidgets[component];
+  return (
+    featureFlags.useTerminalDesign && featureFlags.useTerminalWidgets[component]
+  );
 };
 
 /**
@@ -122,9 +129,11 @@ export const useTerminalDesign = (
  * @returns boolean - Whether to render terminal version
  */
 export const useTerminalScreen = (
-  screen: keyof typeof featureFlags.useTerminalScreens
+  screen: keyof typeof featureFlags.useTerminalScreens,
 ): boolean => {
-  return featureFlags.useTerminalDesign && featureFlags.useTerminalScreens[screen];
+  return (
+    featureFlags.useTerminalDesign && featureFlags.useTerminalScreens[screen]
+  );
 };
 
 /**
@@ -133,7 +142,10 @@ export const useTerminalScreen = (
  * @returns boolean - Whether to render terminal version
  */
 export const useTerminalComponent = (
-  componentType: keyof typeof featureFlags.useTerminalComponents
+  componentType: keyof typeof featureFlags.useTerminalComponents,
 ): boolean => {
-  return featureFlags.useTerminalDesign && featureFlags.useTerminalComponents[componentType];
+  return (
+    featureFlags.useTerminalDesign &&
+    featureFlags.useTerminalComponents[componentType]
+  );
 };

@@ -58,70 +58,74 @@ Use this checklist to track your progress through the implementation. Check off 
 
 ---
 
-## 📊 Phase 2: Dashboard Widgets (12-16 hours)
+## 📊 Phase 2: Dashboard Widgets (12-16 hours) ✅ **COMPLETE**
 
-### Widget 1: PersonalBestsWidget (2h)
-- [ ] Create `PersonalBestsWidget.terminal.tsx`
-- [ ] Update main `PersonalBestsWidget.tsx` with feature flag
-- [ ] Enable flag: `personalBests: true`
-- [ ] Test: Data displays correctly in terminal style
-- [ ] Test: Toggle flag works (legacy still functions)
-- [ ] Commit: "feat(dashboard): Migrate PersonalBestsWidget to terminal"
+**Completed:** December 1, 2025
+**Branch:** `feature/split-flap-terminal-design` (merged to main)
+**Status:** All 7 widgets migrated and tested
 
-### Widget 2: GoalsProgressWidget (2h)
-- [ ] Create `GoalsProgressWidget.terminal.tsx`
-- [ ] Update main `GoalsProgressWidget.tsx` with feature flag
-- [ ] Enable flag: `goalsProgress: true`
-- [ ] Test terminal style rendering
-- [ ] Commit: "feat(dashboard): Migrate GoalsProgressWidget to terminal"
+### Widget 1: PersonalBestsWidget (2h) ✅
+- [x] Create `PersonalBestsWidget.terminal.tsx`
+- [x] Update main `PersonalBestsWidget.tsx` with feature flag
+- [x] Enable flag: `personalBests: true`
+- [x] Test: Data displays correctly in terminal style
+- [x] Test: Toggle flag works (legacy still functions)
+- [x] Committed as part of terminal design feature
 
-### Widget 3: TrainingPlanProgressWidget (2.5h)
-- [ ] Create `TrainingPlanProgressWidget.terminal.tsx`
-- [ ] Update main with feature flag
-- [ ] Enable flag: `trainingPlan: true`
-- [ ] Test rendering
-- [ ] Commit: "feat(dashboard): Migrate TrainingPlanProgressWidget"
+### Widget 2: GoalsProgressWidget (2h) ✅
+- [x] Create `GoalsProgressWidget.terminal.tsx`
+- [x] Update main `GoalsProgressWidget.tsx` with feature flag
+- [x] Enable flag: `goalsProgress: true`
+- [x] Test terminal style rendering
+- [x] Committed as part of terminal design feature
 
-### Widget 4: WeatherWidget (2h)
-- [ ] Create `WeatherWidget.terminal.tsx`
-- [ ] Update main with feature flag
-- [ ] Enable flag: `weather: true`
-- [ ] Test weather data displays
-- [ ] Commit: "feat(dashboard): Migrate WeatherWidget to terminal"
+### Widget 3: TrainingPlanProgressWidget (2.5h) ✅
+- [x] Create `TrainingPlanProgressWidget.terminal.tsx`
+- [x] Update main with feature flag
+- [x] Enable flag: `trainingPlan: true`
+- [x] Test rendering
+- [x] Committed as part of terminal design feature
 
-### Widget 5: TransitionAnalyticsWidget (3h)
-**Special: Needs 7-segment display component**
-- [ ] Create `src/components/ui/terminal/SevenSegmentDisplay.tsx`
-- [ ] Test 7-segment rendering with glow effect
-- [ ] Create `TransitionAnalyticsWidget.terminal.tsx`
-- [ ] Update main with feature flag
-- [ ] Enable flag: `transitions: true`
-- [ ] Test T1/T2 displays correctly
-- [ ] Commit: "feat(dashboard): Add 7-segment display and migrate TransitionAnalytics"
+### Widget 4: WeatherWidget (2h) ✅
+- [x] Create `WeatherWidget.terminal.tsx`
+- [x] Update main with feature flag
+- [x] Enable flag: `weather: true`
+- [x] Test weather data displays
+- [x] Committed as part of terminal design feature
 
-### Widget 6: UpcomingRacesWidget (3h)
-**Special: Needs flip-card component**
-- [ ] Create `src/components/ui/terminal/FlipCard.tsx`
-- [ ] Test flip animation (web vs native)
-- [ ] Create `UpcomingRacesWidget.terminal.tsx`
-- [ ] Add race distance stats (1.2mi, 56mi, 13.1mi)
-- [ ] Update main with feature flag
-- [ ] Enable flag: `upcomingRaces: true`
-- [ ] Test countdown updates
-- [ ] Commit: "feat(dashboard): Add flip cards and migrate UpcomingRaces"
+### Widget 5: TransitionAnalyticsWidget (3h) ✅
+**Special: 7-segment display component created**
+- [x] Create `src/components/ui/terminal/SevenSegmentDisplay.tsx`
+- [x] Test 7-segment rendering with glow effect
+- [x] Create `TransitionAnalyticsWidget.terminal.tsx`
+- [x] Update main with feature flag
+- [x] Enable flag: `transitions: true`
+- [x] Test T1/T2 displays correctly
+- [x] Committed as part of terminal design feature
 
-### Widget 7: PerformanceOverviewWidget (4h)
-**Special: Needs terminal bar chart component**
-- [ ] Create `src/components/charts/TerminalBarChart.tsx`
-- [ ] Test bar rendering with edge glow
-- [ ] Add stacked bar support for multi-discipline days
-- [ ] Create `PerformanceOverviewWidget.terminal.tsx`
-- [ ] Update main with feature flag
-- [ ] Enable flag: `performance: true`
-- [ ] Test training volume displays
-- [ ] Commit: "feat(dashboard): Add terminal charts and migrate PerformanceOverview"
+### Widget 6: UpcomingRacesWidget (3h) ✅
+**Special: Flip-card component created**
+- [x] Create `src/components/ui/terminal/FlipCard.tsx`
+- [x] Test flip animation (web vs native)
+- [x] Create `UpcomingRacesWidget.terminal.tsx`
+- [x] Add race distance stats (1.2mi, 56mi, 13.1mi)
+- [x] Update main with feature flag
+- [x] Enable flag: `upcomingRaces: true`
+- [x] Test countdown updates
+- [x] Committed as part of terminal design feature
 
-**Phase 2 Complete? All 7 widgets should now be in terminal style.**
+### Widget 7: PerformanceOverviewWidget (4h) ✅
+**Special: Terminal bar chart component created**
+- [x] Create `src/components/ui/terminal/TerminalBarChart.tsx`
+- [x] Test bar rendering with edge glow
+- [x] Add stacked bar support for multi-discipline days
+- [x] Create `PerformanceOverviewWidget.terminal.tsx`
+- [x] Update main with feature flag
+- [x] Enable flag: `performance: true`
+- [x] Test training volume displays
+- [x] Committed as part of terminal design feature
+
+**Phase 2 Complete!** ✅ All 7 widgets are now in terminal style and deployed.
 
 ---
 
