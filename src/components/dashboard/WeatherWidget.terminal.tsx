@@ -32,18 +32,49 @@ export const WeatherWidgetTerminal: React.FC = () => {
     }, 500);
   }, [user]);
 
-  const handleGeolocate = () => {
+  const handleGeolocate = async () => {
     setIsGeolocating(true);
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          // In production, would fetch location name from coordinates
-          setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
-          setIsGeolocating(false);
 
-          // Would also fetch weather data for this location
+          try {
+            // Reverse geocode to get city name
+            const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+            );
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+              // Extract city and state from address components
+              const addressComponents = data.results[0].address_components;
+              let city = '';
+              let state = '';
+
+              for (const component of addressComponents) {
+                if (component.types.includes('locality')) {
+                  city = component.short_name;
+                }
+                if (component.types.includes('administrative_area_level_1')) {
+                  state = component.short_name;
+                }
+              }
+
+              const locationName = city && state ? `${city}, ${state}` :
+                                   data.results[0].formatted_address.split(',').slice(0, 2).join(',');
+              setLocation(locationName);
+            } else {
+              setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
+            }
+          } catch (error) {
+            console.error('[Weather] Geocoding error:', error);
+            setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
+          }
+
+          setIsGeolocating(false);
           console.log('[Weather] Location updated:', latitude, longitude);
         },
         (error) => {

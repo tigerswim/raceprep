@@ -2,18 +2,24 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
-## [Unreleased] - 2025-01-25
+## [Unreleased] - 2025-12-01
 
 ### Added (In Development)
-- **Split-Flap Terminal Design System - Phase 1 Foundation** 🚧
+- **Split-Flap Terminal Design System - In Progress** 🚧
   - New retro-futuristic terminal design system (airport departure board aesthetic)
   - Feature flag system for safe gradual rollout
   - Terminal color palette: deep navy-black background, cream white text, cyan/coral/turquoise discipline colors
   - Base components: TerminalCard, TerminalButton, ScanLineOverlay
-  - All features disabled by default - no visual changes yet
+  - Terminal mode implementations for dashboard widgets:
+    - Performance Overview with terminal-styled layout
+    - Weather Widget with monospace text and terminal aesthetics
+    - Training Plan Progress with vertical stats on mobile
+    - Latest Race Performance with terminal design
+    - Quick Actions with consistent terminal buttons
+  - All features controlled by feature flags for safe deployment
   - See `PHASE_1_COMPLETION_SUMMARY.md` for full details
 
-### Technical Details (Phase 1)
+### Technical Details (Terminal Design)
 - **Branch**: `feature/split-flap-terminal-design`
 - **Files Created**:
   - `src/utils/featureFlags.ts`: Feature flag system with master switch and individual widget controls
@@ -21,13 +27,18 @@ All notable changes to the RacePrep project will be documented in this file.
   - `src/components/ui/terminal/TerminalButton.tsx`: Monospace button component
   - `src/components/ui/terminal/ScanLineOverlay.tsx`: Subtle scan line effect (web-only)
   - `src/components/ui/terminal/index.ts`: Barrel exports
+  - `src/components/dashboard/WeatherWidget.terminal.tsx`: Terminal mode weather display
   - `PHASE_1_COMPLETION_SUMMARY.md`: Complete phase 1 documentation
 - **Files Modified**:
   - `tailwind.config.js`: Added terminal color palette and updated monospace font stack
   - `app/_layout.tsx`: Added terminal background and scan line overlay (controlled by flags)
-  - `TERMINAL_DESIGN_CHECKLIST.md`: Updated with Phase 1 completion status
-- **Status**: Foundation complete, ready for widget migration
-- **Next**: Phase 2 - Dashboard widget migration
+  - `src/components/dashboard/PerformanceOverviewWidget.tsx`: Added terminal mode support
+  - `src/components/dashboard/TrainingPlanProgressWidget.tsx`: Mobile layout improvements
+  - `src/components/dashboard/LatestRacePerformanceWidget.tsx`: Terminal mode integration
+  - `src/components/dashboard/QuickActionsWidget.tsx`: Terminal button consistency
+  - `TERMINAL_DESIGN_CHECKLIST.md`: Updated with progress status
+- **Status**: Foundation complete, widget migration in progress
+- **Next**: Complete remaining widget migrations and polish terminal mode
 
 ---
 
