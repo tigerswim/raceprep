@@ -219,9 +219,18 @@ export default function PlanningScreen() {
                 <>
                   {activeTab === "nutrition" && (
                     <>
-                      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                        <h3 className="text-xl font-bold text-white mb-4">
-                          Pre-Race Nutrition Plan
+                      <div
+                        className={useTerminal ?
+                          "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl" :
+                          "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      >
+                        <h3 className={useTerminal ?
+                          "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" :
+                          "text-xl font-bold text-white mb-4"
+                        }>
+                          {useTerminal ? 'PRE-RACE NUTRITION PLAN' : 'Pre-Race Nutrition Plan'}
                         </h3>
                         <div className="grid md:grid-cols-3 gap-4">
                           <div className="bg-white/5 rounded-xl p-4">
@@ -263,9 +272,18 @@ export default function PlanningScreen() {
                         </div>
                       </div>
 
-                      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                        <h3 className="text-xl font-bold text-white mb-4">
-                          Hydration Calculator
+                      <div
+                        className={useTerminal ?
+                          "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl" :
+                          "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      >
+                        <h3 className={useTerminal ?
+                          "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" :
+                          "text-xl font-bold text-white mb-4"
+                        }>
+                          {useTerminal ? 'HYDRATION CALCULATOR' : 'Hydration Calculator'}
                         </h3>
                         <div className="bg-blue-500/10 rounded-xl p-4">
                           <p className="text-blue-300 mb-2">
@@ -292,9 +310,18 @@ export default function PlanningScreen() {
 
                   {activeTab === "gear" && (
                     <>
-                      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                        <h3 className="text-xl font-bold text-white mb-4">
-                          Essential Gear Checklist
+                      <div
+                        className={useTerminal ?
+                          "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl" :
+                          "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      >
+                        <h3 className={useTerminal ?
+                          "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" :
+                          "text-xl font-bold text-white mb-4"
+                        }>
+                          {useTerminal ? 'ESSENTIAL GEAR CHECKLIST' : 'Essential Gear Checklist'}
                         </h3>
                         <div className="grid md:grid-cols-3 gap-6">
                           <div>
