@@ -80,7 +80,7 @@ export const toggleTerminalMode = (): boolean => {
  * Get current terminal mode state
  */
 export const getTerminalModeState = (): boolean => {
-  return terminalModeOverride !== null ? terminalModeOverride : false;
+  return terminalModeOverride !== null ? terminalModeOverride : true;
 };
 
 /**
