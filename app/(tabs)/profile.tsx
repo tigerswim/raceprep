@@ -1411,33 +1411,55 @@ function ProfileScreenContent() {
           {/* Goal Modal */}
           {showGoalModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-md">
-                <h3 className="text-xl font-bold text-white mb-6">
-                  {editingGoal ? "Edit Goal" : "Create New Goal"}
+              <div
+                className={useTerminal ?
+                  "bg-terminal-panel border-2 border-terminal-border p-6 w-full max-w-md" :
+                  "bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-md"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
+              >
+                <h3 className={useTerminal ?
+                  "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider" :
+                  "text-xl font-bold text-white mb-6"
+                }>
+                  {useTerminal ?
+                    (editingGoal ? "EDIT GOAL" : "CREATE NEW GOAL") :
+                    (editingGoal ? "Edit Goal" : "Create New Goal")
+                  }
                 </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-white/80 text-sm font-medium mb-2">
-                      Goal Type
+                    <label className={useTerminal ?
+                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                      "block text-white/80 text-sm font-medium mb-2"
+                    }>
+                      {useTerminal ? 'GOAL TYPE' : 'Goal Type'}
                     </label>
                     <select
                       value={goalForm.goal_type}
                       onChange={(e) =>
                         setGoalForm({ ...goalForm, goal_type: e.target.value })
                       }
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={useTerminal ?
+                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
+                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     >
-                      <option value="time_target">Time Target</option>
-                      <option value="race_count">Race Count</option>
-                      <option value="transition_time">Transition Time</option>
+                      <option value="time_target">{useTerminal ? 'TIME TARGET' : 'Time Target'}</option>
+                      <option value="race_count">{useTerminal ? 'RACE COUNT' : 'Race Count'}</option>
+                      <option value="transition_time">{useTerminal ? 'TRANSITION TIME' : 'Transition Time'}</option>
                     </select>
                   </div>
 
                   {goalForm.goal_type === "time_target" && (
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">
-                        Distance Type
+                      <label className={useTerminal ?
+                        "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                        "block text-white/80 text-sm font-medium mb-2"
+                      }>
+                        {useTerminal ? 'DISTANCE TYPE' : 'Distance Type'}
                       </label>
                       <select
                         value={goalForm.distance_type}
@@ -1447,19 +1469,26 @@ function ProfileScreenContent() {
                             distance_type: e.target.value,
                           })
                         }
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={useTerminal ?
+                          "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
+                          "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
                       >
-                        <option value="sprint">Sprint</option>
-                        <option value="olympic">Olympic</option>
-                        <option value="70.3">70.3</option>
-                        <option value="ironman">Ironman</option>
+                        <option value="sprint">{useTerminal ? 'SPRINT' : 'Sprint'}</option>
+                        <option value="olympic">{useTerminal ? 'OLYMPIC' : 'Olympic'}</option>
+                        <option value="70.3">{useTerminal ? '70.3' : '70.3'}</option>
+                        <option value="ironman">{useTerminal ? 'IRONMAN' : 'Ironman'}</option>
                       </select>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-white/80 text-sm font-medium mb-2">
-                      Target Value
+                    <label className={useTerminal ?
+                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                      "block text-white/80 text-sm font-medium mb-2"
+                    }>
+                      {useTerminal ? 'TARGET VALUE' : 'Target Value'}
                     </label>
                     <input
                       type="text"
@@ -1472,18 +1501,25 @@ function ProfileScreenContent() {
                       }
                       placeholder={
                         goalForm.goal_type === "time_target"
-                          ? "e.g., 1:30:00"
+                          ? (useTerminal ? "E.G., 1:30:00" : "e.g., 1:30:00")
                           : goalForm.goal_type === "race_count"
-                            ? "e.g., 5"
-                            : "e.g., 1:30"
+                            ? (useTerminal ? "E.G., 5" : "e.g., 5")
+                            : (useTerminal ? "E.G., 1:30" : "e.g., 1:30")
                       }
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={useTerminal ?
+                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono" :
+                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-white/80 text-sm font-medium mb-2">
-                      Target Date (Optional)
+                    <label className={useTerminal ?
+                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                      "block text-white/80 text-sm font-medium mb-2"
+                    }>
+                      {useTerminal ? 'TARGET DATE (OPTIONAL)' : 'Target Date (Optional)'}
                     </label>
                     <input
                       type="date"
@@ -1494,7 +1530,11 @@ function ProfileScreenContent() {
                           target_date: e.target.value,
                         })
                       }
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={useTerminal ?
+                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
+                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     />
                   </div>
                 </div>
@@ -1502,15 +1542,26 @@ function ProfileScreenContent() {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={saveGoal}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                    className={useTerminal ?
+                      "flex-1 bg-accent-yellow text-terminal-bg py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider" :
+                      "flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
-                    {editingGoal ? "Update Goal" : "Create Goal"}
+                    {useTerminal ?
+                      (editingGoal ? "UPDATE GOAL" : "CREATE GOAL") :
+                      (editingGoal ? "Update Goal" : "Create Goal")
+                    }
                   </button>
                   <button
                     onClick={closeGoalModal}
-                    className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+                    className={useTerminal ?
+                      "flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider" :
+                      "flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
-                    Cancel
+                    {useTerminal ? 'CANCEL' : 'Cancel'}
                   </button>
                 </div>
               </div>
