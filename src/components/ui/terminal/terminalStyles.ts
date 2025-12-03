@@ -33,15 +33,15 @@ export const terminalText = {
   // Headers
   header: {
     fontFamily: 'monospace',
-    fontSize: 12,
-    fontWeight: '600' as const,
+    fontSize: 18,
+    fontWeight: 'bold' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 1.5,
-    color: terminalColors.textSecondary,
+    color: terminalColors.textPrimary,
   },
   subheader: {
     fontFamily: 'monospace',
-    fontSize: 10,
+    fontSize: 14,
     fontWeight: '600' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: 1.5,
@@ -49,6 +49,11 @@ export const terminalText = {
   },
 
   // Body text
+  base: {
+    fontFamily: 'monospace',
+    fontSize: 14,
+    color: terminalColors.textPrimary,
+  },
   primary: {
     fontFamily: 'monospace',
     fontSize: 14,
@@ -74,7 +79,7 @@ export const terminalText = {
   },
   xlarge: {
     fontFamily: 'monospace',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold' as const,
     color: terminalColors.textPrimary,
   },
