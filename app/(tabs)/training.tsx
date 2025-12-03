@@ -823,114 +823,193 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     <div className="space-y-6">
       {/* Training Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-4"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <TbSwimming className="w-5 h-5 text-blue-400" />
+            <div
+              className={
+                useTerminal
+                  ? "w-8 h-8 bg-[#00D4FF]/20 border border-[#00D4FF]/50 flex items-center justify-center"
+                  : "w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
+              <TbSwimming className={useTerminal ? "w-5 h-5 text-[#00D4FF]" : "w-5 h-5 text-blue-400"} />
             </div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">
-                This Week
+              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
+                {useTerminal ? "THIS WEEK" : "This Week"}
               </p>
-              <p className="text-sm text-blue-300">Swimming</p>
+              <p className={useTerminal ? "text-sm text-[#00D4FF] font-mono font-bold" : "text-sm text-blue-300"}>
+                {useTerminal ? "SWIMMING" : "Swimming"}
+              </p>
             </div>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
             {stravaConnected
-              ? `${(weeklyStats.swim.distance / 1609.34).toFixed(1)} miles`
-              : "3.2 miles"}
+              ? `${(weeklyStats.swim.distance / 1609.34).toFixed(1)} ${useTerminal ? "MI" : "miles"}`
+              : useTerminal ? "3.2 MI" : "3.2 miles"}
           </div>
-          <p className="text-xs text-white/50">
+          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
             {stravaConnected
-              ? `${weeklyStats.swim.sessions} sessions`
-              : "4 sessions"}
+              ? `${weeklyStats.swim.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
+              : useTerminal ? "4 SESSIONS" : "4 sessions"}
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-4"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
-              <TbBike className="w-5 h-5 text-orange-400" />
+            <div
+              className={
+                useTerminal
+                  ? "w-8 h-8 bg-[#FF6B35]/20 border border-[#FF6B35]/50 flex items-center justify-center"
+                  : "w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
+              <TbBike className={useTerminal ? "w-5 h-5 text-[#FF6B35]" : "w-5 h-5 text-orange-400"} />
             </div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">
-                This Week
+              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
+                {useTerminal ? "THIS WEEK" : "This Week"}
               </p>
-              <p className="text-sm text-orange-300">Cycling</p>
+              <p className={useTerminal ? "text-sm text-[#FF6B35] font-mono font-bold" : "text-sm text-orange-300"}>
+                {useTerminal ? "CYCLING" : "Cycling"}
+              </p>
             </div>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
             {stravaConnected
-              ? `${(weeklyStats.bike.distance / 1609.34).toFixed(0)} miles`
-              : "85 miles"}
+              ? `${(weeklyStats.bike.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
+              : useTerminal ? "85 MI" : "85 miles"}
           </div>
-          <p className="text-xs text-white/50">
+          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
             {stravaConnected
-              ? `${weeklyStats.bike.sessions} sessions`
-              : "3 sessions"}
+              ? `${weeklyStats.bike.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
+              : useTerminal ? "3 SESSIONS" : "3 sessions"}
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-4"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <TbRun className="w-5 h-5 text-green-400" />
+            <div
+              className={
+                useTerminal
+                  ? "w-8 h-8 bg-[#4ECDC4]/20 border border-[#4ECDC4]/50 flex items-center justify-center"
+                  : "w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
+              <TbRun className={useTerminal ? "w-5 h-5 text-[#4ECDC4]" : "w-5 h-5 text-green-400"} />
             </div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">
-                This Week
+              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
+                {useTerminal ? "THIS WEEK" : "This Week"}
               </p>
-              <p className="text-sm text-green-300">Running</p>
+              <p className={useTerminal ? "text-sm text-[#4ECDC4] font-mono font-bold" : "text-sm text-green-300"}>
+                {useTerminal ? "RUNNING" : "Running"}
+              </p>
             </div>
           </div>
-          <div className="text-2xl font-bold text-white">
+          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
             {stravaConnected
-              ? `${(weeklyStats.run.distance / 1609.34).toFixed(0)} miles`
-              : "22 miles"}
+              ? `${(weeklyStats.run.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
+              : useTerminal ? "22 MI" : "22 miles"}
           </div>
-          <p className="text-xs text-white/50">
+          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
             {stravaConnected
-              ? `${weeklyStats.run.sessions} sessions`
-              : "5 sessions"}
+              ? `${weeklyStats.run.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
+              : useTerminal ? "5 SESSIONS" : "5 sessions"}
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-4"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-              <TbBolt className="w-5 h-5 text-purple-400" />
+            <div
+              className={
+                useTerminal
+                  ? "w-8 h-8 bg-accent-yellow/20 border border-accent-yellow/50 flex items-center justify-center"
+                  : "w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
+              <TbBolt className={useTerminal ? "w-5 h-5 text-accent-yellow" : "w-5 h-5 text-purple-400"} />
             </div>
             <div>
-              <p className="text-xs text-white/60 uppercase tracking-wide">
-                Training
+              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
+                {useTerminal ? "TRAINING" : "Training"}
               </p>
-              <p className="text-sm text-purple-300">Load</p>
+              <p className={useTerminal ? "text-sm text-accent-yellow font-mono font-bold" : "text-sm text-purple-300"}>
+                {useTerminal ? "LOAD" : "Load"}
+              </p>
             </div>
           </div>
-          <div className="text-2xl font-bold text-white">485</div>
-          <p className="text-xs text-green-300">Optimal range</p>
+          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>485</div>
+          <p className={useTerminal ? "text-xs text-[#4ECDC4] font-mono" : "text-xs text-green-300"}>
+            {useTerminal ? "OPTIMAL" : "Optimal range"}
+          </p>
         </div>
       </div>
 
       {/* Strava Connection Status */}
       {!stravaConnected && (
-        <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-2xl border border-orange-400/20 p-4 md:p-6 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-[#FF6B35] p-4 md:p-6"
+              : "bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-2xl border border-orange-400/20 p-4 md:p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">
-                Connect Strava
+              <h3 className={useTerminal ? "text-lg md:text-xl font-bold text-text-primary mb-1 md:mb-2 font-mono tracking-wider" : "text-lg md:text-xl font-bold text-white mb-1 md:mb-2"}>
+                {useTerminal ? "CONNECT STRAVA" : "Connect Strava"}
               </h3>
-              <p className="text-white/70 text-sm md:text-base">
-                Import your training activities automatically from Strava to get
-                real-time stats and progress tracking.
+              <p className={useTerminal ? "text-text-secondary text-sm md:text-base font-mono" : "text-white/70 text-sm md:text-base"}>
+                {useTerminal
+                  ? "IMPORT TRAINING ACTIVITIES FROM STRAVA FOR REAL-TIME STATS"
+                  : "Import your training activities automatically from Strava to get real-time stats and progress tracking."}
               </p>
             </div>
             <button
               onClick={handleStravaConnect}
-              className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0"
+              className={
+                useTerminal
+                  ? "bg-accent-yellow text-terminal-bg px-4 md:px-6 py-2 md:py-3 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0 border-2 border-accent-yellow"
+                  : "bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
               <span>🔗</span>
-              Connect Strava
+              {useTerminal ? "CONNECT STRAVA" : "Connect Strava"}
             </button>
           </div>
         </div>
@@ -938,31 +1017,49 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
       {/* Strava Sync Button */}
       {stravaConnected && (
-        <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-xl rounded-2xl border border-green-400/20 p-4 md:p-6 shadow-xl">
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-[#4ECDC4] p-4 md:p-6"
+              : "bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-xl rounded-2xl border border-green-400/20 p-4 md:p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-white mb-1">
-                Strava Connected ✅
+              <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-1 font-mono tracking-wider" : "text-lg font-bold text-white mb-1"}>
+                {useTerminal ? "STRAVA CONNECTED [✓]" : "Strava Connected ✅"}
               </h3>
-              <p className="text-white/70 text-sm">
-                Your training data is synced from Strava. Click refresh to get
-                the latest activities.
+              <p className={useTerminal ? "text-text-secondary text-sm font-mono" : "text-white/70 text-sm"}>
+                {useTerminal
+                  ? "DATA SYNCED FROM STRAVA. REFRESH FOR LATEST ACTIVITIES."
+                  : "Your training data is synced from Strava. Click refresh to get the latest activities."}
               </p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto">
               <button
                 onClick={handleStravaSync}
                 disabled={!stravaAccessToken || isLoading}
-                className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className={
+                  useTerminal
+                    ? "flex-1 sm:flex-none bg-[#4ECDC4]/20 text-[#4ECDC4] border-2 border-[#4ECDC4] px-4 py-2 font-mono font-bold hover:bg-[#4ECDC4]/30 transition-colors flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    : "flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
-                {isLoading ? "Syncing..." : "Refresh"}
+                {isLoading ? (useTerminal ? "SYNCING..." : "Syncing...") : (useTerminal ? "REFRESH" : "Refresh")}
               </button>
               <button
                 onClick={handleStravaDisconnect}
                 disabled={isLoading}
-                className="flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center justify-center text-sm border border-red-400/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className={
+                  useTerminal
+                    ? "flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 font-mono font-bold transition-colors flex items-center justify-center text-sm border-2 border-red-400 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    : "flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center justify-center text-sm border border-red-400/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
-                Disconnect
+                {useTerminal ? "DISCONNECT" : "Disconnect"}
               </button>
             </div>
           </div>
@@ -970,22 +1067,45 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       )}
 
       {/* Recent Workouts */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
+      <div
+        className={
+          useTerminal
+            ? "bg-terminal-panel border-2 border-terminal-border p-6"
+            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+        }
+        style={useTerminal ? { borderRadius: 0 } : undefined}
+      >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-white">Recent Workouts</h3>
+          <h3 className={useTerminal ? "text-xl font-bold text-text-primary font-mono tracking-wider" : "text-xl font-bold text-white"}>
+            {useTerminal ? "RECENT WORKOUTS" : "Recent Workouts"}
+          </h3>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                showFilters
-                  ? "bg-blue-500/20 text-blue-400 border border-blue-400/30"
-                  : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-              }`}
+              className={
+                useTerminal
+                  ? showFilters
+                    ? "bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
+                    : "bg-terminal-bg text-text-secondary border-2 border-terminal-border hover:border-text-secondary px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
+                  : `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                      showFilters
+                        ? "bg-blue-500/20 text-blue-400 border border-blue-400/30"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
+                    }`
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
               <span>🔍</span>
-              Filters
+              {useTerminal ? "FILTERS" : "Filters"}
               {(activityFilter !== "all" || dateFilter !== "all") && (
-                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                <span
+                  className={
+                    useTerminal
+                      ? "bg-accent-yellow text-terminal-bg text-xs px-2 py-1 font-mono font-bold"
+                      : "bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                >
                   {(activityFilter !== "all" ? 1 : 0) +
                     (dateFilter !== "all" ? 1 : 0)}
                 </span>
@@ -993,22 +1113,33 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             </button>
             <button
               onClick={() => setActiveTab("workouts")}
-              className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+              className={
+                useTerminal
+                  ? "text-accent-yellow hover:text-accent-yellow/80 text-sm font-mono font-bold"
+                  : "text-blue-400 hover:text-blue-300 text-sm font-medium"
+              }
             >
-              Log New Workout →
+              {useTerminal ? "LOG WORKOUT →" : "Log New Workout →"}
             </button>
           </div>
         </div>
 
         {/* Filter Controls */}
         {showFilters && (
-          <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-4 mb-6 transition-all duration-300">
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-bg border border-terminal-border p-4 mb-6 transition-all duration-300"
+                : "bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-4 mb-6 transition-all duration-300"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             <div className="space-y-4">
               {/* Activity Type Filter */}
               <div>
-                <h4 className="text-white/80 text-sm font-medium mb-3 flex items-center gap-2">
+                <h4 className={useTerminal ? "text-text-secondary text-sm font-mono font-bold mb-3 flex items-center gap-2 tracking-wider" : "text-white/80 text-sm font-medium mb-3 flex items-center gap-2"}>
                   <TbRun className="w-5 h-5" />
-                  Activity Type
+                  {useTerminal ? "ACTIVITY TYPE" : "Activity Type"}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -1017,41 +1148,54 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       label: "All Activities",
                       icon: "🔄",
                       color: "bg-white/10",
+                      terminalColor: "bg-terminal-bg border-terminal-border text-text-primary",
                     },
                     {
                       value: "swim",
                       label: "Swimming",
                       icon: "TbSwimming",
                       color: "bg-blue-500/20 border-blue-400/30 text-blue-400",
+                      terminalColor: "bg-[#00D4FF]/20 border-[#00D4FF] text-[#00D4FF]",
                     },
                     {
                       value: "bike",
                       label: "Cycling",
                       icon: "TbBike",
-                      color:
-                        "bg-orange-500/20 border-orange-400/30 text-orange-400",
+                      color: "bg-orange-500/20 border-orange-400/30 text-orange-400",
+                      terminalColor: "bg-[#FF6B35]/20 border-[#FF6B35] text-[#FF6B35]",
                     },
                     {
                       value: "run",
                       label: "Running",
                       icon: "TbRun",
-                      color:
-                        "bg-green-500/20 border-green-400/30 text-green-400",
+                      color: "bg-green-500/20 border-green-400/30 text-green-400",
+                      terminalColor: "bg-[#4ECDC4]/20 border-[#4ECDC4] text-[#4ECDC4]",
                     },
                   ].map((type) => (
                     <button
                       key={type.value}
                       onClick={() => setActivityFilter(type.value as any)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 border ${
-                        activityFilter === type.value
-                          ? type.color
-                          : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
-                      }`}
+                      className={
+                        useTerminal
+                          ? `px-3 py-2 text-sm font-mono font-bold transition-colors flex items-center gap-2 border-2 ${
+                              activityFilter === type.value
+                                ? type.terminalColor
+                                : "bg-terminal-bg border-terminal-border text-text-secondary hover:border-text-secondary"
+                            }`
+                          : `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 border ${
+                              activityFilter === type.value
+                                ? type.color
+                                : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
+                            }`
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     >
                       {renderIcon(type.icon, "w-4 h-4")}
-                      <span className="hidden sm:inline">{type.label}</span>
+                      <span className="hidden sm:inline">
+                        {useTerminal ? type.label.toUpperCase() : type.label}
+                      </span>
                       <span className="sm:hidden">
-                        {type.label.split(" ")[0]}
+                        {useTerminal ? type.label.split(" ")[0].toUpperCase() : type.label.split(" ")[0]}
                       </span>
                     </button>
                   ))}
@@ -1060,9 +1204,9 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
               {/* Date Range Filter */}
               <div>
-                <h4 className="text-white/80 text-sm font-medium mb-3 flex items-center gap-2">
+                <h4 className={useTerminal ? "text-text-secondary text-sm font-mono font-bold mb-3 flex items-center gap-2 tracking-wider" : "text-white/80 text-sm font-medium mb-3 flex items-center gap-2"}>
                   <span>📅</span>
-                  Time Period
+                  {useTerminal ? "TIME PERIOD" : "Time Period"}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -1073,14 +1217,25 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                     <button
                       key={period.value}
                       onClick={() => setDateFilter(period.value as any)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 border ${
-                        dateFilter === period.value
-                          ? "bg-purple-500/20 border-purple-400/30 text-purple-400"
-                          : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
-                      }`}
+                      className={
+                        useTerminal
+                          ? `px-3 py-2 text-sm font-mono font-bold transition-colors flex items-center gap-2 border-2 ${
+                              dateFilter === period.value
+                                ? "bg-accent-yellow/20 border-accent-yellow text-accent-yellow"
+                                : "bg-terminal-bg border-terminal-border text-text-secondary hover:border-text-secondary"
+                            }`
+                          : `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 border ${
+                              dateFilter === period.value
+                                ? "bg-purple-500/20 border-purple-400/30 text-purple-400"
+                                : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
+                            }`
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     >
                       {renderIcon(period.icon, "w-4 h-4")}
-                      <span className="hidden sm:inline">{period.label}</span>
+                      <span className="hidden sm:inline">
+                        {useTerminal ? period.label.toUpperCase() : period.label}
+                      </span>
                       <span className="sm:hidden">
                         {
                           period.label.split(" ")[
@@ -1094,15 +1249,17 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </div>
 
               {/* Filter Actions */}
-              <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                <div className="text-sm text-white/60">
+              <div className={useTerminal ? "flex items-center justify-between pt-2 border-t border-terminal-border" : "flex items-center justify-between pt-2 border-t border-white/10"}>
+                <div className={useTerminal ? "text-sm text-text-secondary font-mono" : "text-sm text-white/60"}>
                   {(() => {
                     const filteredWorkouts = getFilteredWorkouts(
                       workoutLogs,
                       activityFilter,
                       dateFilter,
                     );
-                    return `Showing ${filteredWorkouts.length} of ${workoutLogs.length} workouts`;
+                    return useTerminal
+                      ? `SHOWING ${filteredWorkouts.length} OF ${workoutLogs.length} WORKOUTS`
+                      : `Showing ${filteredWorkouts.length} of ${workoutLogs.length} workouts`;
                   })()}
                 </div>
                 {(activityFilter !== "all" || dateFilter !== "all") && (
@@ -1111,10 +1268,15 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       setActivityFilter("all");
                       setDateFilter("all");
                     }}
-                    className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-1 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-1"
+                    className={
+                      useTerminal
+                        ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-1 text-sm font-mono font-bold transition-colors flex items-center gap-1 border-2 border-red-400"
+                        : "bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-1 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-1"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
                     <span>🧹</span>
-                    Clear Filters
+                    {useTerminal ? "CLEAR FILTERS" : "Clear Filters"}
                   </button>
                 )}
               </div>

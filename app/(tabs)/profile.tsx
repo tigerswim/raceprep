@@ -730,8 +730,8 @@ function ProfileScreenContent() {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            Full Name
+                          <label className={useTerminal ? "block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider" : "block text-white/80 text-sm font-medium mb-2"}>
+                            {useTerminal ? "FULL NAME" : "Full Name"}
                           </label>
                           <input
                             type="text"
@@ -742,8 +742,13 @@ function ProfileScreenContent() {
                                 name: e.target.value,
                               })
                             }
-                            placeholder="Enter your full name"
-                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder={useTerminal ? "ENTER YOUR FULL NAME" : "Enter your full name"}
+                            className={
+                              useTerminal
+                                ? "w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow"
+                                : "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
                           />
                         </div>
                         <div>

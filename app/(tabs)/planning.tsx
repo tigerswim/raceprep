@@ -233,40 +233,61 @@ export default function PlanningScreen() {
                           {useTerminal ? 'PRE-RACE NUTRITION PLAN' : 'Pre-Race Nutrition Plan'}
                         </h3>
                         <div className="grid md:grid-cols-3 gap-4">
-                          <div className="bg-white/5 rounded-xl p-4">
-                            <h4 className="text-white font-semibold mb-2">
-                              3 Days Before
+                          <div
+                            className={
+                              useTerminal
+                                ? "bg-terminal-bg border border-terminal-border p-4"
+                                : "bg-white/5 rounded-xl p-4"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                          >
+                            <h4 className={useTerminal ? "text-text-primary font-mono font-bold mb-2" : "text-white font-semibold mb-2"}>
+                              {useTerminal ? "3 DAYS BEFORE" : "3 Days Before"}
                             </h4>
-                            <p className="text-white/70 text-sm">
-                              Carb loading begins
+                            <p className={useTerminal ? "text-text-secondary text-sm font-mono" : "text-white/70 text-sm"}>
+                              {useTerminal ? "CARB LOADING BEGINS" : "Carb loading begins"}
                             </p>
-                            <p className="text-green-400 text-sm mt-2">
-                              • Complex carbohydrates
-                              <br />• Hydration focus
+                            <p className={useTerminal ? "text-[#4ECDC4] text-sm mt-2 font-mono" : "text-green-400 text-sm mt-2"}>
+                              • {useTerminal ? "COMPLEX CARBS" : "Complex carbohydrates"}
+                              <br />• {useTerminal ? "HYDRATION FOCUS" : "Hydration focus"}
                             </p>
                           </div>
-                          <div className="bg-white/5 rounded-xl p-4">
-                            <h4 className="text-white font-semibold mb-2">
-                              Race Morning
+                          <div
+                            className={
+                              useTerminal
+                                ? "bg-terminal-bg border border-terminal-border p-4"
+                                : "bg-white/5 rounded-xl p-4"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                          >
+                            <h4 className={useTerminal ? "text-text-primary font-mono font-bold mb-2" : "text-white font-semibold mb-2"}>
+                              {useTerminal ? "RACE MORNING" : "Race Morning"}
                             </h4>
-                            <p className="text-white/70 text-sm">
-                              Light, familiar foods
+                            <p className={useTerminal ? "text-text-secondary text-sm font-mono" : "text-white/70 text-sm"}>
+                              {useTerminal ? "LIGHT, FAMILIAR FOODS" : "Light, familiar foods"}
                             </p>
-                            <p className="text-blue-400 text-sm mt-2">
-                              • Banana + peanut butter
-                              <br />• Coffee (if usual)
+                            <p className={useTerminal ? "text-[#00D4FF] text-sm mt-2 font-mono" : "text-blue-400 text-sm mt-2"}>
+                              • {useTerminal ? "BANANA + PEANUT BUTTER" : "Banana + peanut butter"}
+                              <br />• {useTerminal ? "COFFEE (IF USUAL)" : "Coffee (if usual)"}
                             </p>
                           </div>
-                          <div className="bg-white/5 rounded-xl p-4">
-                            <h4 className="text-white font-semibold mb-2">
-                              During Race
+                          <div
+                            className={
+                              useTerminal
+                                ? "bg-terminal-bg border border-terminal-border p-4"
+                                : "bg-white/5 rounded-xl p-4"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                          >
+                            <h4 className={useTerminal ? "text-text-primary font-mono font-bold mb-2" : "text-white font-semibold mb-2"}>
+                              {useTerminal ? "DURING RACE" : "During Race"}
                             </h4>
-                            <p className="text-white/70 text-sm">
-                              Fuel strategy
+                            <p className={useTerminal ? "text-text-secondary text-sm font-mono" : "text-white/70 text-sm"}>
+                              {useTerminal ? "FUEL STRATEGY" : "Fuel strategy"}
                             </p>
-                            <p className="text-orange-400 text-sm mt-2">
-                              • Gels every 45min
-                              <br />• Electrolyte drinks
+                            <p className={useTerminal ? "text-[#FF6B35] text-sm mt-2 font-mono" : "text-orange-400 text-sm mt-2"}>
+                              • {useTerminal ? "GELS EVERY 45MIN" : "Gels every 45min"}
+                              <br />• {useTerminal ? "ELECTROLYTE DRINKS" : "Electrolyte drinks"}
                             </p>
                           </div>
                         </div>
@@ -285,20 +306,29 @@ export default function PlanningScreen() {
                         }>
                           {useTerminal ? 'HYDRATION CALCULATOR' : 'Hydration Calculator'}
                         </h3>
-                        <div className="bg-blue-500/10 rounded-xl p-4">
-                          <p className="text-blue-300 mb-2">
-                            For a 1:30:00 race duration:
+                        <div
+                          className={
+                            useTerminal
+                              ? "bg-[#00D4FF]/10 border border-[#00D4FF]/50 p-4"
+                              : "bg-blue-500/10 rounded-xl p-4"
+                          }
+                          style={useTerminal ? { borderRadius: 0 } : undefined}
+                        >
+                          <p className={useTerminal ? "text-[#00D4FF] mb-2 font-mono font-bold" : "text-blue-300 mb-2"}>
+                            {useTerminal ? "FOR A 1:30:00 RACE DURATION:" : "For a 1:30:00 race duration:"}
                           </p>
-                          <div className="grid grid-cols-2 gap-4 text-white">
+                          <div className={useTerminal ? "grid grid-cols-2 gap-4 text-text-primary font-mono" : "grid grid-cols-2 gap-4 text-white"}>
                             <div>
-                              <span className="text-white/70">Pre-race: </span>
-                              <span className="font-semibold">16-20oz</span>
+                              <span className={useTerminal ? "text-text-secondary" : "text-white/70"}>
+                                {useTerminal ? "PRE-RACE: " : "Pre-race: "}
+                              </span>
+                              <span className={useTerminal ? "font-bold" : "font-semibold"}>16-20oz</span>
                             </div>
                             <div>
-                              <span className="text-white/70">
-                                During race:{" "}
+                              <span className={useTerminal ? "text-text-secondary" : "text-white/70"}>
+                                {useTerminal ? "DURING RACE: " : "During race: "}
                               </span>
-                              <span className="font-semibold">
+                              <span className={useTerminal ? "font-bold" : "font-semibold"}>
                                 6-8oz every 15min
                               </span>
                             </div>
@@ -398,31 +428,52 @@ export default function PlanningScreen() {
                         </div>
                       </div>
 
-                      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                        <h3 className="text-xl font-bold text-white mb-4">
-                          Transition Setup
+                      <div
+                        className={
+                          useTerminal
+                            ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      >
+                        <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" : "text-xl font-bold text-white mb-4"}>
+                          {useTerminal ? "TRANSITION SETUP" : "Transition Setup"}
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
-                          <div className="bg-blue-500/10 rounded-xl p-4">
-                            <h4 className="text-blue-300 font-semibold mb-2">
-                              T1: Swim → Bike
+                          <div
+                            className={
+                              useTerminal
+                                ? "bg-[#00D4FF]/10 border border-[#00D4FF]/50 p-4"
+                                : "bg-blue-500/10 rounded-xl p-4"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                          >
+                            <h4 className={useTerminal ? "text-[#00D4FF] font-mono font-bold mb-2" : "text-blue-300 font-semibold mb-2"}>
+                              {useTerminal ? "T1: SWIM → BIKE" : "T1: Swim → Bike"}
                             </h4>
-                            <ul className="text-white/80 text-sm space-y-1">
-                              <li>• Towel for feet</li>
-                              <li>• Cycling shoes ready</li>
-                              <li>• Helmet on first</li>
-                              <li>• Nutrition in bike bottle</li>
+                            <ul className={useTerminal ? "text-text-secondary text-sm space-y-1 font-mono" : "text-white/80 text-sm space-y-1"}>
+                              <li>• {useTerminal ? "TOWEL FOR FEET" : "Towel for feet"}</li>
+                              <li>• {useTerminal ? "CYCLING SHOES READY" : "Cycling shoes ready"}</li>
+                              <li>• {useTerminal ? "HELMET ON FIRST" : "Helmet on first"}</li>
+                              <li>• {useTerminal ? "NUTRITION IN BIKE BOTTLE" : "Nutrition in bike bottle"}</li>
                             </ul>
                           </div>
-                          <div className="bg-orange-500/10 rounded-xl p-4">
-                            <h4 className="text-orange-300 font-semibold mb-2">
-                              T2: Bike → Run
+                          <div
+                            className={
+                              useTerminal
+                                ? "bg-[#FF6B35]/10 border border-[#FF6B35]/50 p-4"
+                                : "bg-orange-500/10 rounded-xl p-4"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                          >
+                            <h4 className={useTerminal ? "text-[#FF6B35] font-mono font-bold mb-2" : "text-orange-300 font-semibold mb-2"}>
+                              {useTerminal ? "T2: BIKE → RUN" : "T2: Bike → Run"}
                             </h4>
-                            <ul className="text-white/80 text-sm space-y-1">
-                              <li>• Running shoes loose laced</li>
-                              <li>• Race belt with number</li>
-                              <li>• Hat & sunglasses ready</li>
-                              <li>• Running nutrition</li>
+                            <ul className={useTerminal ? "text-text-secondary text-sm space-y-1 font-mono" : "text-white/80 text-sm space-y-1"}>
+                              <li>• {useTerminal ? "RUNNING SHOES LOOSE LACED" : "Running shoes loose laced"}</li>
+                              <li>• {useTerminal ? "RACE BELT WITH NUMBER" : "Race belt with number"}</li>
+                              <li>• {useTerminal ? "HAT & SUNGLASSES READY" : "Hat & sunglasses ready"}</li>
+                              <li>• {useTerminal ? "RUNNING NUTRITION" : "Running nutrition"}</li>
                             </ul>
                           </div>
                         </div>
