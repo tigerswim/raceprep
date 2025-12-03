@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { dbHelpers } from '../../services/supabase';
 import { TerminalCard, TerminalBarChart } from '../ui/terminal';
+import { terminalView, terminalText, mergeStyles } from '../ui/terminal/terminalStyles';
 
 interface DailyTrainingData {
   date: string;
