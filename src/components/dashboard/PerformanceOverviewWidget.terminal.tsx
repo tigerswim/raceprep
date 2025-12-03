@@ -366,55 +366,47 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       margin: 10
     }}>
       {/* Header */}
-      <Text style={{
-        fontFamily: 'monospace',
-        fontSize: 12,
-        fontWeight: '600',
-        textTransform: 'uppercase',
-        letterSpacing: 1.5,
-        color: colors.textSecondary,
-        marginBottom: 24
-      }}>
-        Performance Overview
+      <Text style={mergeStyles(terminalText.header, { marginBottom: 24 })}>
+        PERFORMANCE OVERVIEW
       </Text>
 
       {/* Weekly Summary Stats */}
       <View style={{ flexDirection: width < 768 ? 'column' : 'row', gap: 12, marginBottom: 24 }}>
         {/* Time */}
         <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginBottom: 4 })}>
             TIME
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={terminalText.xlarge}>
             {formatTime(stats.last7Days.totalTime)}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
             {stats.weekOverWeek.timeChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.timeChange))}%
           </Text>
         </View>
 
         {/* Distance */}
         <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginBottom: 4 })}>
             DIST
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={terminalText.xlarge}>
             {formatDistance(stats.last7Days.totalDistance)}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
             {stats.weekOverWeek.distanceChange >= 0 ? '▲' : '▼'} {Math.abs(Math.round(stats.weekOverWeek.distanceChange))}%
           </Text>
         </View>
 
         {/* Activities */}
         <View style={{ flex: 1, backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 9, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginBottom: 4 })}>
             ACT
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 34, fontWeight: 'bold', color: colors.textPrimary }}>
+          <Text style={terminalText.xlarge}>
             {stats.last7Days.activities}
           </Text>
-          <Text style={{ fontFamily: 'monospace', fontSize: 8, color: colors.textSecondary, marginTop: 4 }}>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
             LAST 7D
           </Text>
         </View>
@@ -422,30 +414,30 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
 
       {/* Discipline Breakdown */}
       <View style={{ marginBottom: 24 }}>
-        <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1.5, color: colors.textSecondary, marginBottom: 12 }}>
+        <Text style={mergeStyles(terminalText.subheader, { marginBottom: 12 })}>
           BY DISCIPLINE
         </Text>
         <View style={{ gap: 8 }}>
           {/* Swim */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.swim, fontWeight: '600' }}>[SWIM]</Text>
-            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+            <Text style={terminalText.swim}>[SWIM]</Text>
+            <Text style={terminalText.primary}>
               {formatTime(stats.last7Days.swim.time)} • {formatDistance(stats.last7Days.swim.distance, 'swim')}
             </Text>
           </View>
 
           {/* Bike */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.bike, fontWeight: '600' }}>[BIKE]</Text>
-            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+            <Text style={terminalText.bike}>[BIKE]</Text>
+            <Text style={terminalText.primary}>
               {formatTime(stats.last7Days.bike.time)} • {formatDistance(stats.last7Days.bike.distance, 'bike')}
             </Text>
           </View>
 
           {/* Run */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0A0E14', borderWidth: 1, borderColor: colors.border, padding: 12 }}>
-            <Text style={{ fontFamily: 'monospace', fontSize: 12, color: colors.run, fontWeight: '600' }}>[RUN]</Text>
-            <Text style={{ fontFamily: 'monospace', fontSize: 14, color: colors.textPrimary }}>
+            <Text style={terminalText.run}>[RUN]</Text>
+            <Text style={terminalText.primary}>
               {formatTime(stats.last7Days.run.time)} • {formatDistance(stats.last7Days.run.distance, 'run')}
             </Text>
           </View>
@@ -455,11 +447,11 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       {/* Footer */}
       <View style={{ paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={{ fontFamily: 'monospace', fontSize: 10, color: colors.textSecondary, textTransform: 'uppercase' }}>
+          <Text style={terminalText.small}>
             7-DAY SUMMARY
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/training')}>
-            <Text style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: '600', color: colors.yellow, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+            <Text style={terminalText.yellow}>
               VIEW TRAINING →
             </Text>
           </TouchableOpacity>
