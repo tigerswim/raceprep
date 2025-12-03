@@ -70,12 +70,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setLoading(false);
   };
 
-  const handleQuickDemo = () => {
-    setEmail('demo@raceprep.app');
-    setPassword('demopassword123');
-    setName('Demo User');
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div
@@ -256,42 +250,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 }
               </button>
             </div>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={handleQuickDemo}
-                className={useTerminal ?
-                  "text-accent-yellow hover:text-accent-yellow/80 text-xs underline font-mono tracking-wider" :
-                  "text-blue-400 hover:text-blue-300 text-sm underline"
-                }
-              >
-                {useTerminal ? 'FILL DEMO CREDENTIALS' : 'Fill demo credentials'}
-              </button>
-            </div>
           </form>
-
-          <div
-            className={useTerminal ?
-              "mt-6 p-4 bg-blue-500/10 border-2 border-blue-400/30" :
-              "mt-6 p-4 bg-blue-500/10 rounded-xl"
-            }
-            style={useTerminal ? { borderRadius: 0 } : undefined}
-          >
-            <p className={useTerminal ?
-              "text-blue-300 text-xs mb-2 font-medium font-mono tracking-wider" :
-              "text-blue-300 text-sm mb-2 font-medium"
-            }>
-              {useTerminal ? 'FOR TESTING:' : 'For Testing:'}
-            </p>
-            <p className={useTerminal ?
-              "text-text-secondary text-xs font-mono" :
-              "text-white/70 text-xs"
-            }>
-              Use the &quot;Fill demo credentials&quot; button above, or create any email/password combination.
-              No real email verification required for development.
-            </p>
-          </div>
         </div>
       </div>
     </div>
