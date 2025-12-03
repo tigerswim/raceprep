@@ -5,6 +5,7 @@ import { dbHelpers } from "../../src/services/supabase";
 import { userDataService } from "../../src/services/userDataService";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { AuthModal } from "../../src/components/AuthModal";
+import { ConfirmDialog } from "../../src/components/ConfirmDialog";
 import { useTerminalModeToggle } from "../../src/hooks/useTerminalModeToggle";
 import { getTerminalModeState } from "../../src/utils/featureFlags";
 import {
@@ -85,6 +86,8 @@ function ProfileScreenContent() {
     target_value: "",
     target_date: "",
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<any>(null);
   const [dataOperationInProgress, setDataOperationInProgress] = useState(false);
   const [showDeletionConfirm, setShowDeletionConfirm] = useState(false);
 
@@ -321,17 +324,28 @@ function ProfileScreenContent() {
     }
   };
 
-  const deleteGoal = async (goalId: string) => {
-    if (confirm("Are you sure you want to delete this goal?")) {
-      try {
-        await dbHelpers.userGoals.delete(goalId);
-        setUserGoals(userGoals.filter((g) => g.id !== goalId));
-        alert("Goal deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting goal:", error);
-        alert("Error deleting goal");
-      }
+  const deleteGoal = async (goal: any) => {
+    setGoalToDelete(goal);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteGoal = async () => {
+    if (!goalToDelete) return;
+
+    try {
+      await dbHelpers.userGoals.delete(goalToDelete.id);
+      setUserGoals(userGoals.filter((g) => g.id !== goalToDelete.id));
+      setShowDeleteConfirm(false);
+      setGoalToDelete(null);
+    } catch (error) {
+      console.error("Error deleting goal:", error);
+      alert("Error deleting goal");
     }
+  };
+
+  const cancelDeleteGoal = () => {
+    setShowDeleteConfirm(false);
+    setGoalToDelete(null);
   };
 
   const getUserInitials = () => {
@@ -922,7 +936,7 @@ function ProfileScreenContent() {
                                   Edit
                                 </button>
                                 <button
-                                  onClick={() => deleteGoal(goal.id)}
+                                  onClick={() => deleteGoal(goal)}
                                   className="text-red-400 hover:text-red-300 text-sm"
                                 >
                                   Delete
@@ -1567,6 +1581,18 @@ function ProfileScreenContent() {
               </div>
             </div>
           )}
+
+          {/* Delete Goal Confirmation */}
+          <ConfirmDialog
+            isOpen={showDeleteConfirm}
+            title="Delete Goal"
+            message="Are you sure you want to delete this goal? This action cannot be undone."
+            confirmLabel="Delete"
+            cancelLabel="Cancel"
+            onConfirm={confirmDeleteGoal}
+            onCancel={cancelDeleteGoal}
+            variant="danger"
+          />
         </div>
       </div>
     </Provider>
