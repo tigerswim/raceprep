@@ -1430,23 +1430,63 @@ function RacesScreenContent() {
   const renderRaceCard = (race: any, showSaveButton: boolean = true) => (
     <div
       key={`${race.id}-${race.status}-${race._lastUpdated}-${renderKey}`}
-      className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl hover:bg-white/10 transition-all duration-300 w-full max-w-full overflow-hidden"
+      className={
+        useTerminal
+          ? "bg-terminal-panel border-2 border-terminal-border p-4 sm:p-6 hover:border-accent-yellow transition-colors w-full max-w-full overflow-hidden"
+          : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl hover:bg-white/10 transition-all duration-300 w-full max-w-full overflow-hidden"
+      }
+      style={useTerminal ? { borderRadius: 0 } : undefined}
     >
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg sm:text-xl font-bold text-white mb-1 truncate">
+          <h3
+            className={
+              useTerminal
+                ? "text-lg sm:text-xl font-bold text-text-primary mb-1 truncate font-mono tracking-wider uppercase"
+                : "text-lg sm:text-xl font-bold text-white mb-1 truncate"
+            }
+          >
             {race.name}
           </h3>
-          <p className="text-blue-400 font-medium">
+          <p
+            className={
+              useTerminal
+                ? "text-accent-yellow font-medium font-mono"
+                : "text-blue-400 font-medium"
+            }
+          >
             {new Date(race.date).toLocaleDateString()}
           </p>
-          <p className="text-white/70 text-sm break-words">{race.location}</p>
+          <p
+            className={
+              useTerminal
+                ? "text-text-secondary text-sm break-words font-mono"
+                : "text-white/70 text-sm break-words"
+            }
+          >
+            {race.location}
+          </p>
           {race.source && (
-            <p className="text-white/50 text-xs mt-1">Source: {race.source}</p>
+            <p
+              className={
+                useTerminal
+                  ? "text-text-secondary text-xs mt-1 font-mono uppercase"
+                  : "text-white/50 text-xs mt-1"
+              }
+            >
+              Source: {race.source}
+            </p>
           )}
         </div>
         <div className="flex sm:flex-col items-start sm:items-end gap-2">
-          <span className="bg-orange-500/20 text-orange-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium capitalize whitespace-nowrap">
+          <span
+            className={
+              useTerminal
+                ? "bg-accent-yellow text-terminal-bg px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold uppercase whitespace-nowrap font-mono"
+                : "bg-orange-500/20 text-orange-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium capitalize whitespace-nowrap"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             {race.distance_type}
           </span>
           {race.status && !showSaveButton && (
@@ -1459,17 +1499,34 @@ function RacesScreenContent() {
                     e.target.value as "interested" | "registered" | "completed",
                   )
                 }
-                className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-transparent border-0 outline-none cursor-pointer ${
-                  race.status === "registered"
-                    ? "bg-green-500/20 text-green-300"
-                    : race.status === "completed"
-                      ? "bg-blue-500/20 text-blue-300"
-                      : "bg-yellow-500/20 text-yellow-300"
-                }`}
+                className={
+                  useTerminal
+                    ? `px-3 py-1 text-xs sm:text-sm font-bold font-mono uppercase border-2 cursor-pointer ${
+                        race.status === "registered"
+                          ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
+                          : race.status === "completed"
+                            ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
+                            : "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
+                      }`
+                    : `px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-transparent border-0 outline-none cursor-pointer ${
+                        race.status === "registered"
+                          ? "bg-green-500/20 text-green-300"
+                          : race.status === "completed"
+                            ? "bg-blue-500/20 text-blue-300"
+                            : "bg-yellow-500/20 text-yellow-300"
+                      }`
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
-                <option value="interested">Interested</option>
-                <option value="registered">Registered</option>
-                <option value="completed">Complete</option>
+                <option value="interested">
+                  {useTerminal ? "INTERESTED" : "Interested"}
+                </option>
+                <option value="registered">
+                  {useTerminal ? "REGISTERED" : "Registered"}
+                </option>
+                <option value="completed">
+                  {useTerminal ? "COMPLETE" : "Complete"}
+                </option>
               </select>
             </div>
           )}
@@ -1477,7 +1534,13 @@ function RacesScreenContent() {
       </div>
 
       {race.description && (
-        <p className="text-white/70 mb-4 text-sm line-clamp-2 break-words">
+        <p
+          className={
+            useTerminal
+              ? "text-text-secondary mb-4 text-sm line-clamp-2 break-words font-mono"
+              : "text-white/70 mb-4 text-sm line-clamp-2 break-words"
+          }
+        >
           {race.description}
         </p>
       )}
@@ -1508,11 +1571,20 @@ function RacesScreenContent() {
           {showSaveButton && user && (
             <>
               <button
-                className={`py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1 ${
-                  savedRaces.includes(race.id)
-                    ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                    : "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
-                }`}
+                className={
+                  useTerminal
+                    ? `py-2 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1 border-2 ${
+                        savedRaces.includes(race.id)
+                          ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4] hover:bg-[#4ECDC4]/30"
+                          : "bg-accent-yellow text-terminal-bg border-accent-yellow hover:bg-accent-yellow/90"
+                      }`
+                    : `py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1 ${
+                        savedRaces.includes(race.id)
+                          ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                          : "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
+                      }`
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() =>
                   savedRaces.includes(race.id)
                     ? unsaveRace(race.id)
@@ -1522,27 +1594,47 @@ function RacesScreenContent() {
               >
                 {savingRaces.includes(race.id) ? (
                   <span className="flex items-center justify-center gap-1">
-                    <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    {savedRaces.includes(race.id) ? "Removing..." : "Saving..."}
+                    <div
+                      className={
+                        useTerminal
+                          ? "w-3 h-3 border-2 border-current border-t-transparent animate-spin"
+                          : "w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                    ></div>
+                    {savedRaces.includes(race.id)
+                      ? useTerminal
+                        ? "REMOVING..."
+                        : "Removing..."
+                      : useTerminal
+                        ? "SAVING..."
+                        : "Saving..."}
                   </span>
                 ) : savedRaces.includes(race.id) ? (
                   <span className="flex items-center justify-center gap-1">
-                    <TbTrash className="w-4 h-4" /> Remove
+                    <TbTrash className="w-4 h-4" />{" "}
+                    {useTerminal ? "REMOVE" : "Remove"}
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-1">
-                    <TbStar className="w-4 h-4" /> Save
+                    <TbStar className="w-4 h-4" />{" "}
+                    {useTerminal ? "SAVE" : "Save"}
                   </span>
                 )}
               </button>
               <button
-                className="py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                className={
+                  useTerminal
+                    ? "py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                    : "py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() =>
                   race.registration_url &&
                   window.open(race.registration_url, "_blank")
                 }
               >
-                Register
+                {useTerminal ? "REGISTER" : "Register"}
               </button>
               <div className="col-span-1"></div>
             </>
@@ -1552,7 +1644,12 @@ function RacesScreenContent() {
             <>
               {/* Update Race Details button */}
               <button
-                className="py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                className={
+                  useTerminal
+                    ? "py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                    : "py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() => openUpdateModal(race)}
               >
                 <span className="flex items-center justify-center gap-1">
@@ -1569,13 +1666,18 @@ function RacesScreenContent() {
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                     />
                   </svg>
-                  Update
+                  {useTerminal ? "UPDATE" : "Update"}
                 </span>
               </button>
 
               {/* Planning button for saved races */}
               <button
-                className="py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                className={
+                  useTerminal
+                    ? "py-2 bg-[#FF6B35]/20 text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FF6B35]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                    : "py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() => {
                   // Store the race data in localStorage for the Planning tab to access
                   localStorage.setItem(
@@ -1587,24 +1689,38 @@ function RacesScreenContent() {
                 }}
               >
                 <span className="flex items-center justify-center gap-1">
-                  <TbClipboard className="w-4 h-4" /> Plan Race
+                  <TbClipboard className="w-4 h-4" />{" "}
+                  {useTerminal ? "PLAN RACE" : "Plan Race"}
                 </span>
               </button>
 
               {/* Remove button for saved races */}
               <button
-                className="py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                className={
+                  useTerminal
+                    ? "py-2 bg-red-500/20 text-red-400 border-2 border-red-400 hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                    : "py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() => unsaveRace(race.externalRaceId || race.id)}
                 disabled={savingRaces.includes(race.externalRaceId || race.id)}
               >
                 {savingRaces.includes(race.externalRaceId || race.id) ? (
                   <span className="flex items-center justify-center gap-1">
-                    <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    Removing...
+                    <div
+                      className={
+                        useTerminal
+                          ? "w-3 h-3 border-2 border-current border-t-transparent animate-spin"
+                          : "w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                    ></div>
+                    {useTerminal ? "REMOVING..." : "Removing..."}
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-1">
-                    <TbTrash className="w-4 h-4" /> Remove
+                    <TbTrash className="w-4 h-4" />{" "}
+                    {useTerminal ? "REMOVE" : "Remove"}
                   </span>
                 )}
               </button>
