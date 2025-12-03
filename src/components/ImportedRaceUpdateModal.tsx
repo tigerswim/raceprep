@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTerminalModeToggle } from '../hooks/useTerminalModeToggle';
+import { getTerminalModeState } from '../utils/featureFlags';
 
 interface ImportedRaceUpdateModalProps {
   race: any;
@@ -17,6 +19,27 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [userSettings, setUserSettings] = useState<any>(null);
+
+  // Terminal mode
+  useTerminalModeToggle();
+  const [useTerminal, setUseTerminal] = useState(() => {
+    const override = getTerminalModeState();
+    if (override !== false) return override;
+    return true;
+  });
+
+  // Listen for terminal mode changes
+  useEffect(() => {
+    const handleTerminalModeChange = () => {
+      setUseTerminal(getTerminalModeState());
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
+      return () => {
+        window.removeEventListener("terminalModeChanged", handleTerminalModeChange);
+      };
+    }
+  }, []);
   const [formData, setFormData] = useState({
     distance_type: 'sprint',
     status: 'interested' as 'interested' | 'registered' | 'completed',
@@ -414,8 +437,19 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   if (!userSettings) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
-          <div className="text-white text-center">Loading...</div>
+        <div
+          className={useTerminal ?
+            "bg-terminal-panel border-2 border-terminal-border p-6" :
+            "bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 p-6"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <div className={useTerminal ?
+            "text-text-primary text-center font-mono" :
+            "text-white text-center"
+          }>
+            {useTerminal ? 'LOADING...' : 'Loading...'}
+          </div>
         </div>
       </div>
     );
@@ -423,13 +457,27 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className={useTerminal ?
+          "bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto" :
+          "bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-auto"
+        }
+        style={useTerminal ? { borderRadius: 0 } : undefined}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Update Race Details</h2>
+            <h2 className={useTerminal ?
+              "text-xl font-bold text-text-primary font-mono tracking-wider" :
+              "text-2xl font-bold text-white"
+            }>
+              {useTerminal ? 'UPDATE RACE DETAILS' : 'Update Race Details'}
+            </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className={useTerminal ?
+                "text-text-secondary hover:text-text-primary text-2xl font-mono" :
+                "text-white/70 hover:text-white text-2xl"
+              }
             >
               ×
             </button>
@@ -447,36 +495,50 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Distance Type Selection */}
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Distance I'm Competing In *
+                  <label className={useTerminal ?
+                    "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                    "block text-white/80 text-sm font-medium mb-2"
+                  }>
+                    {useTerminal ? 'DISTANCE I\'M COMPETING IN *' : 'Distance I\'m Competing In *'}
                   </label>
                   <select
                     value={formData.distance_type}
                     onChange={(e) => handleDistanceTypeChange(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={useTerminal ?
+                      "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
+                      "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                     required
                   >
-                    <option value="sprint">Sprint</option>
-                    <option value="olympic">Olympic</option>
-                    <option value="half">Half Ironman (70.3)</option>
-                    <option value="ironman">Ironman</option>
+                    <option value="sprint">{useTerminal ? 'SPRINT' : 'Sprint'}</option>
+                    <option value="olympic">{useTerminal ? 'OLYMPIC' : 'Olympic'}</option>
+                    <option value="half">{useTerminal ? 'HALF IRONMAN (70.3)' : 'Half Ironman (70.3)'}</option>
+                    <option value="ironman">{useTerminal ? 'IRONMAN' : 'Ironman'}</option>
                   </select>
                 </div>
 
                 {/* Status Selection */}
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Status *
+                  <label className={useTerminal ?
+                    "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
+                    "block text-white/80 text-sm font-medium mb-2"
+                  }>
+                    {useTerminal ? 'STATUS *' : 'Status *'}
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => handleInputChange('status', e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={useTerminal ?
+                      "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
+                      "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                     required
                   >
-                    <option value="interested">Interested</option>
-                    <option value="registered">Registered</option>
-                    <option value="completed">Completed</option>
+                    <option value="interested">{useTerminal ? 'INTERESTED' : 'Interested'}</option>
+                    <option value="registered">{useTerminal ? 'REGISTERED' : 'Registered'}</option>
+                    <option value="completed">{useTerminal ? 'COMPLETED' : 'Completed'}</option>
                   </select>
                 </div>
               </div>
@@ -617,23 +679,31 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
+                className={useTerminal ?
+                  "bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 font-mono tracking-wider" :
+                  "bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
-                Cancel
+                {useTerminal ? 'CANCEL' : 'Cancel'}
               </button>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className={useTerminal ?
+                  "bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-mono tracking-wider" :
+                  "bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    Updating...
+                    {useTerminal ? 'UPDATING...' : 'Updating...'}
                   </>
                 ) : (
-                  'Update Race'
+                  useTerminal ? 'UPDATE RACE' : 'Update Race'
                 )}
               </button>
             </div>
