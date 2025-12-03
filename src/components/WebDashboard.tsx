@@ -520,62 +520,62 @@ export const WebDashboard: React.FC = () => {
             <GoalsProgressWidget />
             {/* Latest Race Performance - Terminal Version (in grid) */}
             {userRaceResults.length > 0 && useTerminal && (
-              <View style={mergeStyles(terminalView.card, { marginBottom: 0 })}>
+              <div className="bg-terminal-panel border-2 border-terminal-border p-6">
                 {/* Header */}
-                <View style={terminalView.spaceBetween}>
-                  <View>
-                    <Text style={terminalText.header}>Latest Race Performance</Text>
-                    <Text style={mergeStyles(terminalText.small, { marginTop: 4 })}>
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-text-primary font-mono tracking-wider">
+                      LATEST RACE PERFORMANCE
+                    </h3>
+                    <p className="text-xs text-text-secondary font-mono mt-1">
                       {performanceStats.latestRace?.race_name?.toUpperCase()} • {formatDate(performanceStats.latestRace?.race_date).toUpperCase()}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => {
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
                       if (userRaceResults.length > 0) {
                         setSelectedResult(userRaceResults[0]);
                         setShowAnalysisModal(true);
                       }
                     }}
-                    style={{ backgroundColor: terminalColors.yellow, padding: 12 }}
+                    className="bg-accent-yellow text-terminal-bg px-4 py-3 font-mono text-xs font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors"
                   >
-                    <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold' })}>
-                      ANALYZE →
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                    ANALYZE →
+                  </button>
+                </div>
 
                 {/* Stats Grid */}
-                <View style={{ flexDirection: 'row', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
-                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="bg-terminal-bg border border-terminal-border p-4 text-center">
+                    <p className="text-2xl font-bold text-text-primary font-mono mb-2">
                       {performanceStats.latestRace?.overall_time || 'N/A'}
-                    </Text>
-                    <Text style={terminalText.small}>OVERALL TIME</Text>
-                  </View>
+                    </p>
+                    <p className="text-xs text-text-secondary font-mono">OVERALL TIME</p>
+                  </div>
                   {performanceStats.latestRace?.overall_rank && (
-                    <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                      <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                    <div className="bg-terminal-bg border border-terminal-border p-4 text-center">
+                      <p className="text-2xl font-bold text-text-primary font-mono mb-2">
                         #{performanceStats.latestRace.overall_rank}
-                      </Text>
-                      <Text style={terminalText.small}>OVERALL PLACE</Text>
-                    </View>
+                      </p>
+                      <p className="text-xs text-text-secondary font-mono">OVERALL PLACE</p>
+                    </div>
                   )}
                   {performanceStats.latestRace?.age_group_rank && (
-                    <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                      <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                    <div className="bg-terminal-bg border border-terminal-border p-4 text-center">
+                      <p className="text-2xl font-bold text-text-primary font-mono mb-2">
                         #{performanceStats.latestRace.age_group_rank}
-                      </Text>
-                      <Text style={terminalText.small}>AGE GROUP</Text>
-                    </View>
+                      </p>
+                      <p className="text-xs text-text-secondary font-mono">AGE GROUP</p>
+                    </div>
                   )}
-                  <View style={{ flex: 1, minWidth: 120, backgroundColor: terminalColors.bg, borderWidth: 1, borderColor: terminalColors.border, padding: 16, alignItems: 'center' }}>
-                    <Text style={mergeStyles(terminalText.xlarge, { marginBottom: 8 })}>
+                  <div className="bg-terminal-bg border border-terminal-border p-4 text-center">
+                    <p className="text-2xl font-bold text-text-primary font-mono mb-2">
                       {performanceStats.latestRace?.distance_type?.charAt(0).toUpperCase()}{performanceStats.latestRace?.distance_type?.slice(1) || 'RACE'}
-                    </Text>
-                    <Text style={terminalText.small}>DISTANCE</Text>
-                  </View>
-                </View>
-              </View>
+                    </p>
+                    <p className="text-xs text-text-secondary font-mono">DISTANCE</p>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -698,25 +698,21 @@ export const WebDashboard: React.FC = () => {
 
           {/* Quick Actions - Terminal Version */}
           {useTerminal && (
-            <View style={mergeStyles(terminalView.card, { marginBottom: 32 })}>
-              <Text style={mergeStyles(terminalText.header, { marginBottom: 16 })}>Quick Actions</Text>
-              <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
+            <div className="bg-terminal-panel border-2 border-terminal-border p-6">
+              <h2 className="text-lg font-bold text-text-primary font-mono tracking-wider mb-4">QUICK ACTIONS</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Add Race Result */}
-                <TouchableOpacity
-                  onPress={() => setShowAddResultModal(true)}
-                  style={{ flex: 1, minWidth: 140, backgroundColor: terminalColors.run, padding: 16, alignItems: 'center' }}
+                <button
+                  onClick={() => setShowAddResultModal(true)}
+                  className="bg-[#22c55e] text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider hover:opacity-90 transition-opacity text-center"
                 >
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
-                    [+] ADD RESULT
-                  </Text>
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
-                    LOG RACE TIMES
-                  </Text>
-                </TouchableOpacity>
+                  <div className="mb-2">[+] ADD RESULT</div>
+                  <div className="text-[9px] opacity-80">LOG RACE TIMES</div>
+                </button>
 
                 {/* Compare Races */}
-                <TouchableOpacity
-                  onPress={() => {
+                <button
+                  onClick={() => {
                     if (userRaceResults.length >= 2) {
                       const raceIds = userRaceResults.slice(0, 2).map(result => result.race_id || result.id);
                       setComparingRaces(raceIds);
@@ -724,63 +720,45 @@ export const WebDashboard: React.FC = () => {
                     }
                   }}
                   disabled={userRaceResults.length < 2}
-                  style={{
-                    flex: 1,
-                    minWidth: 140,
-                    backgroundColor: userRaceResults.length < 2 ? terminalColors.border : terminalColors.bike,
-                    padding: 16,
-                    alignItems: 'center',
-                    opacity: userRaceResults.length < 2 ? 0.5 : 1
-                  }}
+                  className={`${
+                    userRaceResults.length < 2 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#a855f7] hover:opacity-90'
+                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-opacity text-center`}
                 >
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
-                    [VS] COMPARE
-                  </Text>
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                  <div className="mb-2">[VS] COMPARE</div>
+                  <div className="text-[9px] opacity-80">
                     {userRaceResults.length < 2 ? 'NEED 2+ RACES' : 'RACE COMPARISON'}
-                  </Text>
-                </TouchableOpacity>
+                  </div>
+                </button>
 
                 {/* Race Prediction */}
-                <TouchableOpacity
-                  onPress={() => {
+                <button
+                  onClick={() => {
                     if (courses.length > 0) {
                       setSelectedCourse(courses[0]);
                       setShowPredictionModal(true);
                     }
                   }}
                   disabled={courses.length === 0}
-                  style={{
-                    flex: 1,
-                    minWidth: 140,
-                    backgroundColor: courses.length === 0 ? terminalColors.border : terminalColors.swim,
-                    padding: 16,
-                    alignItems: 'center',
-                    opacity: courses.length === 0 ? 0.5 : 1
-                  }}
+                  className={`${
+                    courses.length === 0 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#14b8a6] hover:opacity-90'
+                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-opacity text-center`}
                 >
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
-                    [?] PREDICT
-                  </Text>
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
+                  <div className="mb-2">[?] PREDICT</div>
+                  <div className="text-[9px] opacity-80">
                     {courses.length === 0 ? 'NO COURSES' : 'PREDICT TIME'}
-                  </Text>
-                </TouchableOpacity>
+                  </div>
+                </button>
 
                 {/* Training */}
-                <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/training')}
-                  style={{ flex: 1, minWidth: 140, backgroundColor: terminalColors.yellow, padding: 16, alignItems: 'center' }}
+                <button
+                  onClick={() => router.push('/(tabs)/training')}
+                  className="bg-accent-yellow text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider hover:opacity-90 transition-opacity text-center"
                 >
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontWeight: 'bold', marginBottom: 8 })}>
-                    [>] TRAINING
-                  </Text>
-                  <Text style={mergeStyles(terminalText.small, { color: terminalColors.bg, fontSize: 9 })}>
-                    LOG WORKOUTS
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                  <div className="mb-2">[&gt;] TRAINING</div>
+                  <div className="text-[9px] opacity-80">LOG WORKOUTS</div>
+                </button>
+              </div>
+            </div>
           )}
 
         </div>

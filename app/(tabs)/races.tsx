@@ -1742,8 +1742,21 @@ function RacesScreenContent() {
 
           {/* Discovery Search Controls */}
           {activeSection === "discover" && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-8 shadow-xl">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <div
+              className={
+                useTerminal
+                  ? "bg-terminal-panel border-2 border-terminal-border p-6 mb-8"
+                  : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-8 shadow-xl"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
+              <h3
+                className={
+                  useTerminal
+                    ? "text-lg font-bold text-text-primary font-mono tracking-wider mb-4 flex items-center gap-2"
+                    : "text-lg font-bold text-white mb-4 flex items-center gap-2"
+                }
+              >
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -1757,54 +1770,105 @@ function RacesScreenContent() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                Race Discovery
+                {useTerminal ? "RACE DISCOVERY" : "Race Discovery"}
               </h3>
 
               <div className="grid md:grid-cols-4 gap-4 mb-4">
                 <div className="md:col-span-2">
-                  <label className="block text-white/70 text-sm font-medium mb-2">
-                    Location
+                  <label
+                    className={
+                      useTerminal
+                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
+                        : "block text-white/70 text-sm font-medium mb-2"
+                    }
+                  >
+                    {useTerminal ? "LOCATION" : "Location"}
                   </label>
                   <input
                     type="text"
                     value={locationQuery}
                     onChange={(e) => setLocationQuery(e.target.value)}
-                    placeholder="City, State, or Zip Code"
-                    className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={
+                      useTerminal
+                        ? "CITY, STATE, OR ZIP CODE"
+                        : "City, State, or Zip Code"
+                    }
+                    className={
+                      useTerminal
+                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white/70 text-sm font-medium mb-2">
-                    Search Radius
+                  <label
+                    className={
+                      useTerminal
+                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
+                        : "block text-white/70 text-sm font-medium mb-2"
+                    }
+                  >
+                    {useTerminal ? "SEARCH RADIUS" : "Search Radius"}
                   </label>
                   <select
                     value={searchRadius}
                     onChange={(e) => setSearchRadius(e.target.value)}
-                    className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={
+                      useTerminal
+                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
-                    <option value="all">Nationwide</option>
-                    <option value="25">25 miles</option>
-                    <option value="50">50 miles</option>
-                    <option value="100">100 miles</option>
-                    <option value="250">250 miles</option>
+                    <option value="all">
+                      {useTerminal ? "NATIONWIDE" : "Nationwide"}
+                    </option>
+                    <option value="25">25 {useTerminal ? "MI" : "miles"}</option>
+                    <option value="50">50 {useTerminal ? "MI" : "miles"}</option>
+                    <option value="100">
+                      100 {useTerminal ? "MI" : "miles"}
+                    </option>
+                    <option value="250">
+                      250 {useTerminal ? "MI" : "miles"}
+                    </option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-white/70 text-sm font-medium mb-2">
-                    Distance Filter
+                  <label
+                    className={
+                      useTerminal
+                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
+                        : "block text-white/70 text-sm font-medium mb-2"
+                    }
+                  >
+                    {useTerminal ? "DISTANCE FILTER" : "Distance Filter"}
                   </label>
                   <select
                     value={raceDistance}
                     onChange={(e) => setRaceDistance(e.target.value)}
-                    className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={
+                      useTerminal
+                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
-                    <option value="all">All Distances</option>
-                    <option value="sprint">Sprint</option>
-                    <option value="olympic">Olympic</option>
+                    <option value="all">
+                      {useTerminal ? "ALL DISTANCES" : "All Distances"}
+                    </option>
+                    <option value="sprint">
+                      {useTerminal ? "SPRINT" : "Sprint"}
+                    </option>
+                    <option value="olympic">
+                      {useTerminal ? "OLYMPIC" : "Olympic"}
+                    </option>
                     <option value="70.3">70.3</option>
-                    <option value="ironman">Ironman</option>
+                    <option value="ironman">
+                      {useTerminal ? "IRONMAN" : "Ironman"}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -1812,12 +1876,24 @@ function RacesScreenContent() {
               <button
                 onClick={discoverRaces}
                 disabled={isSyncing}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                className={
+                  useTerminal
+                    ? "bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors flex items-center gap-2 font-mono text-xs font-bold tracking-wider disabled:opacity-50"
+                    : "bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
               >
                 {isSyncing ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    Discovering Races...
+                    <div
+                      className={
+                        useTerminal
+                          ? "w-4 h-4 border-2 border-current border-t-transparent animate-spin"
+                          : "w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                    ></div>
+                    {useTerminal ? "DISCOVERING RACES..." : "Discovering Races..."}
                   </>
                 ) : (
                   <>
@@ -1834,7 +1910,7 @@ function RacesScreenContent() {
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                       />
                     </svg>
-                    Discover Races
+                    {useTerminal ? "DISCOVER RACES" : "Discover Races"}
                   </>
                 )}
               </button>
