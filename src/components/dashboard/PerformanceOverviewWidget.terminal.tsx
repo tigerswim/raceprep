@@ -307,24 +307,11 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
   };
 
   if (isLoading || !userProfile || !userSettings) {
-    console.log('[PerformanceOverviewWidgetTerminal] Rendering LOADING state');
     return (
-      <View style={{ backgroundColor: '#FF0000', padding: 20, margin: 10, minHeight: 200 }}>
-        <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: 'bold' }}>
-          TERMINAL MODE LOADING TEST
-        </Text>
-        <Text style={{ color: '#FFFF00', fontSize: 16, marginTop: 10 }}>
-          If you see this, terminal widgets ARE rendering!
-        </Text>
-        <Text style={{ color: '#00FF00', fontSize: 14, marginTop: 10 }}>
-          isLoading: {isLoading ? 'true' : 'false'}
-        </Text>
-        <Text style={{ color: '#00FFFF', fontSize: 14 }}>
-          hasUser: {user ? 'true' : 'false'}
-        </Text>
-        <Text style={{ color: '#FF00FF', fontSize: 14 }}>
-          hasProfile: {userProfile ? 'true' : 'false'}
-        </Text>
+      <View style={terminalView.card}>
+        <View style={terminalView.center}>
+          <Text style={terminalText.base}>LOADING...</Text>
+        </View>
       </View>
     );
   }
@@ -332,21 +319,13 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
   // Show empty state only if we have NO stats at all
   // (Allow rendering even if Strava not connected - user might have manual data)
   if (!stats) {
-    console.log('[PerformanceOverviewWidgetTerminal] Rendering NO DATA state - stravaConnected:', stravaConnected, 'hasStats:', !!stats);
     return (
-      <View style={{ backgroundColor: '#0000FF', padding: 20, margin: 10, minHeight: 200 }}>
-        <Text style={{ color: '#FFFFFF', fontSize: 24, fontWeight: 'bold' }}>
-          TERMINAL MODE - NO DATA STATE
-        </Text>
-        <Text style={{ color: '#FFFF00', fontSize: 16, marginTop: 10 }}>
-          Strava Connected: {stravaConnected ? 'YES' : 'NO'}
-        </Text>
-        <Text style={{ color: '#00FF00', fontSize: 16 }}>
-          Has Stats: {stats ? 'YES' : 'NO'}
-        </Text>
-        <View style={{ backgroundColor: '#FFD866', padding: 15, marginTop: 20 }}>
-          <Text style={{ color: '#000000', fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}>
-            {!stravaConnected ? 'CONNECT STRAVA' : 'VIEW TRAINING'}
+      <View style={terminalView.card}>
+        <Text style={terminalText.header}>PERFORMANCE OVERVIEW</Text>
+        <View style={mergeStyles(terminalView.center, { marginTop: 20 })}>
+          <Text style={terminalText.base}>NO DATA AVAILABLE</Text>
+          <Text style={mergeStyles(terminalText.small, { marginTop: 10 })}>
+            {!stravaConnected ? 'CONNECT STRAVA TO VIEW STATS' : 'START TRAINING TO SEE PERFORMANCE DATA'}
           </Text>
         </View>
       </View>
