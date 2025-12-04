@@ -4,10 +4,11 @@ import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 interface UserRaceManagementProps {
+  useTerminal?: boolean;
   onRaceUpdate?: () => void; // Callback for when races are updated
 }
 
-export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUpdate }) => {
+export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ useTerminal = false, onRaceUpdate }) => {
   const { user } = useAuth();
   const [userRaces, setUserRaces] = useState<any[]>([]);
   const [filteredRaces, setFilteredRaces] = useState<any[]>([]);
@@ -20,6 +21,19 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
   const [statusFilter, setStatusFilter] = useState('all');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Terminal color palette
+  const terminalColors = {
+    bg: '#0A0E14',
+    panel: '#0F1419',
+    border: '#1C2127',
+    textPrimary: '#F8F8F2',
+    textSecondary: '#B4B8C5',
+    yellow: '#FFD866',
+    swim: '#00D4FF',
+    bike: '#FF6B35',
+    run: '#4ECDC4',
+  };
 
   // Load user races
   const loadUserRaces = useCallback(async () => {
@@ -218,65 +232,208 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
       {/* Header with Create Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">My Created Races</h2>
-          <p className="text-white/70">Manage your custom races and events</p>
+          <h2
+            className={
+              useTerminal
+                ? "text-2xl font-bold font-mono tracking-wider"
+                : "text-2xl font-bold text-white"
+            }
+            style={
+              useTerminal
+                ? { color: terminalColors.textPrimary, textTransform: 'uppercase' }
+                : undefined
+            }
+          >
+            {useTerminal ? 'MY CREATED RACES' : 'My Created Races'}
+          </h2>
+          <p
+            className={
+              useTerminal
+                ? "font-mono text-sm"
+                : "text-white/70"
+            }
+            style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+          >
+            {useTerminal ? 'MANAGE YOUR CUSTOM RACES AND EVENTS' : 'Manage your custom races and events'}
+          </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+          className={
+            useTerminal
+              ? "px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 flex items-center gap-2 border-2"
+              : "bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+          }
+          style={
+            useTerminal
+              ? {
+                  backgroundColor: terminalColors.yellow,
+                  color: terminalColors.bg,
+                  borderColor: terminalColors.yellow,
+                  borderRadius: 0,
+                  textTransform: 'uppercase',
+                }
+              : undefined
+          }
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Create New Race
+          {useTerminal ? 'CREATE NEW RACE' : 'Create New Race'}
         </button>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+      <div
+        className={
+          useTerminal
+            ? "p-6 border-2"
+            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
+        }
+        style={
+          useTerminal
+            ? {
+                backgroundColor: terminalColors.panel,
+                borderColor: terminalColors.border,
+                borderRadius: 0,
+              }
+            : undefined
+        }
+      >
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-white/70 text-sm font-medium mb-2">Search Races</label>
+            <label
+              className={
+                useTerminal
+                  ? "block text-sm font-bold mb-2 font-mono tracking-wider"
+                  : "block text-white/70 text-sm font-medium mb-2"
+              }
+              style={
+                useTerminal
+                  ? { color: terminalColors.textSecondary, textTransform: 'uppercase' }
+                  : undefined
+              }
+            >
+              {useTerminal ? 'SEARCH RACES' : 'Search Races'}
+            </label>
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className={
+                  useTerminal
+                    ? "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                    : "absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50"
+                }
+                style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, location, or description..."
-                className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={useTerminal ? "SEARCH BY NAME, LOCATION, OR DESCRIPTION..." : "Search by name, location, or description..."}
+                className={
+                  useTerminal
+                    ? "w-full pl-10 pr-4 py-3 border-2 focus:outline-none font-mono"
+                    : "w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                }
+                style={
+                  useTerminal
+                    ? {
+                        backgroundColor: terminalColors.bg,
+                        borderColor: terminalColors.border,
+                        color: terminalColors.textPrimary,
+                        borderRadius: 0,
+                      }
+                    : undefined
+                }
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">Distance Type</label>
+            <label
+              className={
+                useTerminal
+                  ? "block text-sm font-bold mb-2 font-mono tracking-wider"
+                  : "block text-white/70 text-sm font-medium mb-2"
+              }
+              style={
+                useTerminal
+                  ? { color: terminalColors.textSecondary, textTransform: 'uppercase' }
+                  : undefined
+              }
+            >
+              {useTerminal ? 'DISTANCE TYPE' : 'Distance Type'}
+            </label>
             <select
               value={distanceFilter}
               onChange={(e) => setDistanceFilter(e.target.value)}
-              className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={
+                useTerminal
+                  ? "w-full px-4 py-3 border-2 focus:outline-none font-mono"
+                  : "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              }
+              style={
+                useTerminal
+                  ? {
+                      backgroundColor: terminalColors.bg,
+                      borderColor: terminalColors.border,
+                      color: terminalColors.textPrimary,
+                      borderRadius: 0,
+                    }
+                  : undefined
+              }
             >
-              <option value="all">All Distances</option>
-              <option value="sprint">Sprint</option>
-              <option value="olympic">Olympic</option>
-              <option value="half">Half Ironman</option>
-              <option value="ironman">Ironman</option>
-              <option value="custom">Custom</option>
+              <option value="all">{useTerminal ? 'ALL DISTANCES' : 'All Distances'}</option>
+              <option value="sprint">{useTerminal ? 'SPRINT' : 'Sprint'}</option>
+              <option value="olympic">{useTerminal ? 'OLYMPIC' : 'Olympic'}</option>
+              <option value="half">{useTerminal ? 'HALF IRONMAN' : 'Half Ironman'}</option>
+              <option value="ironman">{useTerminal ? 'IRONMAN' : 'Ironman'}</option>
+              <option value="custom">{useTerminal ? 'CUSTOM' : 'Custom'}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-white/70 text-sm font-medium mb-2">Status</label>
+            <label
+              className={
+                useTerminal
+                  ? "block text-sm font-bold mb-2 font-mono tracking-wider"
+                  : "block text-white/70 text-sm font-medium mb-2"
+              }
+              style={
+                useTerminal
+                  ? { color: terminalColors.textSecondary, textTransform: 'uppercase' }
+                  : undefined
+              }
+            >
+              {useTerminal ? 'STATUS' : 'Status'}
+            </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={
+                useTerminal
+                  ? "w-full px-4 py-3 border-2 focus:outline-none font-mono"
+                  : "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              }
+              style={
+                useTerminal
+                  ? {
+                      backgroundColor: terminalColors.bg,
+                      borderColor: terminalColors.border,
+                      color: terminalColors.textPrimary,
+                      borderRadius: 0,
+                    }
+                  : undefined
+              }
             >
-              <option value="all">All Races</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="past">Past</option>
+              <option value="all">{useTerminal ? 'ALL RACES' : 'All Races'}</option>
+              <option value="upcoming">{useTerminal ? 'UPCOMING' : 'Upcoming'}</option>
+              <option value="past">{useTerminal ? 'PAST' : 'Past'}</option>
             </select>
           </div>
         </div>
@@ -284,28 +441,106 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
 
       {/* Race List */}
       {filteredRaces.length === 0 ? (
-        <div className="text-center py-12 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
+        <div
+          className={
+            useTerminal
+              ? "text-center py-12 border-2"
+              : "text-center py-12 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10"
+          }
+          style={
+            useTerminal
+              ? {
+                  backgroundColor: terminalColors.panel,
+                  borderColor: terminalColors.border,
+                  borderRadius: 0,
+                }
+              : undefined
+          }
+        >
           {userRaces.length === 0 ? (
             <>
-              <svg className="mx-auto w-16 h-16 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="mx-auto w-16 h-16 mb-4"
+                style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
               </svg>
-              <h3 className="text-xl font-bold text-white mb-2">No Custom Races Yet</h3>
-              <p className="text-white/70 mb-4">Create your first custom race to get started!</p>
+              <h3
+                className={
+                  useTerminal
+                    ? "text-xl font-bold mb-2 font-mono tracking-wider"
+                    : "text-xl font-bold text-white mb-2"
+                }
+                style={
+                  useTerminal
+                    ? { color: terminalColors.textPrimary, textTransform: 'uppercase' }
+                    : undefined
+                }
+              >
+                {useTerminal ? 'NO CUSTOM RACES YET' : 'No Custom Races Yet'}
+              </h3>
+              <p
+                className={useTerminal ? "mb-4 font-mono text-sm" : "text-white/70 mb-4"}
+                style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+              >
+                {useTerminal ? 'CREATE YOUR FIRST CUSTOM RACE TO GET STARTED!' : 'Create your first custom race to get started!'}
+              </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                className={
+                  useTerminal
+                    ? "px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 border-2"
+                    : "bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                }
+                style={
+                  useTerminal
+                    ? {
+                        backgroundColor: terminalColors.yellow,
+                        color: terminalColors.bg,
+                        borderColor: terminalColors.yellow,
+                        borderRadius: 0,
+                        textTransform: 'uppercase',
+                      }
+                    : undefined
+                }
               >
-                Create Your First Race
+                {useTerminal ? 'CREATE YOUR FIRST RACE' : 'Create Your First Race'}
               </button>
             </>
           ) : (
             <>
-              <svg className="mx-auto w-16 h-16 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="mx-auto w-16 h-16 mb-4"
+                style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <h3 className="text-xl font-bold text-white mb-2">No Races Found</h3>
-              <p className="text-white/70">Try adjusting your search or filters.</p>
+              <h3
+                className={
+                  useTerminal
+                    ? "text-xl font-bold mb-2 font-mono tracking-wider"
+                    : "text-xl font-bold text-white mb-2"
+                }
+                style={
+                  useTerminal
+                    ? { color: terminalColors.textPrimary, textTransform: 'uppercase' }
+                    : undefined
+                }
+              >
+                {useTerminal ? 'NO RACES FOUND' : 'No Races Found'}
+              </h3>
+              <p
+                className={useTerminal ? "font-mono text-sm" : "text-white/70"}
+                style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+              >
+                {useTerminal ? 'TRY ADJUSTING YOUR SEARCH OR FILTERS.' : 'Try adjusting your search or filters.'}
+              </p>
             </>
           )}
         </div>
@@ -314,35 +549,136 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
           {filteredRaces.map((race) => (
             <div
               key={race.id}
-              className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all duration-300"
+              className={
+                useTerminal
+                  ? "p-6 border-2 hover:border-opacity-80 transition-all duration-300"
+                  : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all duration-300"
+              }
+              style={
+                useTerminal
+                  ? {
+                      backgroundColor: terminalColors.panel,
+                      borderColor: isUpcoming(race.date) ? terminalColors.yellow : terminalColors.border,
+                      borderRadius: 0,
+                    }
+                  : undefined
+              }
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-white mb-1 truncate">{race.name}</h3>
-                  <p className={`font-medium mb-1 ${isUpcoming(race.date) ? 'text-blue-400' : 'text-white/70'}`}>
+                  <h3
+                    className={
+                      useTerminal
+                        ? "text-lg font-bold mb-1 truncate font-mono tracking-wider"
+                        : "text-lg font-bold text-white mb-1 truncate"
+                    }
+                    style={
+                      useTerminal
+                        ? { color: terminalColors.textPrimary, textTransform: 'uppercase' }
+                        : undefined
+                    }
+                  >
+                    {useTerminal ? race.name.toUpperCase() : race.name}
+                  </h3>
+                  <p
+                    className={
+                      useTerminal
+                        ? `font-medium mb-1 font-mono text-sm`
+                        : `font-medium mb-1 ${isUpcoming(race.date) ? 'text-blue-400' : 'text-white/70'}`
+                    }
+                    style={
+                      useTerminal
+                        ? { color: isUpcoming(race.date) ? terminalColors.yellow : terminalColors.textSecondary }
+                        : undefined
+                    }
+                  >
                     {formatDate(race.date)}
                     {isUpcoming(race.date) && (
-                      <span className="ml-2 bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full text-xs">Upcoming</span>
+                      <span
+                        className={
+                          useTerminal
+                            ? "ml-2 px-2 py-0.5 text-xs font-mono font-bold border"
+                            : "ml-2 bg-green-500/20 text-green-300 px-2 py-0.5 rounded-full text-xs"
+                        }
+                        style={
+                          useTerminal
+                            ? {
+                                backgroundColor: `${terminalColors.run}33`,
+                                color: terminalColors.run,
+                                borderColor: terminalColors.run,
+                                borderRadius: 0,
+                              }
+                            : undefined
+                        }
+                      >
+                        {useTerminal ? 'UPCOMING' : 'Upcoming'}
+                      </span>
                     )}
                   </p>
-                  <p className="text-white/70 text-sm break-words">{race.location}</p>
+                  <p
+                    className={useTerminal ? "text-sm break-words font-mono" : "text-white/70 text-sm break-words"}
+                    style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+                  >
+                    {race.location}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm font-medium">
-                    {getDistanceDisplay(race)}
+                  <span
+                    className={
+                      useTerminal
+                        ? "px-3 py-1 text-sm font-bold font-mono border"
+                        : "bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm font-medium"
+                    }
+                    style={
+                      useTerminal
+                        ? {
+                            backgroundColor: `${terminalColors.bike}33`,
+                            color: terminalColors.bike,
+                            borderColor: terminalColors.bike,
+                            borderRadius: 0,
+                          }
+                        : undefined
+                    }
+                  >
+                    {useTerminal ? getDistanceDisplay(race).toUpperCase() : getDistanceDisplay(race)}
                   </span>
                   {race.difficulty_score && (
-                    <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
-                      Difficulty: {race.difficulty_score}/10
+                    <span
+                      className={
+                        useTerminal
+                          ? "px-3 py-1 text-sm font-bold font-mono border"
+                          : "bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium"
+                      }
+                      style={
+                        useTerminal
+                          ? {
+                              backgroundColor: `${terminalColors.yellow}33`,
+                              color: terminalColors.yellow,
+                              borderColor: terminalColors.yellow,
+                              borderRadius: 0,
+                            }
+                          : undefined
+                      }
+                    >
+                      {useTerminal ? `DIFF: ${race.difficulty_score}/10` : `Difficulty: ${race.difficulty_score}/10`}
                     </span>
                   )}
                 </div>
 
                 {race.description && (
-                  <p className="text-white/70 text-sm line-clamp-2 break-words">{race.description}</p>
+                  <p
+                    className={
+                      useTerminal
+                        ? "text-sm line-clamp-2 break-words font-mono"
+                        : "text-white/70 text-sm line-clamp-2 break-words"
+                    }
+                    style={useTerminal ? { color: terminalColors.textSecondary } : undefined}
+                  >
+                    {race.description}
+                  </p>
                 )}
 
                 {race.website_url && (
@@ -350,12 +686,17 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
                     href={race.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 text-sm break-all inline-flex items-center gap-1"
+                    className={
+                      useTerminal
+                        ? "text-sm break-all inline-flex items-center gap-1 font-mono font-bold"
+                        : "text-blue-400 hover:text-blue-300 text-sm break-all inline-flex items-center gap-1"
+                    }
+                    style={useTerminal ? { color: terminalColors.swim } : undefined}
                   >
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                    Website
+                    {useTerminal ? 'WEBSITE →' : 'Website'}
                   </a>
                 )}
               </div>
@@ -364,17 +705,45 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
               <div className="flex gap-2">
                 <button
                   onClick={() => startEdit(race)}
-                  className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                  className={
+                    useTerminal
+                      ? "flex-1 py-2 transition-colors text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
+                      : "flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                  }
+                  style={
+                    useTerminal
+                      ? {
+                          backgroundColor: `${terminalColors.swim}33`,
+                          color: terminalColors.swim,
+                          borderColor: terminalColors.swim,
+                          borderRadius: 0,
+                        }
+                      : undefined
+                  }
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  Edit
+                  {useTerminal ? 'EDIT' : 'Edit'}
                 </button>
 
                 <button
                   onClick={() => setShowDeleteConfirm(race.id)}
-                  className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                  className={
+                    useTerminal
+                      ? "flex-1 py-2 transition-colors text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
+                      : "flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                  }
+                  style={
+                    useTerminal
+                      ? {
+                          backgroundColor: `${terminalColors.bike}33`,
+                          color: terminalColors.bike,
+                          borderColor: terminalColors.bike,
+                          borderRadius: 0,
+                        }
+                      : undefined
+                  }
                   disabled={actionLoading === race.id}
                 >
                   {actionLoading === race.id ? (
@@ -384,7 +753,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   )}
-                  Delete
+                  {useTerminal ? 'DELETE' : 'Delete'}
                 </button>
               </div>
             </div>

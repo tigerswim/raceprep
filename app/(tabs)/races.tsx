@@ -2052,7 +2052,7 @@ function RacesScreenContent() {
                       )}
                       {/* Add Create Race button at the end */}
                       <div className="col-span-full mt-6">
-                        <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
+                        <UserRaceManagement useTerminal={useTerminal} onRaceUpdate={handleRaceUpdate} />
                       </div>
                     </>
                   ) : (
@@ -2068,7 +2068,7 @@ function RacesScreenContent() {
                           Discover Races
                         </button>
                         <div className="sm:w-auto">
-                          <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
+                          <UserRaceManagement useTerminal={useTerminal} onRaceUpdate={handleRaceUpdate} />
                         </div>
                       </div>
                     </div>
