@@ -2717,92 +2717,173 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
         {/* Training Distribution */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-white mb-4">
-              Training Distribution (This Month)
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
+            <h3
+              className={
+                useTerminal
+                  ? "text-base font-bold text-text-primary mb-4 font-mono tracking-wider"
+                  : "text-lg font-bold text-white mb-4"
+              }
+            >
+              {useTerminal ? "TRAINING DISTRIBUTION" : "Training Distribution (This Month)"}
             </h3>
             <div className="space-y-3">
               {[
                 {
                   discipline: "Swimming",
                   percentage: analytics.distribution.swimming,
-                  color: "bg-blue-500",
+                  color: useTerminal ? "bg-[#00D4FF]" : "bg-blue-500",
+                  terminalLabel: "SWIM",
                 },
                 {
                   discipline: "Cycling",
                   percentage: analytics.distribution.cycling,
-                  color: "bg-orange-500",
+                  color: useTerminal ? "bg-[#FF6B35]" : "bg-orange-500",
+                  terminalLabel: "BIKE",
                 },
                 {
                   discipline: "Running",
                   percentage: analytics.distribution.running,
-                  color: "bg-green-500",
+                  color: useTerminal ? "bg-[#4ECDC4]" : "bg-green-500",
+                  terminalLabel: "RUN",
                 },
               ].map((item) => (
                 <div key={item.discipline}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/80">{item.discipline}</span>
-                    <span className="text-white font-medium">
+                    <span
+                      className={
+                        useTerminal
+                          ? "text-text-primary font-mono font-bold"
+                          : "text-white/80"
+                      }
+                    >
+                      {useTerminal ? item.terminalLabel : item.discipline}
+                    </span>
+                    <span
+                      className={
+                        useTerminal
+                          ? "text-text-primary font-mono font-bold"
+                          : "text-white font-medium"
+                      }
+                    >
                       {item.percentage}%
                     </span>
                   </div>
-                  <div className="bg-white/10 rounded-full h-2">
+                  <div
+                    className={
+                      useTerminal
+                        ? "bg-terminal-bg border border-terminal-border h-2"
+                        : "bg-white/10 rounded-full h-2"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                  >
                     <div
-                      className={`${item.color} h-2 rounded-full transition-all duration-1000`}
-                      style={{ width: `${item.percentage}%` }}
+                      className={`${item.color} h-2 transition-all duration-1000 ${useTerminal ? "" : "rounded-full"}`}
+                      style={useTerminal ? { width: `${item.percentage}%`, borderRadius: 0 } : { width: `${item.percentage}%` }}
                     ></div>
                   </div>
                 </div>
               ))}
             </div>
             {analytics.currentMonthStats.totalHours === 0 && (
-              <div className="text-center py-4 text-white/60">
-                <p className="text-sm">No workouts this month yet</p>
+              <div
+                className={
+                  useTerminal
+                    ? "text-center py-4 text-text-secondary font-mono"
+                    : "text-center py-4 text-white/60"
+                }
+              >
+                <p className="text-sm">{useTerminal ? "NO WORKOUTS THIS MONTH" : "No workouts this month yet"}</p>
                 <p className="text-xs">
-                  Start training to see your distribution!
+                  {useTerminal ? "START TRAINING TO SEE DISTRIBUTION" : "Start training to see your distribution!"}
                 </p>
               </div>
             )}
           </div>
 
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-white mb-4">
-              Heart Rate Zones (This Month)
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
+            <h3
+              className={
+                useTerminal
+                  ? "text-base font-bold text-text-primary mb-4 font-mono tracking-wider"
+                  : "text-lg font-bold text-white mb-4"
+              }
+            >
+              {useTerminal ? "HEART RATE ZONES" : "Heart Rate Zones (This Month)"}
             </h3>
             <div className="space-y-3">
               {[
                 {
                   zone: "Zone 1 (Recovery)",
                   percentage: analytics.zoneDistribution.zone1,
-                  color: "bg-blue-500",
+                  color: useTerminal ? "bg-[#00D4FF]" : "bg-blue-500",
+                  terminalLabel: "Z1 RECOVERY",
                 },
                 {
                   zone: "Zone 2 (Aerobic)",
                   percentage: analytics.zoneDistribution.zone2,
-                  color: "bg-green-500",
+                  color: useTerminal ? "bg-[#4ECDC4]" : "bg-green-500",
+                  terminalLabel: "Z2 AEROBIC",
                 },
                 {
                   zone: "Zone 3 (Tempo)",
                   percentage: analytics.zoneDistribution.zone3,
-                  color: "bg-yellow-500",
+                  color: useTerminal ? "bg-accent-yellow" : "bg-yellow-500",
+                  terminalLabel: "Z3 TEMPO",
                 },
                 {
                   zone: "Zone 4-5 (Threshold+)",
                   percentage: analytics.zoneDistribution.zone45,
-                  color: "bg-red-500",
+                  color: useTerminal ? "bg-[#FF6B35]" : "bg-red-500",
+                  terminalLabel: "Z4-5 THRESHOLD+",
                 },
               ].map((item) => (
                 <div key={item.zone}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/80">{item.zone}</span>
-                    <span className="text-white font-medium">
+                    <span
+                      className={
+                        useTerminal
+                          ? "text-text-primary font-mono font-bold"
+                          : "text-white/80"
+                      }
+                    >
+                      {useTerminal ? item.terminalLabel : item.zone}
+                    </span>
+                    <span
+                      className={
+                        useTerminal
+                          ? "text-text-primary font-mono font-bold"
+                          : "text-white font-medium"
+                      }
+                    >
                       {item.percentage}%
                     </span>
                   </div>
-                  <div className="bg-white/10 rounded-full h-2">
+                  <div
+                    className={
+                      useTerminal
+                        ? "bg-terminal-bg border border-terminal-border h-2"
+                        : "bg-white/10 rounded-full h-2"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                  >
                     <div
-                      className={`${item.color} h-2 rounded-full transition-all duration-1000`}
-                      style={{ width: `${item.percentage}%` }}
+                      className={`${item.color} h-2 transition-all duration-1000 ${useTerminal ? "" : "rounded-full"}`}
+                      style={useTerminal ? { width: `${item.percentage}%`, borderRadius: 0 } : { width: `${item.percentage}%` }}
                     ></div>
                   </div>
                 </div>
@@ -2811,10 +2892,16 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             {Object.values(analytics.zoneDistribution).every(
               (v) => v === 0,
             ) && (
-              <div className="text-center py-4 text-white/60">
-                <p className="text-sm">No heart rate data available</p>
+              <div
+                className={
+                  useTerminal
+                    ? "text-center py-4 text-text-secondary font-mono"
+                    : "text-center py-4 text-white/60"
+                }
+              >
+                <p className="text-sm">{useTerminal ? "NO HR DATA AVAILABLE" : "No heart rate data available"}</p>
                 <p className="text-xs">
-                  Connect a heart rate monitor to see zone analysis!
+                  {useTerminal ? "CONNECT HR MONITOR FOR ZONE ANALYSIS" : "Connect a heart rate monitor to see zone analysis!"}
                 </p>
               </div>
             )}
@@ -2822,18 +2909,46 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
         </div>
 
         {/* Monthly Progress - Current vs Previous Month */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-4">
-            Monthly Progress
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-6"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <h3
+            className={
+              useTerminal
+                ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider"
+                : "text-xl font-bold text-white mb-4"
+            }
+          >
+            {useTerminal ? "MONTHLY PROGRESS" : "Monthly Progress"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">
+              <div
+                className={
+                  useTerminal
+                    ? "text-3xl font-bold text-[#00D4FF] mb-2 font-mono"
+                    : "text-3xl font-bold text-blue-400 mb-2"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
                 {analytics.currentMonthStats.totalWorkouts}
               </div>
-              <div className="text-white/70">Total Workouts</div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalWorkouts, analytics.previousMonthStats.totalWorkouts).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-text-secondary font-mono text-xs tracking-wider"
+                    : "text-white/70"
+                }
+              >
+                {useTerminal ? "TOTAL WORKOUTS" : "Total Workouts"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalWorkouts, analytics.previousMonthStats.totalWorkouts).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2844,12 +2959,27 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-2">
-                {analytics.currentMonthStats.totalHours}h
-              </div>
-              <div className="text-white/70">Training Time</div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalHours, analytics.previousMonthStats.totalHours).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-3xl font-bold text-[#FF6B35] mb-2 font-mono"
+                    : "text-3xl font-bold text-orange-400 mb-2"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
+                {analytics.currentMonthStats.totalHours}{useTerminal ? "H" : "h"}
+              </div>
+              <div
+                className={
+                  useTerminal
+                    ? "text-text-secondary font-mono text-xs tracking-wider"
+                    : "text-white/70"
+                }
+              >
+                {useTerminal ? "TRAINING TIME" : "Training Time"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalHours, analytics.previousMonthStats.totalHours).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2860,12 +2990,27 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">
+              <div
+                className={
+                  useTerminal
+                    ? "text-3xl font-bold text-accent-yellow mb-2 font-mono"
+                    : "text-3xl font-bold text-green-400 mb-2"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
                 {analytics.currentMonthStats.avgPerformance}
               </div>
-              <div className="text-white/70">Avg. Performance</div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.avgPerformance, analytics.previousMonthStats.avgPerformance).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-text-secondary font-mono text-xs tracking-wider"
+                    : "text-white/70"
+                }
+              >
+                {useTerminal ? "AVG PERFORMANCE" : "Avg. Performance"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.avgPerformance, analytics.previousMonthStats.avgPerformance).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2879,25 +3024,71 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
         </div>
 
         {/* Enhanced Monthly Analytics - Distance Breakdown */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-4">
-            Distance Analysis (This Month vs Last Month)
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-6"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <h3
+            className={
+              useTerminal
+                ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider"
+                : "text-xl font-bold text-white mb-4"
+            }
+          >
+            {useTerminal ? "DISTANCE ANALYSIS" : "Distance Analysis (This Month vs Last Month)"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-400/20">
+            <div
+              className={
+                useTerminal
+                  ? "bg-[#00D4FF]/10 p-4 border-2 border-[#00D4FF]"
+                  : "bg-blue-500/10 rounded-xl p-4 border border-blue-400/20"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
               <div className="flex items-center gap-2 mb-3">
-                <TbSwimming className="text-blue-400 w-5 h-5" />
-                <span className="text-blue-400 font-medium">Swimming</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">
-                {analytics.currentMonthStats.totalDistance.swim} mi
-              </div>
-              <div className="text-sm text-white/60 mb-2">
-                vs {analytics.previousMonthStats.totalDistance.swim} mi last
-                month
+                <TbSwimming
+                  className={
+                    useTerminal
+                      ? "w-5 h-5 text-[#00D4FF]"
+                      : "text-blue-400 w-5 h-5"
+                  }
+                />
+                <span
+                  className={
+                    useTerminal
+                      ? "text-[#00D4FF] font-mono font-bold tracking-wider"
+                      : "text-blue-400 font-medium"
+                  }
+                >
+                  {useTerminal ? "SWIM" : "Swimming"}
+                </span>
               </div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.swim, analytics.previousMonthStats.totalDistance.swim).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-2xl font-bold text-text-primary mb-1 font-mono"
+                    : "text-2xl font-bold text-white mb-1"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
+                {analytics.currentMonthStats.totalDistance.swim} {useTerminal ? "MI" : "mi"}
+              </div>
+              <div
+                className={
+                  useTerminal
+                    ? "text-sm text-text-secondary mb-2 font-mono"
+                    : "text-sm text-white/60 mb-2"
+                }
+              >
+                {useTerminal ? "VS " : "vs "}{analytics.previousMonthStats.totalDistance.swim} {useTerminal ? "MI LAST MONTH" : "mi last month"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.swim, analytics.previousMonthStats.totalDistance.swim).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono font-bold" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2908,20 +3099,53 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </div>
             </div>
 
-            <div className="bg-orange-500/10 rounded-xl p-4 border border-orange-400/20">
+            <div
+              className={
+                useTerminal
+                  ? "bg-[#FF6B35]/10 p-4 border-2 border-[#FF6B35]"
+                  : "bg-orange-500/10 rounded-xl p-4 border border-orange-400/20"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
               <div className="flex items-center gap-2 mb-3">
-                <TbBike className="text-orange-400 w-5 h-5" />
-                <span className="text-orange-400 font-medium">Cycling</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">
-                {analytics.currentMonthStats.totalDistance.bike} mi
-              </div>
-              <div className="text-sm text-white/60 mb-2">
-                vs {analytics.previousMonthStats.totalDistance.bike} mi last
-                month
+                <TbBike
+                  className={
+                    useTerminal
+                      ? "w-5 h-5 text-[#FF6B35]"
+                      : "text-orange-400 w-5 h-5"
+                  }
+                />
+                <span
+                  className={
+                    useTerminal
+                      ? "text-[#FF6B35] font-mono font-bold tracking-wider"
+                      : "text-orange-400 font-medium"
+                  }
+                >
+                  {useTerminal ? "BIKE" : "Cycling"}
+                </span>
               </div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.bike, analytics.previousMonthStats.totalDistance.bike).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-2xl font-bold text-text-primary mb-1 font-mono"
+                    : "text-2xl font-bold text-white mb-1"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
+                {analytics.currentMonthStats.totalDistance.bike} {useTerminal ? "MI" : "mi"}
+              </div>
+              <div
+                className={
+                  useTerminal
+                    ? "text-sm text-text-secondary mb-2 font-mono"
+                    : "text-sm text-white/60 mb-2"
+                }
+              >
+                {useTerminal ? "VS " : "vs "}{analytics.previousMonthStats.totalDistance.bike} {useTerminal ? "MI LAST MONTH" : "mi last month"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.bike, analytics.previousMonthStats.totalDistance.bike).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono font-bold" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2932,20 +3156,53 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </div>
             </div>
 
-            <div className="bg-green-500/10 rounded-xl p-4 border border-green-400/20">
+            <div
+              className={
+                useTerminal
+                  ? "bg-[#4ECDC4]/10 p-4 border-2 border-[#4ECDC4]"
+                  : "bg-green-500/10 rounded-xl p-4 border border-green-400/20"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
+            >
               <div className="flex items-center gap-2 mb-3">
-                <TbRun className="text-green-400 w-5 h-5" />
-                <span className="text-green-400 font-medium">Running</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">
-                {analytics.currentMonthStats.totalDistance.run} mi
-              </div>
-              <div className="text-sm text-white/60 mb-2">
-                vs {analytics.previousMonthStats.totalDistance.run} mi last
-                month
+                <TbRun
+                  className={
+                    useTerminal
+                      ? "w-5 h-5 text-[#4ECDC4]"
+                      : "text-green-400 w-5 h-5"
+                  }
+                />
+                <span
+                  className={
+                    useTerminal
+                      ? "text-[#4ECDC4] font-mono font-bold tracking-wider"
+                      : "text-green-400 font-medium"
+                  }
+                >
+                  {useTerminal ? "RUN" : "Running"}
+                </span>
               </div>
               <div
-                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.run, analytics.previousMonthStats.totalDistance.run).isPositive ? "text-green-400" : "text-red-400"}`}
+                className={
+                  useTerminal
+                    ? "text-2xl font-bold text-text-primary mb-1 font-mono"
+                    : "text-2xl font-bold text-white mb-1"
+                }
+                style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+              >
+                {analytics.currentMonthStats.totalDistance.run} {useTerminal ? "MI" : "mi"}
+              </div>
+              <div
+                className={
+                  useTerminal
+                    ? "text-sm text-text-secondary mb-2 font-mono"
+                    : "text-sm text-white/60 mb-2"
+                }
+              >
+                {useTerminal ? "VS " : "vs "}{analytics.previousMonthStats.totalDistance.run} {useTerminal ? "MI LAST MONTH" : "mi last month"}
+              </div>
+              <div
+                className={`text-sm ${getMonthlyComparison(analytics.currentMonthStats.totalDistance.run, analytics.previousMonthStats.totalDistance.run).isPositive ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono font-bold" : ""}`}
               >
                 {
                   getMonthlyComparison(
@@ -2961,90 +3218,265 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
         {/* Additional Analytics Widgets */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Consistency Score */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             <div className="flex items-center gap-2 mb-3">
-              <TbChartBar className="w-5 h-5 text-purple-400" />
-              <span className="text-purple-400 font-medium">Consistency</span>
+              <TbChartBar
+                className={
+                  useTerminal
+                    ? "w-5 h-5 text-accent-yellow"
+                    : "w-5 h-5 text-purple-400"
+                }
+              />
+              <span
+                className={
+                  useTerminal
+                    ? "text-accent-yellow font-mono font-bold text-xs tracking-wider"
+                    : "text-purple-400 font-medium"
+                }
+              >
+                {useTerminal ? "CONSISTENCY" : "Consistency"}
+              </span>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">
+            <div
+              className={
+                useTerminal
+                  ? "text-3xl font-bold text-text-primary mb-2 font-mono"
+                  : "text-3xl font-bold text-white mb-2"
+              }
+              style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            >
               {analytics.consistencyScore}%
             </div>
-            <div className="text-white/70 text-sm">Days trained this month</div>
+            <div
+              className={
+                useTerminal
+                  ? "text-text-secondary text-xs font-mono"
+                  : "text-white/70 text-sm"
+              }
+            >
+              {useTerminal ? "DAYS TRAINED" : "Days trained this month"}
+            </div>
             <div className="mt-2">
-              <div className="bg-white/10 rounded-full h-2">
+              <div
+                className={
+                  useTerminal
+                    ? "bg-terminal-bg border border-terminal-border h-2"
+                    : "bg-white/10 rounded-full h-2"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
+              >
                 <div
-                  className="bg-purple-500 h-2 rounded-full transition-all duration-1000"
-                  style={{ width: `${analytics.consistencyScore}%` }}
+                  className={
+                    useTerminal
+                      ? "bg-accent-yellow h-2 transition-all duration-1000"
+                      : "bg-purple-500 h-2 rounded-full transition-all duration-1000"
+                  }
+                  style={useTerminal ? { width: `${analytics.consistencyScore}%`, borderRadius: 0 } : { width: `${analytics.consistencyScore}%` }}
                 ></div>
               </div>
             </div>
           </div>
 
           {/* Average Workout Quality */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             <div className="flex items-center gap-2 mb-3">
-              <TbStar className="w-5 h-5 text-yellow-400" />
-              <span className="text-yellow-400 font-medium">Quality Score</span>
+              <TbStar
+                className={
+                  useTerminal
+                    ? "w-5 h-5 text-accent-yellow"
+                    : "w-5 h-5 text-yellow-400"
+                }
+              />
+              <span
+                className={
+                  useTerminal
+                    ? "text-accent-yellow font-mono font-bold text-xs tracking-wider"
+                    : "text-yellow-400 font-medium"
+                }
+              >
+                {useTerminal ? "QUALITY" : "Quality Score"}
+              </span>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">
+            <div
+              className={
+                useTerminal
+                  ? "text-3xl font-bold text-text-primary mb-2 font-mono"
+                  : "text-3xl font-bold text-white mb-2"
+              }
+              style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            >
               {analytics.currentMonthStats.avgPerformance}
             </div>
-            <div className="text-white/70 text-sm">Average performance</div>
             <div
-              className={`text-xs mt-1 ${analytics.currentMonthStats.avgPerformance >= 70 ? "text-green-400" : analytics.currentMonthStats.avgPerformance >= 50 ? "text-yellow-400" : "text-red-400"}`}
+              className={
+                useTerminal
+                  ? "text-text-secondary text-xs font-mono"
+                  : "text-white/70 text-sm"
+              }
+            >
+              {useTerminal ? "AVG PERFORMANCE" : "Average performance"}
+            </div>
+            <div
+              className={`text-xs mt-1 ${analytics.currentMonthStats.avgPerformance >= 70 ? (useTerminal ? "text-[#4ECDC4]" : "text-green-400") : analytics.currentMonthStats.avgPerformance >= 50 ? (useTerminal ? "text-accent-yellow" : "text-yellow-400") : (useTerminal ? "text-[#FF6B35]" : "text-red-400")} ${useTerminal ? "font-mono font-bold" : ""}`}
             >
               {analytics.currentMonthStats.avgPerformance >= 70
-                ? "Excellent"
+                ? (useTerminal ? "EXCELLENT" : "Excellent")
                 : analytics.currentMonthStats.avgPerformance >= 50
-                  ? "Good"
-                  : "Needs improvement"}
+                  ? (useTerminal ? "GOOD" : "Good")
+                  : (useTerminal ? "NEEDS IMPROVEMENT" : "Needs improvement")}
             </div>
           </div>
 
           {/* Most Active Time */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             <div className="flex items-center gap-2 mb-3">
-              <TbClock className="w-5 h-5 text-blue-400" />
-              <span className="text-blue-400 font-medium">Peak Time</span>
+              <TbClock
+                className={
+                  useTerminal
+                    ? "w-5 h-5 text-[#00D4FF]"
+                    : "w-5 h-5 text-blue-400"
+                }
+              />
+              <span
+                className={
+                  useTerminal
+                    ? "text-[#00D4FF] font-mono font-bold text-xs tracking-wider"
+                    : "text-blue-400 font-medium"
+                }
+              >
+                {useTerminal ? "PEAK TIME" : "Peak Time"}
+              </span>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">
+            <div
+              className={
+                useTerminal
+                  ? "text-3xl font-bold text-text-primary mb-2 font-mono"
+                  : "text-3xl font-bold text-white mb-2"
+              }
+              style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            >
               {analytics.mostActiveHour !== null
                 ? analytics.mostActiveHour === 0
-                  ? "12:00 AM"
+                  ? (useTerminal ? "12:00AM" : "12:00 AM")
                   : analytics.mostActiveHour < 12
-                    ? `${analytics.mostActiveHour}:00 AM`
+                    ? (useTerminal ? `${String(analytics.mostActiveHour).padStart(2,'0')}:00AM` : `${analytics.mostActiveHour}:00 AM`)
                     : analytics.mostActiveHour === 12
-                      ? "12:00 PM"
-                      : `${analytics.mostActiveHour - 12}:00 PM`
+                      ? (useTerminal ? "12:00PM" : "12:00 PM")
+                      : (useTerminal ? `${String(analytics.mostActiveHour - 12).padStart(2,'0')}:00PM` : `${analytics.mostActiveHour - 12}:00 PM`)
                 : "--"}
             </div>
-            <div className="text-white/70 text-sm">Most active hour</div>
-            <div className="text-xs text-white/60 mt-1">
+            <div
+              className={
+                useTerminal
+                  ? "text-text-secondary text-xs font-mono"
+                  : "text-white/70 text-sm"
+              }
+            >
+              {useTerminal ? "MOST ACTIVE" : "Most active hour"}
+            </div>
+            <div
+              className={
+                useTerminal
+                  ? "text-xs text-text-secondary mt-1 font-mono"
+                  : "text-xs text-white/60 mt-1"
+              }
+            >
               {analytics.mostActiveHour !== null
-                ? `${analytics.mostActiveHour < 12 ? "Morning" : analytics.mostActiveHour < 17 ? "Afternoon" : "Evening"} person`
-                : "Connect Strava to see your peak workout time"}
+                ? `${analytics.mostActiveHour < 12 ? (useTerminal ? "MORNING" : "Morning") : analytics.mostActiveHour < 17 ? (useTerminal ? "AFTERNOON" : "Afternoon") : (useTerminal ? "EVENING" : "Evening")}${useTerminal ? "" : " person"}`
+                : (useTerminal ? "CONNECT STRAVA" : "Connect Strava to see your peak workout time")}
             </div>
           </div>
 
           {/* Goal Progress Placeholder */}
-          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
+          <div
+            className={
+              useTerminal
+                ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+            }
+            style={useTerminal ? { borderRadius: 0 } : undefined}
+          >
             <div className="flex items-center gap-2 mb-3">
-              <TbTarget className="w-5 h-5 text-green-400" />
-              <span className="text-green-400 font-medium">Goal Progress</span>
+              <TbTarget
+                className={
+                  useTerminal
+                    ? "w-5 h-5 text-[#4ECDC4]"
+                    : "w-5 h-5 text-green-400"
+                }
+              />
+              <span
+                className={
+                  useTerminal
+                    ? "text-[#4ECDC4] font-mono font-bold text-xs tracking-wider"
+                    : "text-green-400 font-medium"
+                }
+              >
+                {useTerminal ? "GOAL" : "Goal Progress"}
+              </span>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">
+            <div
+              className={
+                useTerminal
+                  ? "text-3xl font-bold text-text-primary mb-2 font-mono"
+                  : "text-3xl font-bold text-white mb-2"
+              }
+              style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            >
               {Math.min(
                 100,
                 Math.round((analytics.currentMonthStats.totalHours / 20) * 100),
               )}
               %
             </div>
-            <div className="text-white/70 text-sm">Monthly target (20h)</div>
+            <div
+              className={
+                useTerminal
+                  ? "text-text-secondary text-xs font-mono"
+                  : "text-white/70 text-sm"
+              }
+            >
+              {useTerminal ? "TARGET: 20H" : "Monthly target (20h)"}
+            </div>
             <div className="mt-2">
-              <div className="bg-white/10 rounded-full h-2">
+              <div
+                className={
+                  useTerminal
+                    ? "bg-terminal-bg border border-terminal-border h-2"
+                    : "bg-white/10 rounded-full h-2"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
+              >
                 <div
-                  className="bg-green-500 h-2 rounded-full transition-all duration-1000"
-                  style={{
+                  className={
+                    useTerminal
+                      ? "bg-[#4ECDC4] h-2 transition-all duration-1000"
+                      : "bg-green-500 h-2 rounded-full transition-all duration-1000"
+                  }
+                  style={useTerminal ? {
+                    width: `${Math.min(100, Math.round((analytics.currentMonthStats.totalHours / 20) * 100))}%`,
+                    borderRadius: 0
+                  } : {
                     width: `${Math.min(100, Math.round((analytics.currentMonthStats.totalHours / 20) * 100))}%`,
                   }}
                 ></div>
