@@ -2,21 +2,26 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
-## [Unreleased] - 2025-12-01
+## [Unreleased] - 2025-12-04
 
 ### Added
 - **Split-Flap Terminal Design System - Phase 3 Complete** ✅
   - Retro-futuristic terminal design system (airport departure board aesthetic)
-  - **Phase 3 Complete**: All screens and navigation migrated to terminal styling
+  - **Phase 3 Complete**: All screens, navigation, and widgets migrated to terminal styling
   - Monospace typography with uppercase text and wider tracking
   - Hard edges (borderRadius: 0) instead of rounded corners
-  - Terminal color palette: #1a1a1a background, accent-yellow (#fbbf24), terminal borders (#333333)
-  - Feature flag system for safe gradual rollout
+  - Terminal color palette: #0A0E14 background, accent-yellow (#FFD866), terminal borders (#1C2127)
+  - Discipline colors: swim (#00D4FF), bike (#FF6B35), run (#4ECDC4)
 
-### Phase 3 Completed (Screens & Navigation)
+### Phase 3 Completed (December 1-4, 2025)
 - ✅ **Dashboard Screen**: Terminal header, background, widget layout
 - ✅ **Races Screen**: Terminal-styled header, search, navigation buttons, race cards
-- ✅ **Training Screen**: Terminal header, tab navigation, calendar, stats
+  - ✅ **My Created Races Widget**: Complete terminal styling (Dec 4)
+- ✅ **Training Screen**: Complete terminal mode implementation (Dec 4)
+  - ✅ Overview card numbers with monospace fonts
+  - ✅ Analytics section (8 major components with charts and stats)
+  - ✅ Log Workout form and workout history cards
+  - ✅ Training Plans section (TrainingPlanSelectionScreen)
 - ✅ **Planning Screen**: Terminal header, mode toggles, planning tabs
 - ✅ **Profile Screen**: Terminal-styled sections, navigation, forms containers
 - ✅ **Navigation Bar**: Terminal colors (accent-yellow active), 2px borders, terminal-bg
@@ -26,13 +31,29 @@ All notable changes to the RacePrep project will be documented in this file.
 - **Status**: Phase 3 (Screens & Navigation) complete - ready for Phase 4 (Modals & Forms)
 - **Next Phase**: Phase 4 - Modals & Forms (AuthModal, race modals, goal modals, form inputs)
 
+### Today's Updates (December 4, 2025)
+- **Training Tab - Log Workout & History**: Complete terminal styling
+  - Form inputs with monospace fonts and hard edges
+  - Workout history cards with discipline-colored borders
+  - Action buttons (EDIT/DELETE) with terminal colors
+- **Training Tab - Training Plans**: Full TrainingPlanSelectionScreen terminal mode
+  - Filter buttons with accent yellow active states
+  - Plan cards with terminal badges and stats
+  - Detail modal with complete terminal styling
+- **Races Tab - My Created Races**: Complete widget terminal implementation
+  - Search and filters with terminal inputs
+  - Race cards with yellow borders for upcoming races
+  - Distance and difficulty badges with terminal colors
+
 ### Files Modified (Phase 3)
 - `src/components/WebDashboard.tsx`: Terminal header and background
 - `app/(tabs)/races.tsx`: Complete terminal mode implementation
-- `app/(tabs)/training.tsx`: Terminal styling for training screen
+- `app/(tabs)/training.tsx`: Terminal styling for training screen (complete Dec 4)
 - `app/(tabs)/planning.tsx`: Terminal mode for planning tools
 - `app/(tabs)/profile.tsx`: Terminal styling for profile sections
 - `app/(tabs)/_layout.tsx`: Terminal navigation bar colors and borders
+- `src/screens/Training/TrainingPlanSelectionScreen.tsx`: Full terminal mode (Dec 4)
+- `src/components/UserRaceManagement.tsx`: My Created Races terminal styling (Dec 4)
 
 ### Phase 1 & 2 Previously Completed
 - **Phase 1**: Foundation & Components (TerminalCard, TerminalButton, ScanLineOverlay)

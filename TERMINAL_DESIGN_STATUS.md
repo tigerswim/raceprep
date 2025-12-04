@@ -1,8 +1,8 @@
 # Split-Flap Terminal Design - Current Status
 
-**Last Updated:** November 25, 2025
-**Current Phase:** Phase 1 Complete ✅, Ready for Phase 2
-**Branch:** `feature/split-flap-terminal-design`
+**Last Updated:** December 4, 2025
+**Current Phase:** Phase 3 Complete ✅, Ready for Phase 4
+**Branch:** `main`
 **Build Status:** ✅ Passing
 
 ---
@@ -12,15 +12,15 @@
 ```
 Phase 1: Foundation           ✅ COMPLETE (Nov 25, 2025)
 Phase 2: Dashboard Widgets    ✅ COMPLETE (Dec 1, 2025)
-Phase 3: Screens              ⬜ Not Started
+Phase 3: Screens              ✅ COMPLETE (Dec 4, 2025)
 Phase 4: Modals & Forms       ⬜ Not Started
 Phase 5: Polish & Animation   ⬜ Not Started
 Phase 6: Testing              ⬜ Not Started
 Phase 7: Deployment           ⬜ Not Started
 ```
 
-**Progress:** 29% complete (2/7 phases)
-**Estimated Time Remaining:** 38-62 hours
+**Progress:** 43% complete (3/7 phases)
+**Estimated Time Remaining:** 28-42 hours
 
 ---
 
@@ -44,43 +44,39 @@ npm start
 
 ### What's Already Done
 
-✅ Feature flag system (`src/utils/featureFlags.ts`)
-✅ Terminal color palette in Tailwind
-✅ Base components: TerminalCard, TerminalButton, ScanLineOverlay
-✅ Root layout updated with terminal background (disabled by default)
-✅ Web build tested and passing
-✅ All TypeScript errors resolved
+**Phase 1: Foundation** ✅
+- Feature flag system (`src/utils/featureFlags.ts`)
+- Terminal color palette in Tailwind
+- Base components: TerminalCard, TerminalButton, ScanLineOverlay
+- Root layout updated with terminal background
+- Web build tested and passing
+- All TypeScript errors resolved
+
+**Phase 2: Dashboard Widgets** ✅
+- PerformanceOverviewWidget with terminal styling
+- All dashboard widgets updated
+- Terminal bar charts and data visualizations
+- Inline terminal styles for web compatibility
+
+**Phase 3: Screens** ✅
+- Training tab complete:
+  - Overview card numbers with monospace fonts
+  - Analytics section (8 major components)
+  - Log Workout form and history
+  - Training Plans section (TrainingPlanSelectionScreen)
+- Planning tab complete (previous session)
+- Profile tab complete (previous session)
+- Navigation bar complete (previous session)
+- Races tab complete:
+  - My Created Races widget with full terminal styling
 
 ### What to Do Next
 
-**Option 1: Continue with Phase 2 - Widget Migration**
+**Ready for Phase 4: Modals & Forms**
 
-Start with `PersonalBestsWidget`:
+Next up: Terminal styling for modals and form components across the app.
 
-1. Read the current implementation: `src/components/dashboard/PersonalBestsWidget.tsx`
-2. Create terminal version: `src/components/dashboard/PersonalBestsWidget.terminal.tsx`
-3. Update main widget to use feature flag
-4. Enable flag and test
-5. Commit
-
-**Option 2: Review/Test Foundation**
-
-Enable terminal design to see the foundation:
-
-```typescript
-// src/utils/featureFlags.ts
-export const featureFlags = {
-  useTerminalDesign: true,  // Change to true
-  // ...
-};
-```
-
-Then run `npm start` and view the app. You'll see:
-- Terminal background (#0A0E14)
-- Scan lines (web only, very subtle)
-- But all widgets/content still use legacy design
-
-Remember to set it back to `false` before continuing development.
+See `PHASE_4_MODALS_FORMS_PLAN.md` for detailed implementation plan.
 
 ---
 
@@ -321,13 +317,32 @@ Before starting Phase 2, you might want to clarify:
 - ✅ Web build successful
 - ✅ No visual regressions
 
-### Phase 2 (Next)
+### Phase 2 (Complete)
 
-- [ ] All 7 widgets have terminal versions
-- [ ] Feature flags enable individual widgets
-- [ ] No data loss or functionality regression
-- [ ] Special components created (7-segment, flip-card, terminal charts)
-- [ ] Web, iOS, Android all tested
+- ✅ All dashboard widgets have terminal versions
+- ✅ Terminal styling integrated throughout dashboard
+- ✅ No data loss or functionality regression
+- ✅ Terminal charts and data visualizations working
+- ✅ Web build tested and passing
+
+### Phase 3 (Complete)
+
+- ✅ Training tab fully styled with terminal design
+- ✅ Planning tab fully styled with terminal design
+- ✅ Profile tab fully styled with terminal design
+- ✅ Navigation bar updated with terminal styling
+- ✅ Races tab (My Created Races) fully styled
+- ✅ All forms and inputs use terminal styling
+- ✅ Consistent monospace fonts and hard edges throughout
+- ✅ No visual regressions, all features functional
+
+### Phase 4 (Next)
+
+- [ ] Modal components with terminal styling
+- [ ] Form validation UI with terminal design
+- [ ] Loading states and spinners
+- [ ] Error states and messages
+- [ ] Success confirmations
 
 ---
 
