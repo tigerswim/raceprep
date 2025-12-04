@@ -851,12 +851,18 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </p>
             </div>
           </div>
-          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
+          <div
+            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
+            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+          >
             {stravaConnected
               ? `${(weeklyStats.swim.distance / 1609.34).toFixed(1)} ${useTerminal ? "MI" : "miles"}`
               : useTerminal ? "3.2 MI" : "3.2 miles"}
           </div>
-          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
+          <p
+            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
+            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+          >
             {stravaConnected
               ? `${weeklyStats.swim.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
               : useTerminal ? "4 SESSIONS" : "4 sessions"}
@@ -891,12 +897,18 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </p>
             </div>
           </div>
-          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
+          <div
+            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
+            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+          >
             {stravaConnected
               ? `${(weeklyStats.bike.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
               : useTerminal ? "85 MI" : "85 miles"}
           </div>
-          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
+          <p
+            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
+            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+          >
             {stravaConnected
               ? `${weeklyStats.bike.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
               : useTerminal ? "3 SESSIONS" : "3 sessions"}
@@ -931,12 +943,18 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </p>
             </div>
           </div>
-          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>
+          <div
+            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
+            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+          >
             {stravaConnected
               ? `${(weeklyStats.run.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
               : useTerminal ? "22 MI" : "22 miles"}
           </div>
-          <p className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}>
+          <p
+            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
+            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+          >
             {stravaConnected
               ? `${weeklyStats.run.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
               : useTerminal ? "5 SESSIONS" : "5 sessions"}
@@ -971,8 +989,16 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               </p>
             </div>
           </div>
-          <div className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}>485</div>
-          <p className={useTerminal ? "text-xs text-[#4ECDC4] font-mono" : "text-xs text-green-300"}>
+          <div
+            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
+            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+          >
+            485
+          </div>
+          <p
+            className={useTerminal ? "text-xs text-[#4ECDC4] font-mono" : "text-xs text-green-300"}
+            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+          >
             {useTerminal ? "OPTIMAL" : "Optimal range"}
           </p>
         </div>
