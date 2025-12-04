@@ -2487,9 +2487,22 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
     return (
       <div className="space-y-6">
         {/* Weekly Training Volume */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-4">
-            Monthly Training Volume
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-6"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <h3
+            className={
+              useTerminal
+                ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider"
+                : "text-xl font-bold text-white mb-4"
+            }
+          >
+            {useTerminal ? "MONTHLY TRAINING VOLUME" : "Monthly Training Volume"}
           </h3>
           <div className="grid grid-cols-4 gap-3 mb-4">
             {analytics.monthlyVolume.map((weekData, index) => {
@@ -2504,6 +2517,20 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   : 0;
 
               const getColorForDiscipline = (discipline: string) => {
+                if (useTerminal) {
+                  switch (discipline) {
+                    case "swim":
+                      return "border-[#00D4FF]";
+                    case "bike":
+                      return "border-[#FF6B35]";
+                    case "run":
+                      return "border-[#4ECDC4]";
+                    case "brick":
+                      return "border-accent-yellow";
+                    default:
+                      return "border-terminal-border";
+                  }
+                }
                 switch (discipline) {
                   case "swim":
                     return "border-blue-400";
@@ -2519,6 +2546,20 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               };
 
               const getColorForHeight = (discipline: string) => {
+                if (useTerminal) {
+                  switch (discipline) {
+                    case "swim":
+                      return "bg-[#00D4FF]";
+                    case "bike":
+                      return "bg-[#FF6B35]";
+                    case "run":
+                      return "bg-[#4ECDC4]";
+                    case "brick":
+                      return "bg-accent-yellow";
+                    default:
+                      return "bg-terminal-border";
+                  }
+                }
                 switch (discipline) {
                   case "swim":
                     return "bg-blue-400";
@@ -2535,31 +2576,61 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
               return (
                 <div key={index} className="text-center">
-                  <div className="text-xs text-white/60 mb-2">
-                    Week {4 - index}
+                  <div
+                    className={
+                      useTerminal
+                        ? "text-xs text-text-secondary mb-2 font-mono"
+                        : "text-xs text-white/60 mb-2"
+                    }
+                  >
+                    {useTerminal ? `WK ${4 - index}` : `Week ${4 - index}`}
                   </div>
                   <div
-                    className={`h-20 rounded-lg flex flex-col justify-end relative border overflow-hidden ${
+                    className={`h-20 flex flex-col justify-end relative border overflow-hidden ${
                       weekData.hours > 0
                         ? getColorForDiscipline(weekData.primaryDiscipline)
-                        : "bg-white/5 border-white/10"
-                    }`}
-                    style={{ minHeight: "80px" }}
+                        : useTerminal
+                          ? "bg-terminal-bg border-terminal-border"
+                          : "bg-white/5 border-white/10"
+                    } ${useTerminal ? "" : "rounded-lg"}`}
+                    style={useTerminal ? { minHeight: "80px", borderRadius: 0 } : { minHeight: "80px" }}
                   >
                     {weekData.hours > 0 && (
                       <div
-                        className={`w-full rounded-b-lg flex items-end justify-center flex-1 ${getColorForHeight(weekData.primaryDiscipline)}`}
+                        className={`w-full flex items-end justify-center flex-1 ${getColorForHeight(weekData.primaryDiscipline)} ${useTerminal ? "" : "rounded-b-lg"}`}
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
                       >
-                        <div className="text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg">
-                          {weekData.hours}h
+                        <div
+                          className={
+                            useTerminal
+                              ? "text-xs text-terminal-bg mb-1 px-2 py-1 bg-text-primary font-mono font-bold border border-terminal-bg"
+                              : "text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg"
+                          }
+                          style={useTerminal ? { borderRadius: 0 } : undefined}
+                        >
+                          {weekData.hours}{useTerminal ? "H" : "h"}
                         </div>
                       </div>
                     )}
                     {weekData.hours === 0 && (
-                      <div className="text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg"></div>
+                      <div
+                        className={
+                          useTerminal
+                            ? "text-xs text-terminal-bg mb-1 px-2 py-1 bg-text-primary font-mono font-bold border border-terminal-bg"
+                            : "text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      ></div>
                     )}
                     {weekData.workoutCount > 1 && (
-                      <div className="absolute top-1 right-1 text-xs text-white/60 bg-white/20 rounded-full w-4 h-4 flex items-center justify-center">
+                      <div
+                        className={
+                          useTerminal
+                            ? "absolute top-1 right-1 text-xs text-text-primary bg-terminal-bg border border-terminal-border w-4 h-4 flex items-center justify-center font-mono"
+                            : "absolute top-1 right-1 text-xs text-white/60 bg-white/20 rounded-full w-4 h-4 flex items-center justify-center"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                      >
                         {weekData.workoutCount}
                       </div>
                     )}
@@ -2569,25 +2640,76 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             })}
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-white/70">
-              Total this month:{" "}
+            <span
+              className={
+                useTerminal
+                  ? "text-text-secondary font-mono"
+                  : "text-white/70"
+              }
+            >
+              {useTerminal ? "TOTAL: " : "Total this month: "}
               {analytics.monthlyVolume
                 .reduce((sum, week) => sum + week.hours, 0)
                 .toFixed(1)}
-              h
+              {useTerminal ? "H" : "h"}
             </span>
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-white/60">Swim</span>
+                <div
+                  className={
+                    useTerminal
+                      ? "w-2 h-2 bg-[#00D4FF] border border-[#00D4FF]"
+                      : "w-2 h-2 bg-blue-500 rounded-full"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                ></div>
+                <span
+                  className={
+                    useTerminal
+                      ? "text-text-secondary font-mono"
+                      : "text-white/60"
+                  }
+                >
+                  {useTerminal ? "SWIM" : "Swim"}
+                </span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-white/60">Bike</span>
+                <div
+                  className={
+                    useTerminal
+                      ? "w-2 h-2 bg-[#FF6B35] border border-[#FF6B35]"
+                      : "w-2 h-2 bg-orange-500 rounded-full"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                ></div>
+                <span
+                  className={
+                    useTerminal
+                      ? "text-text-secondary font-mono"
+                      : "text-white/60"
+                  }
+                >
+                  {useTerminal ? "BIKE" : "Bike"}
+                </span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-white/60">Run</span>
+                <div
+                  className={
+                    useTerminal
+                      ? "w-2 h-2 bg-[#4ECDC4] border border-[#4ECDC4]"
+                      : "w-2 h-2 bg-green-500 rounded-full"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                ></div>
+                <span
+                  className={
+                    useTerminal
+                      ? "text-text-secondary font-mono"
+                      : "text-white/60"
+                  }
+                >
+                  {useTerminal ? "RUN" : "Run"}
+                </span>
               </div>
             </div>
           </div>
