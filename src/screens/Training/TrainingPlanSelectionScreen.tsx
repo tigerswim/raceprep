@@ -17,11 +17,13 @@ type DistanceFilter = 'all' | 'sprint' | 'olympic' | '70.3' | 'ironman';
 type ExperienceFilter = 'all' | 'beginner' | 'intermediate' | 'advanced';
 
 interface TrainingPlanSelectionScreenProps {
+  useTerminal?: boolean;
   onSelectPlan?: (template: TrainingPlanTemplate) => void;
   onBack?: () => void;
 }
 
 export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenProps> = ({
+  useTerminal = false,
   onSelectPlan,
   onBack,
 }) => {
@@ -38,6 +40,19 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
 
   const [selectedTemplate, setSelectedTemplate] = useState<TrainingPlanTemplate | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Terminal color palette
+  const terminalColors = {
+    bg: '#0A0E14',
+    panel: '#0F1419',
+    border: '#1C2127',
+    textPrimary: '#F8F8F2',
+    textSecondary: '#B4B8C5',
+    yellow: '#FFD866',
+    swim: '#00D4FF',
+    bike: '#FF6B35',
+    run: '#4ECDC4',
+  };
 
   // Reload user plans when screen comes into focus (e.g., after navigating back from calendar)
   useFocusEffect(
@@ -142,7 +157,19 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
       <View style={styles.filterGroup}>
-        <Text style={styles.filterLabel}>Distance:</Text>
+        <Text style={[
+          styles.filterLabel,
+          useTerminal && {
+            fontFamily: 'monospace',
+            fontSize: 11,
+            fontWeight: 'bold',
+            color: terminalColors.textSecondary,
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+          }
+        ]}>
+          {useTerminal ? 'DISTANCE:' : 'Distance:'}
+        </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {(['all', 'sprint', 'olympic', '70.3', 'ironman'] as DistanceFilter[]).map((filter) => (
             <TouchableOpacity
@@ -150,6 +177,12 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
               style={[
                 styles.filterButton,
                 distanceFilter === filter && styles.filterButtonActive,
+                useTerminal && {
+                  backgroundColor: distanceFilter === filter ? terminalColors.yellow : terminalColors.panel,
+                  borderWidth: 2,
+                  borderColor: distanceFilter === filter ? terminalColors.yellow : terminalColors.border,
+                  borderRadius: 0,
+                }
               ]}
               onPress={() => setDistanceFilter(filter)}
             >
@@ -157,9 +190,18 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
                 style={[
                   styles.filterButtonText,
                   distanceFilter === filter && styles.filterButtonTextActive,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    color: distanceFilter === filter ? terminalColors.bg : terminalColors.textPrimary,
+                    textTransform: 'uppercase',
+                  }
                 ]}
               >
-                {filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                {useTerminal
+                  ? (filter === 'all' ? 'ALL' : filter.toUpperCase())
+                  : (filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1))}
               </Text>
             </TouchableOpacity>
           ))}
@@ -167,7 +209,19 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
       </View>
 
       <View style={styles.filterGroup}>
-        <Text style={styles.filterLabel}>Experience:</Text>
+        <Text style={[
+          styles.filterLabel,
+          useTerminal && {
+            fontFamily: 'monospace',
+            fontSize: 11,
+            fontWeight: 'bold',
+            color: terminalColors.textSecondary,
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+          }
+        ]}>
+          {useTerminal ? 'EXPERIENCE:' : 'Experience:'}
+        </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {(['all', 'beginner', 'intermediate', 'advanced'] as ExperienceFilter[]).map((filter) => (
             <TouchableOpacity
@@ -175,6 +229,12 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
               style={[
                 styles.filterButton,
                 experienceFilter === filter && styles.filterButtonActive,
+                useTerminal && {
+                  backgroundColor: experienceFilter === filter ? terminalColors.yellow : terminalColors.panel,
+                  borderWidth: 2,
+                  borderColor: experienceFilter === filter ? terminalColors.yellow : terminalColors.border,
+                  borderRadius: 0,
+                }
               ]}
               onPress={() => setExperienceFilter(filter)}
             >
@@ -182,9 +242,18 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
                 style={[
                   styles.filterButtonText,
                   experienceFilter === filter && styles.filterButtonTextActive,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    color: experienceFilter === filter ? terminalColors.bg : terminalColors.textPrimary,
+                    textTransform: 'uppercase',
+                  }
                 ]}
               >
-                {filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                {useTerminal
+                  ? (filter === 'all' ? 'ALL' : filter.toUpperCase())
+                  : (filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1))}
               </Text>
             </TouchableOpacity>
           ))}
@@ -196,48 +265,169 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
   const renderTemplateCard = (template: TrainingPlanTemplate) => (
     <TouchableOpacity
       key={template.id}
-      style={styles.templateCard}
+      style={[
+        styles.templateCard,
+        useTerminal && {
+          backgroundColor: terminalColors.panel,
+          borderWidth: 2,
+          borderColor: terminalColors.border,
+          borderRadius: 0,
+        }
+      ]}
       onPress={() => handleTemplatePress(template)}
     >
       <View style={styles.templateHeader}>
-        <Text style={styles.templateName}>{template.name}</Text>
+        <Text style={[
+          styles.templateName,
+          useTerminal && {
+            fontFamily: 'monospace',
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: terminalColors.textPrimary,
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+          }
+        ]}>
+          {useTerminal ? template.name.toUpperCase() : template.name}
+        </Text>
         <View style={styles.badges}>
-          <View style={[styles.badge, styles.badgeDistance]}>
-            <Text style={styles.badgeText}>{template.distance_type.toUpperCase()}</Text>
+          <View style={[
+            styles.badge,
+            styles.badgeDistance,
+            useTerminal && {
+              backgroundColor: `${terminalColors.swim}33`,
+              borderWidth: 1,
+              borderColor: terminalColors.swim,
+              borderRadius: 0,
+            }
+          ]}>
+            <Text style={[
+              styles.badgeText,
+              useTerminal && {
+                fontFamily: 'monospace',
+                fontSize: 10,
+                fontWeight: 'bold',
+                color: terminalColors.swim,
+              }
+            ]}>
+              {template.distance_type.toUpperCase()}
+            </Text>
           </View>
-          <View style={[styles.badge, styles.badgeLevel]}>
-            <Text style={styles.badgeText}>{template.experience_level}</Text>
+          <View style={[
+            styles.badge,
+            styles.badgeLevel,
+            useTerminal && {
+              backgroundColor: `${terminalColors.yellow}33`,
+              borderWidth: 1,
+              borderColor: terminalColors.yellow,
+              borderRadius: 0,
+            }
+          ]}>
+            <Text style={[
+              styles.badgeText,
+              useTerminal && {
+                fontFamily: 'monospace',
+                fontSize: 10,
+                fontWeight: 'bold',
+                color: terminalColors.yellow,
+                textTransform: 'uppercase',
+              }
+            ]}>
+              {useTerminal ? template.experience_level.toUpperCase() : template.experience_level}
+            </Text>
           </View>
         </View>
       </View>
 
-      <Text style={styles.templateDescription} numberOfLines={2}>
+      <Text style={[
+        styles.templateDescription,
+        useTerminal && {
+          fontFamily: 'monospace',
+          fontSize: 12,
+          color: terminalColors.textSecondary,
+        }
+      ]} numberOfLines={2}>
         {template.description}
       </Text>
 
       <View style={styles.templateStats}>
         <View style={styles.stat}>
-          <Text style={styles.statValue}>{template.duration_weeks}</Text>
-          <Text style={styles.statLabel}>weeks</Text>
+          <Text style={[
+            styles.statValue,
+            useTerminal && {
+              fontFamily: 'monospace',
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: terminalColors.textPrimary,
+            }
+          ]}>
+            {template.duration_weeks}
+          </Text>
+          <Text style={[
+            styles.statLabel,
+            useTerminal && {
+              fontFamily: 'monospace',
+              fontSize: 10,
+              color: terminalColors.textSecondary,
+              textTransform: 'uppercase',
+            }
+          ]}>
+            {useTerminal ? 'WEEKS' : 'weeks'}
+          </Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statValue}>
+          <Text style={[
+            styles.statValue,
+            useTerminal && {
+              fontFamily: 'monospace',
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: terminalColors.textPrimary,
+            }
+          ]}>
             {template.weekly_hours_min}-{template.weekly_hours_max}
           </Text>
-          <Text style={styles.statLabel}>hrs/week</Text>
+          <Text style={[
+            styles.statLabel,
+            useTerminal && {
+              fontFamily: 'monospace',
+              fontSize: 10,
+              color: terminalColors.textSecondary,
+              textTransform: 'uppercase',
+            }
+          ]}>
+            {useTerminal ? 'HRS/WEEK' : 'hrs/week'}
+          </Text>
         </View>
       </View>
 
       {template.key_features && template.key_features.length > 0 && (
         <View style={styles.featuresContainer}>
           {template.key_features.slice(0, 2).map((feature, index) => (
-            <Text key={index} style={styles.featureItem}>
-              • {feature}
+            <Text key={index} style={[
+              styles.featureItem,
+              useTerminal && {
+                fontFamily: 'monospace',
+                fontSize: 11,
+                color: terminalColors.textSecondary,
+              }
+            ]}>
+              {useTerminal ? `[${feature.toUpperCase()}]` : `• ${feature}`}
             </Text>
           ))}
           {template.key_features.length > 2 && (
-            <Text style={styles.moreFeatures}>
-              +{template.key_features.length - 2} more features
+            <Text style={[
+              styles.moreFeatures,
+              useTerminal && {
+                fontFamily: 'monospace',
+                fontSize: 10,
+                color: terminalColors.yellow,
+                fontWeight: 'bold',
+              }
+            ]}>
+              {useTerminal
+                ? `+${template.key_features.length - 2} MORE FEATURES`
+                : `+${template.key_features.length - 2} more features`}
             </Text>
           )}
         </View>
@@ -255,53 +445,212 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
         presentationStyle="fullScreen"
         onRequestClose={() => setShowDetailModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[
+          styles.modalOverlay,
+          useTerminal && { backgroundColor: `${terminalColors.bg}F0` }
+        ]}>
+          <View style={[
+            styles.modalContent,
+            useTerminal && {
+              backgroundColor: terminalColors.panel,
+              borderWidth: 2,
+              borderColor: terminalColors.border,
+              borderRadius: 0,
+            }
+          ]}>
             <ScrollView>
-              <Text style={styles.modalTitle}>{selectedTemplate.name}</Text>
+              <Text style={[
+                styles.modalTitle,
+                useTerminal && {
+                  fontFamily: 'monospace',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: terminalColors.textPrimary,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.5,
+                }
+              ]}>
+                {useTerminal ? selectedTemplate.name.toUpperCase() : selectedTemplate.name}
+              </Text>
 
               <View style={styles.modalBadges}>
-                <View style={[styles.badge, styles.badgeDistance]}>
-                  <Text style={styles.badgeText}>
+                <View style={[
+                  styles.badge,
+                  styles.badgeDistance,
+                  useTerminal && {
+                    backgroundColor: `${terminalColors.swim}33`,
+                    borderWidth: 1,
+                    borderColor: terminalColors.swim,
+                    borderRadius: 0,
+                  }
+                ]}>
+                  <Text style={[
+                    styles.badgeText,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 11,
+                      fontWeight: 'bold',
+                      color: terminalColors.swim,
+                    }
+                  ]}>
                     {selectedTemplate.distance_type.toUpperCase()}
                   </Text>
                 </View>
-                <View style={[styles.badge, styles.badgeLevel]}>
-                  <Text style={styles.badgeText}>{selectedTemplate.experience_level}</Text>
+                <View style={[
+                  styles.badge,
+                  styles.badgeLevel,
+                  useTerminal && {
+                    backgroundColor: `${terminalColors.yellow}33`,
+                    borderWidth: 1,
+                    borderColor: terminalColors.yellow,
+                    borderRadius: 0,
+                  }
+                ]}>
+                  <Text style={[
+                    styles.badgeText,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 11,
+                      fontWeight: 'bold',
+                      color: terminalColors.yellow,
+                      textTransform: 'uppercase',
+                    }
+                  ]}>
+                    {useTerminal ? selectedTemplate.experience_level.toUpperCase() : selectedTemplate.experience_level}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.modalStats}>
                 <View style={styles.modalStat}>
-                  <Text style={styles.modalStatValue}>{selectedTemplate.duration_weeks}</Text>
-                  <Text style={styles.modalStatLabel}>Weeks</Text>
+                  <Text style={[
+                    styles.modalStatValue,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 28,
+                      fontWeight: 'bold',
+                      color: terminalColors.textPrimary,
+                    }
+                  ]}>
+                    {selectedTemplate.duration_weeks}
+                  </Text>
+                  <Text style={[
+                    styles.modalStatLabel,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 11,
+                      color: terminalColors.textSecondary,
+                      textTransform: 'uppercase',
+                    }
+                  ]}>
+                    {useTerminal ? 'WEEKS' : 'Weeks'}
+                  </Text>
                 </View>
                 <View style={styles.modalStat}>
-                  <Text style={styles.modalStatValue}>
+                  <Text style={[
+                    styles.modalStatValue,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 28,
+                      fontWeight: 'bold',
+                      color: terminalColors.textPrimary,
+                    }
+                  ]}>
                     {selectedTemplate.weekly_hours_min}-{selectedTemplate.weekly_hours_max}
                   </Text>
-                  <Text style={styles.modalStatLabel}>Hours/Week</Text>
+                  <Text style={[
+                    styles.modalStatLabel,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 11,
+                      color: terminalColors.textSecondary,
+                      textTransform: 'uppercase',
+                    }
+                  ]}>
+                    {useTerminal ? 'HOURS/WEEK' : 'Hours/Week'}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Description</Text>
-                <Text style={styles.modalText}>{selectedTemplate.description}</Text>
+                <Text style={[
+                  styles.modalSectionTitle,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: terminalColors.textPrimary,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.2,
+                  }
+                ]}>
+                  {useTerminal ? 'DESCRIPTION' : 'Description'}
+                </Text>
+                <Text style={[
+                  styles.modalText,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    color: terminalColors.textSecondary,
+                  }
+                ]}>
+                  {selectedTemplate.description}
+                </Text>
               </View>
 
               {selectedTemplate.target_audience && (
                 <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Target Audience</Text>
-                  <Text style={styles.modalText}>{selectedTemplate.target_audience}</Text>
+                  <Text style={[
+                    styles.modalSectionTitle,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: terminalColors.textPrimary,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1.2,
+                    }
+                  ]}>
+                    {useTerminal ? 'TARGET AUDIENCE' : 'Target Audience'}
+                  </Text>
+                  <Text style={[
+                    styles.modalText,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                      color: terminalColors.textSecondary,
+                    }
+                  ]}>
+                    {selectedTemplate.target_audience}
+                  </Text>
                 </View>
               )}
 
               {selectedTemplate.key_features && selectedTemplate.key_features.length > 0 && (
                 <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Key Features</Text>
+                  <Text style={[
+                    styles.modalSectionTitle,
+                    useTerminal && {
+                      fontFamily: 'monospace',
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: terminalColors.textPrimary,
+                      textTransform: 'uppercase',
+                      letterSpacing: 1.2,
+                    }
+                  ]}>
+                    {useTerminal ? 'KEY FEATURES' : 'Key Features'}
+                  </Text>
                   {selectedTemplate.key_features.map((feature, index) => (
-                    <Text key={index} style={styles.modalFeatureItem}>
-                      • {feature}
+                    <Text key={index} style={[
+                      styles.modalFeatureItem,
+                      useTerminal && {
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: terminalColors.textSecondary,
+                      }
+                    ]}>
+                      {useTerminal ? `[${feature.toUpperCase()}]` : `• ${feature}`}
                     </Text>
                   ))}
                 </View>
@@ -310,13 +659,51 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
 
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={styles.cancelButton}
+                style={[
+                  styles.cancelButton,
+                  useTerminal && {
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderColor: terminalColors.border,
+                    borderRadius: 0,
+                  }
+                ]}
                 onPress={() => setShowDetailModal(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={[
+                  styles.cancelButtonText,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                    color: terminalColors.textSecondary,
+                    textTransform: 'uppercase',
+                  }
+                ]}>
+                  {useTerminal ? 'CANCEL' : 'Cancel'}
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.selectButton} onPress={handleSelectPlan}>
-                <Text style={styles.selectButtonText}>Start This Plan</Text>
+              <TouchableOpacity style={[
+                styles.selectButton,
+                useTerminal && {
+                  backgroundColor: terminalColors.yellow,
+                  borderWidth: 2,
+                  borderColor: terminalColors.yellow,
+                  borderRadius: 0,
+                }
+              ]} onPress={handleSelectPlan}>
+                <Text style={[
+                  styles.selectButtonText,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                    color: terminalColors.bg,
+                    textTransform: 'uppercase',
+                  }
+                ]}>
+                  {useTerminal ? 'START THIS PLAN' : 'Start This Plan'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -346,37 +733,128 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      useTerminal && {
+        backgroundColor: terminalColors.bg,
+        borderWidth: 2,
+        borderColor: terminalColors.border,
+        borderRadius: 0,
+      }
+    ]}>
       {onBack && (
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={[
+            styles.backButtonText,
+            useTerminal && {
+              fontFamily: 'monospace',
+              color: terminalColors.yellow,
+              textTransform: 'uppercase',
+              letterSpacing: 1.5,
+            }
+          ]}>
+            {useTerminal ? '← BACK' : '← Back'}
+          </Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.header}>Training Plans</Text>
-      <Text style={styles.subheader}>
+      <Text style={[
+        styles.header,
+        useTerminal && {
+          fontFamily: 'monospace',
+          fontSize: 24,
+          fontWeight: 'bold',
+          color: terminalColors.textPrimary,
+          textTransform: 'uppercase',
+          letterSpacing: 2,
+        }
+      ]}>
+        {useTerminal ? 'TRAINING PLANS' : 'Training Plans'}
+      </Text>
+      <Text style={[
+        styles.subheader,
+        useTerminal && {
+          fontFamily: 'monospace',
+          fontSize: 12,
+          color: terminalColors.textSecondary,
+        }
+      ]}>
         {userPlans.length > 0
-          ? 'Continue your active plan or start a new one'
-          : 'Select a structured training plan based on your goals and experience level'
+          ? useTerminal
+            ? 'CONTINUE YOUR ACTIVE PLAN OR START A NEW ONE'
+            : 'Continue your active plan or start a new one'
+          : useTerminal
+            ? 'SELECT A STRUCTURED TRAINING PLAN BASED ON YOUR GOALS AND EXPERIENCE LEVEL'
+            : 'Select a structured training plan based on your goals and experience level'
         }
       </Text>
 
       {/* My Plans Section */}
       {userPlans.length > 0 && (
         <View style={styles.myPlansSection}>
-          <Text style={styles.sectionTitle}>My Plans</Text>
+          <Text style={[
+            styles.sectionTitle,
+            useTerminal && {
+              fontFamily: 'monospace',
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: terminalColors.textPrimary,
+              textTransform: 'uppercase',
+              letterSpacing: 1.5,
+            }
+          ]}>
+            {useTerminal ? 'MY PLANS' : 'My Plans'}
+          </Text>
           {userPlans.map((plan) => (
             <TouchableOpacity
               key={plan.id}
-              style={styles.userPlanCard}
+              style={[
+                styles.userPlanCard,
+                useTerminal && {
+                  backgroundColor: terminalColors.panel,
+                  borderWidth: 2,
+                  borderColor: terminalColors.border,
+                  borderRadius: 0,
+                }
+              ]}
               onPress={() => router.push(`/training-calendar?planId=${plan.id}&currentWeek=${plan.current_week || 1}`)}
             >
               <View style={styles.userPlanHeader}>
-                <Text style={styles.userPlanName}>{plan.plan_name}</Text>
-                <Text style={styles.userPlanWeek}>Week {plan.current_week || 1}/{plan.duration_weeks || 12}</Text>
+                <Text style={[
+                  styles.userPlanName,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: terminalColors.textPrimary,
+                    textTransform: 'uppercase',
+                  }
+                ]}>
+                  {useTerminal ? plan.plan_name.toUpperCase() : plan.plan_name}
+                </Text>
+                <Text style={[
+                  styles.userPlanWeek,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    color: terminalColors.yellow,
+                    fontWeight: 'bold',
+                  }
+                ]}>
+                  {useTerminal
+                    ? `WEEK ${plan.current_week || 1}/${plan.duration_weeks || 12}`
+                    : `Week ${plan.current_week || 1}/${plan.duration_weeks || 12}`}
+                </Text>
               </View>
               {(plan.template?.distance_type || plan.template?.experience_level) && (
-                <Text style={styles.userPlanSubtext}>
-                  {plan.template?.distance_type?.toUpperCase() || 'Custom'} · {plan.template?.experience_level || 'Intermediate'}
+                <Text style={[
+                  styles.userPlanSubtext,
+                  useTerminal && {
+                    fontFamily: 'monospace',
+                    fontSize: 11,
+                    color: terminalColors.textSecondary,
+                  }
+                ]}>
+                  {plan.template?.distance_type?.toUpperCase() || 'CUSTOM'} · {plan.template?.experience_level?.toUpperCase() || 'INTERMEDIATE'}
                 </Text>
               )}
             </TouchableOpacity>
@@ -385,17 +863,45 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
       )}
 
       {/* Divider */}
-      {userPlans.length > 0 && <View style={styles.divider} />}
+      {userPlans.length > 0 && <View style={[
+        styles.divider,
+        useTerminal && {
+          backgroundColor: terminalColors.border,
+          height: 2,
+        }
+      ]} />}
 
-      <Text style={styles.browsePlansTitle}>Browse Training Plan Templates</Text>
+      <Text style={[
+        styles.browsePlansTitle,
+        useTerminal && {
+          fontFamily: 'monospace',
+          fontSize: 14,
+          fontWeight: 'bold',
+          color: terminalColors.textSecondary,
+          textTransform: 'uppercase',
+          letterSpacing: 1.5,
+        }
+      ]}>
+        {useTerminal ? 'BROWSE TRAINING PLAN TEMPLATES' : 'Browse Training Plan Templates'}
+      </Text>
 
       {renderFilters()}
 
       <ScrollView style={styles.templatesContainer} showsVerticalScrollIndicator={false}>
         {templates.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
-              No training plans match your filters. Try adjusting your selection.
+            <Text style={[
+              styles.emptyStateText,
+              useTerminal && {
+                fontFamily: 'monospace',
+                fontSize: 12,
+                color: terminalColors.textSecondary,
+                textTransform: 'uppercase',
+              }
+            ]}>
+              {useTerminal
+                ? 'NO TRAINING PLANS MATCH YOUR FILTERS. TRY ADJUSTING YOUR SELECTION.'
+                : 'No training plans match your filters. Try adjusting your selection.'}
             </Text>
           </View>
         ) : (

@@ -1647,13 +1647,34 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
     return (
       <div className="space-y-6">
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-4">Log New Workout</h3>
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-6"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <h3
+            className={
+              useTerminal
+                ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider"
+                : "text-xl font-bold text-white mb-4"
+            }
+          >
+            {useTerminal ? "LOG NEW WORKOUT" : "Log New Workout"}
+          </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Date
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "DATE" : "Date"}
                 </label>
                 <input
                   type="date"
@@ -1661,13 +1682,24 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   onChange={(e) =>
                     setNewWorkout({ ...newWorkout, date: e.target.value })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Discipline
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "DISCIPLINE" : "Discipline"}
                 </label>
                 <select
                   value={newWorkout.discipline}
@@ -1677,19 +1709,24 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       discipline: e.target.value as any,
                     })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                 >
-                  <option value="swim" className="bg-slate-800">
-                    Swimming
+                  <option value="swim" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "SWIM" : "Swimming"}
                   </option>
-                  <option value="bike" className="bg-slate-800">
-                    Cycling
+                  <option value="bike" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "BIKE" : "Cycling"}
                   </option>
-                  <option value="run" className="bg-slate-800">
-                    Running
+                  <option value="run" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "RUN" : "Running"}
                   </option>
-                  <option value="brick" className="bg-slate-800">
-                    Brick Workout
+                  <option value="brick" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "BRICK" : "Brick Workout"}
                   </option>
                 </select>
               </div>
@@ -1697,8 +1734,14 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Duration (minutes)
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "DURATION (MIN)" : "Duration (minutes)"}
                 </label>
                 <input
                   type="number"
@@ -1709,14 +1752,25 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       duration_minutes: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                   placeholder="45"
                   required
                 />
               </div>
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Distance (optional)
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "DISTANCE (OPT)" : "Distance (optional)"}
                 </label>
                 <input
                   type="number"
@@ -1725,13 +1779,24 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   onChange={(e) =>
                     setNewWorkout({ ...newWorkout, distance: e.target.value })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                   placeholder="5.0"
                 />
               </div>
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Distance Unit
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "UNIT" : "Distance Unit"}
                 </label>
                 <select
                   value={newWorkout.distance_unit}
@@ -1741,13 +1806,18 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       distance_unit: e.target.value as "miles" | "km",
                     })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                 >
-                  <option value="miles" className="bg-slate-800">
-                    Miles
+                  <option value="miles" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "MI" : "Miles"}
                   </option>
-                  <option value="km" className="bg-slate-800">
-                    Kilometers
+                  <option value="km" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    KM
                   </option>
                 </select>
               </div>
@@ -1755,8 +1825,14 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Intensity
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "INTENSITY" : "Intensity"}
                 </label>
                 <select
                   value={newWorkout.intensity}
@@ -1766,25 +1842,36 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       intensity: e.target.value as any,
                     })
                   }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  className={
+                    useTerminal
+                      ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none font-mono"
+                      : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                 >
-                  <option value="easy" className="bg-slate-800">
-                    Easy
+                  <option value="easy" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "EASY" : "Easy"}
                   </option>
-                  <option value="moderate" className="bg-slate-800">
-                    Moderate
+                  <option value="moderate" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "MODERATE" : "Moderate"}
                   </option>
-                  <option value="hard" className="bg-slate-800">
-                    Hard
+                  <option value="hard" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "HARD" : "Hard"}
                   </option>
-                  <option value="race_pace" className="bg-slate-800">
-                    Race Pace
+                  <option value="race_pace" className={useTerminal ? "bg-terminal-bg" : "bg-slate-800"}>
+                    {useTerminal ? "RACE PACE" : "Race Pace"}
                   </option>
                 </select>
               </div>
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-1">
-                  Feeling Rating (1-10)
+                <label
+                  className={
+                    useTerminal
+                      ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                      : "block text-white/80 text-sm font-medium mb-1"
+                  }
+                >
+                  {useTerminal ? "FEELING (1-10)" : "Feeling Rating (1-10)"}
                 </label>
                 <input
                   type="range"
@@ -1799,122 +1886,233 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   }
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-white/60 mt-1">
-                  <span>1 (Terrible)</span>
-                  <span className="text-white font-medium">
+                <div
+                  className={
+                    useTerminal
+                      ? "flex justify-between text-xs text-text-secondary mt-1 font-mono"
+                      : "flex justify-between text-xs text-white/60 mt-1"
+                  }
+                >
+                  <span>{useTerminal ? "1 BAD" : "1 (Terrible)"}</span>
+                  <span
+                    className={
+                      useTerminal
+                        ? "text-accent-yellow font-bold"
+                        : "text-white font-medium"
+                    }
+                  >
                     {newWorkout.feeling_rating}
                   </span>
-                  <span>10 (Amazing)</span>
+                  <span>{useTerminal ? "10 GREAT" : "10 (Amazing)"}</span>
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-white/80 text-sm font-medium mb-1">
-                Notes
+              <label
+                className={
+                  useTerminal
+                    ? "block text-text-secondary text-xs font-mono font-bold mb-1 tracking-wider"
+                    : "block text-white/80 text-sm font-medium mb-1"
+                }
+              >
+                {useTerminal ? "NOTES" : "Notes"}
               </label>
               <textarea
                 value={newWorkout.notes}
                 onChange={(e) =>
                   setNewWorkout({ ...newWorkout, notes: e.target.value })
                 }
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none h-20 resize-none"
-                placeholder="How did the workout feel? Any specific intervals or goals?"
+                className={
+                  useTerminal
+                    ? "w-full px-3 py-2 bg-terminal-bg border-2 border-terminal-border text-text-primary focus:border-accent-yellow focus:outline-none h-20 resize-none font-mono"
+                    : "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-blue-400 focus:outline-none h-20 resize-none"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
+                placeholder={useTerminal ? "WORKOUT NOTES..." : "How did the workout feel? Any specific intervals or goals?"}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+              className={
+                useTerminal
+                  ? "w-full bg-accent-yellow text-terminal-bg px-6 py-3 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors border-2 border-accent-yellow"
+                  : "w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
-              Log Workout
+              {useTerminal ? "LOG WORKOUT" : "Log Workout"}
             </button>
           </form>
         </div>
 
         {/* Recent Workouts History */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-          <h3 className="text-xl font-bold text-white mb-4">Workout History</h3>
+        <div
+          className={
+            useTerminal
+              ? "bg-terminal-panel border-2 border-terminal-border p-6"
+              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+          }
+          style={useTerminal ? { borderRadius: 0 } : undefined}
+        >
+          <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" : "text-xl font-bold text-white mb-4"}>
+            {useTerminal ? "WORKOUT HISTORY" : "Workout History"}
+          </h3>
           <div className="space-y-2">
             {workoutLogs.map((workout) => (
               <div
                 key={workout.id}
-                className="p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 cursor-pointer transition-colors"
+                className={
+                  useTerminal
+                    ? "p-3 bg-terminal-bg border border-terminal-border hover:border-accent-yellow cursor-pointer transition-colors"
+                    : "p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 cursor-pointer transition-colors"
+                }
+                style={useTerminal ? { borderRadius: 0 } : undefined}
                 onClick={() => handleWorkoutClick(workout)}
               >
                 <div className="flex items-center gap-3">
                   {/* Sport Icon */}
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      workout.discipline === "swim"
-                        ? "bg-blue-500/20"
-                        : workout.discipline === "bike"
-                          ? "bg-orange-500/20"
-                          : workout.discipline === "run"
-                            ? "bg-green-500/20"
-                            : "bg-purple-500/20"
-                    }`}
+                    className={
+                      useTerminal
+                        ? `w-8 h-8 flex items-center justify-center flex-shrink-0 border-2 ${
+                            workout.discipline === "swim"
+                              ? "bg-[#00D4FF]/20 border-[#00D4FF]"
+                              : workout.discipline === "bike"
+                                ? "bg-[#FF6B35]/20 border-[#FF6B35]"
+                                : workout.discipline === "run"
+                                  ? "bg-[#4ECDC4]/20 border-[#4ECDC4]"
+                                  : "bg-accent-yellow/20 border-accent-yellow"
+                          }`
+                        : `w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            workout.discipline === "swim"
+                              ? "bg-blue-500/20"
+                              : workout.discipline === "bike"
+                                ? "bg-orange-500/20"
+                                : workout.discipline === "run"
+                                  ? "bg-green-500/20"
+                                  : "bg-purple-500/20"
+                          }`
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
                     {workout.discipline === "swim" ? (
-                      <TbSwimming className={`w-4 h-4 text-blue-400`} />
+                      <TbSwimming
+                        className={
+                          useTerminal ? `w-4 h-4 text-[#00D4FF]` : `w-4 h-4 text-blue-400`
+                        }
+                      />
                     ) : workout.discipline === "bike" ? (
-                      <TbBike className={`w-4 h-4 text-orange-400`} />
+                      <TbBike
+                        className={
+                          useTerminal ? `w-4 h-4 text-[#FF6B35]` : `w-4 h-4 text-orange-400`
+                        }
+                      />
                     ) : workout.discipline === "run" ? (
-                      <TbRun className={`w-4 h-4 text-green-400`} />
+                      <TbRun
+                        className={
+                          useTerminal ? `w-4 h-4 text-[#4ECDC4]` : `w-4 h-4 text-green-400`
+                        }
+                      />
                     ) : (
-                      <TbFlame className="w-4 h-4 text-purple-400" />
+                      <TbFlame
+                        className={
+                          useTerminal ? "w-4 h-4 text-accent-yellow" : "w-4 h-4 text-purple-400"
+                        }
+                      />
                     )}
                   </div>
 
                   {/* Activity Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-white font-medium text-sm leading-tight">
-                        {workout.notes ||
-                          `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} Workout`}
+                      <h4
+                        className={
+                          useTerminal
+                            ? "text-text-primary font-mono font-bold text-sm leading-tight tracking-wider"
+                            : "text-white font-medium text-sm leading-tight"
+                        }
+                      >
+                        {useTerminal
+                          ? (workout.notes ||
+                              `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} Workout`
+                            ).toUpperCase()
+                          : workout.notes ||
+                            `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} Workout`}
                       </h4>
-                      <span className="text-xs text-white/50 whitespace-nowrap ml-2">
+                      <span
+                        className={
+                          useTerminal
+                            ? "text-xs text-text-secondary whitespace-nowrap ml-2 font-mono"
+                            : "text-xs text-white/50 whitespace-nowrap ml-2"
+                        }
+                      >
                         {new Date(workout.date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
-                        })}
+                        }).toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-white/70">
-                      <span>{workout.duration_minutes}min</span>
+                    <div
+                      className={
+                        useTerminal
+                          ? "flex items-center gap-3 text-xs text-text-secondary font-mono"
+                          : "flex items-center gap-3 text-xs text-white/70"
+                      }
+                    >
+                      <span>
+                        {workout.duration_minutes}
+                        {useTerminal ? "MIN" : "min"}
+                      </span>
                       {workout.distance && (
                         <span>
-                          {workout.distance} {workout.distance_unit}
+                          {workout.distance} {workout.distance_unit.toUpperCase()}
                         </span>
                       )}
 
                       {/* Key metrics */}
                       {workout.average_heartrate && (
-                        <span>{Math.round(workout.average_heartrate)} bpm</span>
+                        <span>
+                          {Math.round(workout.average_heartrate)}{" "}
+                          {useTerminal ? "BPM" : "bpm"}
+                        </span>
                       )}
                       {workout.average_speed && (
                         <span>
-                          {calculatePace(
-                            workout.average_speed,
-                            workout.discipline,
-                          )}
+                          {calculatePace(workout.average_speed, workout.discipline)}
                         </span>
                       )}
 
                       {/* Intensity badge */}
                       <span
-                        className={`px-1.5 py-0.5 rounded text-xs font-medium capitalize ${
-                          workout.intensity === "easy"
-                            ? "bg-green-500/20 text-green-400"
-                            : workout.intensity === "moderate"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : workout.intensity === "hard"
-                                ? "bg-red-500/20 text-red-400"
-                                : "bg-orange-500/20 text-orange-400"
-                        }`}
+                        className={
+                          useTerminal
+                            ? `px-1.5 py-0.5 text-xs font-mono font-bold border ${
+                                workout.intensity === "easy"
+                                  ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
+                                  : workout.intensity === "moderate"
+                                    ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
+                                    : workout.intensity === "hard"
+                                      ? "bg-[#FF6B35]/20 text-[#FF6B35] border-[#FF6B35]"
+                                      : "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
+                              }`
+                            : `px-1.5 py-0.5 rounded text-xs font-medium capitalize ${
+                                workout.intensity === "easy"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : workout.intensity === "moderate"
+                                    ? "bg-blue-500/20 text-blue-400"
+                                    : workout.intensity === "hard"
+                                      ? "bg-red-500/20 text-red-400"
+                                      : "bg-orange-500/20 text-orange-400"
+                              }`
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
                       >
-                        {workout.intensity.replace("_", " ")}
+                        {useTerminal
+                          ? workout.intensity.replace("_", " ").toUpperCase()
+                          : workout.intensity.replace("_", " ")}
                       </span>
                     </div>
                   </div>
@@ -1929,10 +2127,16 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
           <div className="text-center">
             <button
               onClick={() => setWorkoutsDisplayCount((prev) => prev + 10)}
-              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 px-6 py-3 rounded-xl font-medium transition-all duration-300 border border-blue-400/20 hover:border-blue-400/40"
+              className={
+                useTerminal
+                  ? "bg-accent-yellow/20 hover:bg-accent-yellow/30 text-accent-yellow border-2 border-accent-yellow hover:border-accent-yellow px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300"
+                  : "bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 px-6 py-3 rounded-xl font-medium transition-all duration-300 border border-blue-400/20 hover:border-blue-400/40"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
-              Show More Workouts (
-              {filteredWorkouts.length - workoutsDisplayCount} remaining)
+              {useTerminal
+                ? `SHOW MORE (${filteredWorkouts.length - workoutsDisplayCount} REMAINING)`
+                : `Show More Workouts (${filteredWorkouts.length - workoutsDisplayCount} remaining)`}
             </button>
           </div>
         )}
@@ -3601,6 +3805,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
           {activeTab === "overview" && renderOverview()}
           {activeTab === "plans" && (
             <TrainingPlanSelectionScreen
+              useTerminal={useTerminal}
               onSelectPlan={(template) =>
                 router.push(`/create-training-plan?templateId=${template.id}`)
               }
