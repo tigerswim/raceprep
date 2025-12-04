@@ -1916,41 +1916,68 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   const renderTrainingEvents = () => (
     <div className="space-y-6">
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Upcoming Training Events
+      <div
+        className={
+          useTerminal
+            ? "bg-terminal-panel border-2 border-terminal-border p-6"
+            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+        }
+        style={useTerminal ? { borderRadius: 0 } : undefined}
+      >
+        <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" : "text-xl font-bold text-white mb-4"}>
+          {useTerminal ? "UPCOMING TRAINING EVENTS" : "Upcoming Training Events"}
         </h3>
         <div className="space-y-4">
           {trainingEvents.map((event) => (
             <div
               key={event.id}
-              className="p-4 bg-white/5 rounded-xl border border-white/10"
+              className={
+                useTerminal
+                  ? "p-4 bg-terminal-bg border border-terminal-border"
+                  : "p-4 bg-white/5 rounded-xl border border-white/10"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h4 className="text-white font-semibold text-lg">
-                      {event.title}
+                    <h4 className={useTerminal ? "text-text-primary font-mono font-bold text-lg tracking-wider" : "text-white font-semibold text-lg"}>
+                      {useTerminal ? event.title.toUpperCase() : event.title}
                     </h4>
                     <span
-                      className={`px-2 py-1 rounded-lg text-xs font-medium capitalize ${
-                        event.event_type === "clinic"
-                          ? "bg-blue-500/20 text-blue-400"
-                          : event.event_type === "workshop"
-                            ? "bg-green-500/20 text-green-400"
-                            : event.event_type === "group_training"
-                              ? "bg-orange-500/20 text-orange-400"
-                              : "bg-purple-500/20 text-purple-400"
-                      }`}
+                      className={
+                        useTerminal
+                          ? `px-2 py-1 text-xs font-mono font-bold border ${
+                              event.event_type === "clinic"
+                                ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
+                                : event.event_type === "workshop"
+                                  ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
+                                  : event.event_type === "group_training"
+                                    ? "bg-[#FF6B35]/20 text-[#FF6B35] border-[#FF6B35]"
+                                    : "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
+                            }`
+                          : `px-2 py-1 rounded-lg text-xs font-medium capitalize ${
+                              event.event_type === "clinic"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : event.event_type === "workshop"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : event.event_type === "group_training"
+                                    ? "bg-orange-500/20 text-orange-400"
+                                    : "bg-purple-500/20 text-purple-400"
+                            }`
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     >
-                      {event.event_type.replace("_", " ")}
+                      {useTerminal ? event.event_type.replace("_", " ").toUpperCase() : event.event_type.replace("_", " ")}
                     </span>
                   </div>
-                  <p className="text-white/70 mb-3">{event.description}</p>
-                  <div className="flex items-center space-x-6 text-sm text-white/60">
+                  <p className={useTerminal ? "text-text-secondary mb-3 font-mono" : "text-white/70 mb-3"}>
+                    {useTerminal ? event.description.toUpperCase() : event.description}
+                  </p>
+                  <div className={useTerminal ? "flex items-center space-x-6 text-sm text-text-secondary font-mono" : "flex items-center space-x-6 text-sm text-white/60"}>
                     <span className="flex items-center space-x-1">
-                      <span>📅</span>
-                      <span>{new Date(event.date).toLocaleDateString()}</span>
+                      <span>{useTerminal ? "[" : "📅"}</span>
+                      <span>{new Date(event.date).toLocaleDateString()}{useTerminal ? "]" : ""}</span>
                     </span>
                     {event.time && (
                       <span className="flex items-center space-x-1">
@@ -1961,13 +1988,13 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                     {event.duration_minutes && (
                       <span className="flex items-center space-x-1">
                         <TbClock className="w-4 h-4" />
-                        <span>{event.duration_minutes} min</span>
+                        <span>{event.duration_minutes} {useTerminal ? "MIN" : "min"}</span>
                       </span>
                     )}
                     {event.location && (
                       <span className="flex items-center space-x-1">
                         <TbMapPin className="w-4 h-4" />
-                        <span>{event.location}</span>
+                        <span>{useTerminal ? event.location.toUpperCase() : event.location}</span>
                       </span>
                     )}
                   </div>
@@ -1977,19 +2004,24 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                     href={event.registration_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 text-sm"
+                    className={
+                      useTerminal
+                        ? "bg-accent-yellow text-terminal-bg px-4 py-2 font-mono font-bold hover:bg-accent-yellow/90 transition-colors text-sm border-2 border-accent-yellow"
+                        : "bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 text-sm"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   >
-                    Register
+                    {useTerminal ? "REGISTER" : "Register"}
                   </a>
                 )}
               </div>
             </div>
           ))}
           {trainingEvents.length === 0 && (
-            <div className="text-center py-8 text-white/60">
-              <p>No upcoming training events found.</p>
+            <div className={useTerminal ? "text-center py-8 text-text-secondary font-mono" : "text-center py-8 text-white/60"}>
+              <p>{useTerminal ? "NO UPCOMING TRAINING EVENTS FOUND." : "No upcoming training events found."}</p>
               <p className="text-sm mt-2">
-                Check back later for new training opportunities!
+                {useTerminal ? "CHECK BACK LATER FOR NEW TRAINING OPPORTUNITIES!" : "Check back later for new training opportunities!"}
               </p>
             </div>
           )}
@@ -2000,56 +2032,84 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
   const renderTrainingArticles = () => (
     <div className="space-y-6">
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Latest Training Tips & Articles
+      <div
+        className={
+          useTerminal
+            ? "bg-terminal-panel border-2 border-terminal-border p-6"
+            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+        }
+        style={useTerminal ? { borderRadius: 0 } : undefined}
+      >
+        <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-4 font-mono tracking-wider" : "text-xl font-bold text-white mb-4"}>
+          {useTerminal ? "LATEST TRAINING TIPS & ARTICLES" : "Latest Training Tips & Articles"}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {trainingArticles.map((article) => (
             <div
               key={article.id}
-              className="p-4 bg-white/5 rounded-xl border border-white/10"
+              className={
+                useTerminal
+                  ? "p-4 bg-terminal-bg border border-terminal-border"
+                  : "p-4 bg-white/5 rounded-xl border border-white/10"
+              }
+              style={useTerminal ? { borderRadius: 0 } : undefined}
             >
               <div className="flex items-start space-x-3">
                 {article.image_url && (
                   <img
                     src={article.image_url}
                     alt={article.title}
-                    className="w-16 h-16 rounded-lg object-cover"
+                    className={useTerminal ? "w-16 h-16 object-cover border border-terminal-border" : "w-16 h-16 rounded-lg object-cover"}
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
                   />
                 )}
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
                     <span
-                      className={`px-2 py-1 rounded-lg text-xs font-medium capitalize ${
-                        article.category === "technique"
-                          ? "bg-blue-500/20 text-blue-400"
-                          : article.category === "nutrition"
-                            ? "bg-green-500/20 text-green-400"
-                            : article.category === "training"
-                              ? "bg-orange-500/20 text-orange-400"
-                              : article.category === "mental"
-                                ? "bg-purple-500/20 text-purple-400"
-                                : "bg-gray-500/20 text-gray-400"
-                      }`}
+                      className={
+                        useTerminal
+                          ? `px-2 py-1 text-xs font-mono font-bold border ${
+                              article.category === "technique"
+                                ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
+                                : article.category === "nutrition"
+                                  ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
+                                  : article.category === "training"
+                                    ? "bg-[#FF6B35]/20 text-[#FF6B35] border-[#FF6B35]"
+                                    : article.category === "mental"
+                                      ? "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
+                                      : "bg-text-secondary/20 text-text-secondary border-text-secondary"
+                            }`
+                          : `px-2 py-1 rounded-lg text-xs font-medium capitalize ${
+                              article.category === "technique"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : article.category === "nutrition"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : article.category === "training"
+                                    ? "bg-orange-500/20 text-orange-400"
+                                    : article.category === "mental"
+                                      ? "bg-purple-500/20 text-purple-400"
+                                      : "bg-gray-500/20 text-gray-400"
+                            }`
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
                     >
-                      {article.category}
+                      {useTerminal ? article.category.toUpperCase() : article.category}
                     </span>
                     {article.reading_time_minutes && (
-                      <span className="text-xs text-white/60">
-                        {article.reading_time_minutes} min read
+                      <span className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/60"}>
+                        {article.reading_time_minutes} {useTerminal ? "MIN READ" : "min read"}
                       </span>
                     )}
                   </div>
-                  <h4 className="text-white font-semibold text-sm mb-2 line-clamp-2">
-                    {article.title}
+                  <h4 className={useTerminal ? "text-text-primary font-mono font-bold text-sm mb-2 line-clamp-2 tracking-wider" : "text-white font-semibold text-sm mb-2 line-clamp-2"}>
+                    {useTerminal ? article.title.toUpperCase() : article.title}
                   </h4>
-                  <p className="text-white/70 text-xs mb-2 line-clamp-2">
+                  <p className={useTerminal ? "text-text-secondary text-xs mb-2 line-clamp-2 font-mono" : "text-white/70 text-xs mb-2 line-clamp-2"}>
                     {article.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="text-xs text-white/60">
-                      {article.author && <span>By {article.author}</span>}
+                    <div className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/60"}>
+                      {article.author && <span>{useTerminal ? `BY ${article.author.toUpperCase()}` : `By ${article.author}`}</span>}
                       {article.published_at && (
                         <span className="ml-2">
                           {new Date(article.published_at).toLocaleDateString()}
@@ -2061,9 +2121,9 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                         href={article.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 text-xs font-medium"
+                        className={useTerminal ? "text-accent-yellow hover:text-accent-yellow/80 text-xs font-mono font-bold" : "text-blue-400 hover:text-blue-300 text-xs font-medium"}
                       >
-                        Read More →
+                        {useTerminal ? "READ →" : "Read More →"}
                       </a>
                     )}
                   </div>
@@ -2072,10 +2132,10 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             </div>
           ))}
           {trainingArticles.length === 0 && (
-            <div className="col-span-2 text-center py-8 text-white/60">
-              <p>No training articles available.</p>
+            <div className={useTerminal ? "col-span-2 text-center py-8 text-text-secondary font-mono" : "col-span-2 text-center py-8 text-white/60"}>
+              <p>{useTerminal ? "NO TRAINING ARTICLES AVAILABLE." : "No training articles available."}</p>
               <p className="text-sm mt-2">
-                Check back later for new training tips!
+                {useTerminal ? "CHECK BACK LATER FOR NEW TRAINING TIPS!" : "Check back later for new training tips!"}
               </p>
             </div>
           )}

@@ -355,9 +355,9 @@ export default function PlanningScreen() {
                         </h3>
                         <div className="grid md:grid-cols-3 gap-6">
                           <div>
-                            <h4 className="text-blue-400 font-semibold mb-3 flex items-center gap-2">
+                            <h4 className={useTerminal ? "text-[#00D4FF] font-mono font-bold mb-3 flex items-center gap-2 tracking-wider" : "text-blue-400 font-semibold mb-3 flex items-center gap-2"}>
                               <span className="flex items-center gap-2">
-                                <TbSwimming className="w-4 h-4" /> Swim
+                                <TbSwimming className="w-4 h-4" /> {useTerminal ? "SWIM" : "Swim"}
                               </span>
                             </h4>
                             <div className="space-y-2">
@@ -369,18 +369,18 @@ export default function PlanningScreen() {
                               ].map((item) => (
                                 <label
                                   key={item}
-                                  className="flex items-center gap-2 text-white/80"
+                                  className={useTerminal ? "flex items-center gap-2 text-text-primary font-mono" : "flex items-center gap-2 text-white/80"}
                                 >
-                                  <input type="checkbox" className="rounded" />
-                                  <span className="text-sm">{item}</span>
+                                  <input type="checkbox" className={useTerminal ? "border-2 border-terminal-border" : "rounded"} style={useTerminal ? { borderRadius: 0 } : undefined} />
+                                  <span className="text-sm">{useTerminal ? item.toUpperCase() : item}</span>
                                 </label>
                               ))}
                             </div>
                           </div>
                           <div>
-                            <h4 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
+                            <h4 className={useTerminal ? "text-[#FF6B35] font-mono font-bold mb-3 flex items-center gap-2 tracking-wider" : "text-orange-400 font-semibold mb-3 flex items-center gap-2"}>
                               <span className="flex items-center gap-2">
-                                <TbBike className="w-4 h-4" /> Bike
+                                <TbBike className="w-4 h-4" /> {useTerminal ? "BIKE" : "Bike"}
                               </span>
                             </h4>
                             <div className="space-y-2">
@@ -394,18 +394,18 @@ export default function PlanningScreen() {
                               ].map((item) => (
                                 <label
                                   key={item}
-                                  className="flex items-center gap-2 text-white/80"
+                                  className={useTerminal ? "flex items-center gap-2 text-text-primary font-mono" : "flex items-center gap-2 text-white/80"}
                                 >
-                                  <input type="checkbox" className="rounded" />
-                                  <span className="text-sm">{item}</span>
+                                  <input type="checkbox" className={useTerminal ? "border-2 border-terminal-border" : "rounded"} style={useTerminal ? { borderRadius: 0 } : undefined} />
+                                  <span className="text-sm">{useTerminal ? item.toUpperCase() : item}</span>
                                 </label>
                               ))}
                             </div>
                           </div>
                           <div>
-                            <h4 className="text-green-400 font-semibold mb-3 flex items-center gap-2">
+                            <h4 className={useTerminal ? "text-[#4ECDC4] font-mono font-bold mb-3 flex items-center gap-2 tracking-wider" : "text-green-400 font-semibold mb-3 flex items-center gap-2"}>
                               <span className="flex items-center gap-2">
-                                <TbRun className="w-4 h-4" /> Run
+                                <TbRun className="w-4 h-4" /> {useTerminal ? "RUN" : "Run"}
                               </span>
                             </h4>
                             <div className="space-y-2">
@@ -417,10 +417,10 @@ export default function PlanningScreen() {
                               ].map((item) => (
                                 <label
                                   key={item}
-                                  className="flex items-center gap-2 text-white/80"
+                                  className={useTerminal ? "flex items-center gap-2 text-text-primary font-mono" : "flex items-center gap-2 text-white/80"}
                                 >
-                                  <input type="checkbox" className="rounded" />
-                                  <span className="text-sm">{item}</span>
+                                  <input type="checkbox" className={useTerminal ? "border-2 border-terminal-border" : "rounded"} style={useTerminal ? { borderRadius: 0 } : undefined} />
+                                  <span className="text-sm">{useTerminal ? item.toUpperCase() : item}</span>
                                 </label>
                               ))}
                             </div>
@@ -482,81 +482,161 @@ export default function PlanningScreen() {
                   )}
 
                   {activeTab === "strategy" && (
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                      <h3 className="text-xl font-bold text-white mb-6">
-                        Race Strategy Plan
+                    <div
+                      className={
+                        useTerminal
+                          ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                          : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                    >
+                      <h3
+                        className={
+                          useTerminal
+                            ? "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider"
+                            : "text-xl font-bold text-white mb-6"
+                        }
+                      >
+                        {useTerminal ? "RACE STRATEGY PLAN" : "Race Strategy Plan"}
                       </h3>
                       <div className="space-y-6">
-                        <div className="border border-blue-400/30 rounded-xl p-4 bg-blue-500/5">
-                          <h4 className="text-blue-400 font-semibold mb-3">
-                            Swim Strategy
+                        {/* Swim Strategy */}
+                        <div
+                          className={
+                            useTerminal
+                              ? "border-2 border-[#00D4FF] p-4 bg-[#00D4FF]/10"
+                              : "border border-blue-400/30 rounded-xl p-4 bg-blue-500/5"
+                          }
+                          style={useTerminal ? { borderRadius: 0 } : undefined}
+                        >
+                          <h4
+                            className={
+                              useTerminal
+                                ? "text-[#00D4FF] font-mono font-bold mb-3 tracking-wider"
+                                : "text-blue-400 font-semibold mb-3"
+                            }
+                          >
+                            {useTerminal ? "SWIM STRATEGY" : "Swim Strategy"}
                           </h4>
-                          <div className="grid md:grid-cols-2 gap-4 text-white/80 text-sm">
+                          <div
+                            className={
+                              useTerminal
+                                ? "grid md:grid-cols-2 gap-4 text-text-primary text-sm font-mono"
+                                : "grid md:grid-cols-2 gap-4 text-white/80 text-sm"
+                            }
+                          >
                             <div>
-                              <strong>Position:</strong> Start wide right to
-                              avoid crowds
+                              <strong>{useTerminal ? "POSITION:" : "Position:"}</strong>{" "}
+                              {useTerminal ? "START WIDE RIGHT TO AVOID CROWDS" : "Start wide right to avoid crowds"}
                               <br />
-                              <strong>Pace:</strong> Controlled effort, save
-                              energy
+                              <strong>{useTerminal ? "PACE:" : "Pace:"}</strong>{" "}
+                              {useTerminal ? "CONTROLLED EFFORT, SAVE ENERGY" : "Controlled effort, save energy"}
                               <br />
-                              <strong>Sighting:</strong> Every 6-8 strokes
+                              <strong>{useTerminal ? "SIGHTING:" : "Sighting:"}</strong>{" "}
+                              {useTerminal ? "EVERY 6-8 STROKES" : "Every 6-8 strokes"}
                             </div>
                             <div>
-                              <strong>Target Time:</strong> 8:30 - 9:00
+                              <strong>{useTerminal ? "TARGET TIME:" : "Target Time:"}</strong> 8:30 - 9:00
                               <br />
-                              <strong>Exit:</strong> Gradual stand in shallow
-                              water
+                              <strong>{useTerminal ? "EXIT:" : "Exit:"}</strong>{" "}
+                              {useTerminal ? "GRADUAL STAND IN SHALLOW WATER" : "Gradual stand in shallow water"}
                               <br />
-                              <strong>Transition:</strong> Run to T1, wetsuit
-                              off quickly
+                              <strong>{useTerminal ? "TRANSITION:" : "Transition:"}</strong>{" "}
+                              {useTerminal ? "RUN TO T1, WETSUIT OFF QUICKLY" : "Run to T1, wetsuit off quickly"}
                             </div>
                           </div>
                         </div>
 
-                        <div className="border border-orange-400/30 rounded-xl p-4 bg-orange-500/5">
-                          <h4 className="text-orange-400 font-semibold mb-3">
-                            Bike Strategy
+                        {/* Bike Strategy */}
+                        <div
+                          className={
+                            useTerminal
+                              ? "border-2 border-[#FF6B35] p-4 bg-[#FF6B35]/10"
+                              : "border border-orange-400/30 rounded-xl p-4 bg-orange-500/5"
+                          }
+                          style={useTerminal ? { borderRadius: 0 } : undefined}
+                        >
+                          <h4
+                            className={
+                              useTerminal
+                                ? "text-[#FF6B35] font-mono font-bold mb-3 tracking-wider"
+                                : "text-orange-400 font-semibold mb-3"
+                            }
+                          >
+                            {useTerminal ? "BIKE STRATEGY" : "Bike Strategy"}
                           </h4>
-                          <div className="grid md:grid-cols-2 gap-4 text-white/80 text-sm">
+                          <div
+                            className={
+                              useTerminal
+                                ? "grid md:grid-cols-2 gap-4 text-text-primary text-sm font-mono"
+                                : "grid md:grid-cols-2 gap-4 text-white/80 text-sm"
+                            }
+                          >
                             <div>
-                              <strong>First 10 min:</strong> Easy spin, settle
-                              in
+                              <strong>{useTerminal ? "FIRST 10 MIN:" : "First 10 min:"}</strong>{" "}
+                              {useTerminal ? "EASY SPIN, SETTLE IN" : "Easy spin, settle in"}
                               <br />
-                              <strong>Main effort:</strong> 80% threshold pace
+                              <strong>{useTerminal ? "MAIN EFFORT:" : "Main effort:"}</strong>{" "}
+                              {useTerminal ? "80% THRESHOLD PACE" : "80% threshold pace"}
                               <br />
-                              <strong>Hills:</strong> Stay seated, steady power
+                              <strong>{useTerminal ? "HILLS:" : "Hills:"}</strong>{" "}
+                              {useTerminal ? "STAY SEATED, STEADY POWER" : "Stay seated, steady power"}
                             </div>
                             <div>
-                              <strong>Target Time:</strong> 42:00 - 44:00
+                              <strong>{useTerminal ? "TARGET TIME:" : "Target Time:"}</strong> 42:00 - 44:00
                               <br />
-                              <strong>Nutrition:</strong> Gel at 30min mark
+                              <strong>{useTerminal ? "NUTRITION:" : "Nutrition:"}</strong>{" "}
+                              {useTerminal ? "GEL AT 30MIN MARK" : "Gel at 30min mark"}
                               <br />
-                              <strong>Final 10 min:</strong> Prepare legs for
-                              run
+                              <strong>{useTerminal ? "FINAL 10 MIN:" : "Final 10 min:"}</strong>{" "}
+                              {useTerminal ? "PREPARE LEGS FOR RUN" : "Prepare legs for run"}
                             </div>
                           </div>
                         </div>
 
-                        <div className="border border-green-400/30 rounded-xl p-4 bg-green-500/5">
-                          <h4 className="text-green-400 font-semibold mb-3">
-                            Run Strategy
+                        {/* Run Strategy */}
+                        <div
+                          className={
+                            useTerminal
+                              ? "border-2 border-[#4ECDC4] p-4 bg-[#4ECDC4]/10"
+                              : "border border-green-400/30 rounded-xl p-4 bg-green-500/5"
+                          }
+                          style={useTerminal ? { borderRadius: 0 } : undefined}
+                        >
+                          <h4
+                            className={
+                              useTerminal
+                                ? "text-[#4ECDC4] font-mono font-bold mb-3 tracking-wider"
+                                : "text-green-400 font-semibold mb-3"
+                            }
+                          >
+                            {useTerminal ? "RUN STRATEGY" : "Run Strategy"}
                           </h4>
-                          <div className="grid md:grid-cols-2 gap-4 text-white/80 text-sm">
+                          <div
+                            className={
+                              useTerminal
+                                ? "grid md:grid-cols-2 gap-4 text-text-primary text-sm font-mono"
+                                : "grid md:grid-cols-2 gap-4 text-white/80 text-sm"
+                            }
+                          >
                             <div>
-                              <strong>First mile:</strong> Controlled pace, find
-                              rhythm
+                              <strong>{useTerminal ? "FIRST MILE:" : "First mile:"}</strong>{" "}
+                              {useTerminal ? "CONTROLLED PACE, FIND RHYTHM" : "Controlled pace, find rhythm"}
                               <br />
-                              <strong>Middle miles:</strong> Target race pace
+                              <strong>{useTerminal ? "MIDDLE MILES:" : "Middle miles:"}</strong>{" "}
+                              {useTerminal ? "TARGET RACE PACE" : "Target race pace"}
                               <br />
-                              <strong>Final mile:</strong> Empty the tank
+                              <strong>{useTerminal ? "FINAL MILE:" : "Final mile:"}</strong>{" "}
+                              {useTerminal ? "EMPTY THE TANK" : "Empty the tank"}
                             </div>
                             <div>
-                              <strong>Target Time:</strong> 23:00 - 24:00
+                              <strong>{useTerminal ? "TARGET TIME:" : "Target Time:"}</strong> 23:00 - 24:00
                               <br />
-                              <strong>Hydration:</strong> Every aid station
+                              <strong>{useTerminal ? "HYDRATION:" : "Hydration:"}</strong>{" "}
+                              {useTerminal ? "EVERY AID STATION" : "Every aid station"}
                               <br />
-                              <strong>Form cues:</strong> Relax shoulders, quick
-                              turnover
+                              <strong>{useTerminal ? "FORM CUES:" : "Form cues:"}</strong>{" "}
+                              {useTerminal ? "RELAX SHOULDERS, QUICK TURNOVER" : "Relax shoulders, quick turnover"}
                             </div>
                           </div>
                         </div>
@@ -565,62 +645,104 @@ export default function PlanningScreen() {
                   )}
 
                   {activeTab === "timeline" && (
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl">
-                      <h3 className="text-xl font-bold text-white mb-6">
-                        Race Day Timeline
+                    <div
+                      className={
+                        useTerminal
+                          ? "bg-terminal-panel border-2 border-terminal-border p-6"
+                          : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
+                      }
+                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                    >
+                      <h3
+                        className={
+                          useTerminal
+                            ? "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider"
+                            : "text-xl font-bold text-white mb-6"
+                        }
+                      >
+                        {useTerminal ? "RACE DAY TIMELINE" : "Race Day Timeline"}
                       </h3>
                       <div className="space-y-4">
                         {[
                           {
                             time: "5:00 AM",
                             task: "Wake up, light breakfast",
-                            color: "blue",
+                            color: "#00D4FF",
+                            terminalTask: "WAKE UP, LIGHT BREAKFAST",
                           },
                           {
                             time: "5:45 AM",
                             task: "Final gear check, leave for venue",
-                            color: "blue",
+                            color: "#00D4FF",
+                            terminalTask: "FINAL GEAR CHECK, LEAVE FOR VENUE",
                           },
                           {
                             time: "6:30 AM",
                             task: "Arrive at race venue, packet pickup",
-                            color: "orange",
+                            color: "#FF6B35",
+                            terminalTask: "ARRIVE AT RACE VENUE, PACKET PICKUP",
                           },
                           {
                             time: "6:45 AM",
                             task: "Set up transition area",
-                            color: "orange",
+                            color: "#FF6B35",
+                            terminalTask: "SET UP TRANSITION AREA",
                           },
                           {
                             time: "7:15 AM",
                             task: "Wetsuit on, warm-up swim",
-                            color: "cyan",
+                            color: "#00D4FF",
+                            terminalTask: "WETSUIT ON, WARM-UP SWIM",
                           },
                           {
                             time: "7:45 AM",
                             task: "Pre-race briefing",
-                            color: "green",
+                            color: "#4ECDC4",
+                            terminalTask: "PRE-RACE BRIEFING",
                           },
                           {
                             time: "8:00 AM",
                             task: "Race start!",
-                            color: "red",
+                            color: "#FFD866",
+                            terminalTask: "RACE START!",
                             icon: "TbFlag",
                           },
                         ].map((item, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl"
+                            className={
+                              useTerminal
+                                ? "flex items-center gap-4 p-4 bg-terminal-bg border border-terminal-border"
+                                : "flex items-center gap-4 p-4 bg-white/5 rounded-xl"
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
                           >
                             <div
-                              className={`w-3 h-3 rounded-full bg-${item.color}-500`}
+                              className={useTerminal ? "w-3 h-3 border-2 flex-shrink-0" : "w-3 h-3 rounded-full flex-shrink-0"}
+                              style={
+                                useTerminal
+                                  ? { backgroundColor: item.color, borderColor: item.color, borderRadius: 0 }
+                                  : { backgroundColor: item.color }
+                              }
                             ></div>
-                            <div className="flex-1 flex justify-between items-center">
-                              <span className="text-white font-medium">
-                                {item.task}
+                            <div className="flex-1 flex justify-between items-center gap-4">
+                              <span
+                                className={
+                                  useTerminal
+                                    ? "text-text-primary font-mono font-bold"
+                                    : "text-white font-medium"
+                                }
+                              >
+                                {useTerminal ? item.terminalTask : item.task}
                               </span>
-                              <span className="text-white/70 font-mono">
-                                {item.time}
+                              <span
+                                className={
+                                  useTerminal
+                                    ? "text-accent-yellow font-mono font-bold flex-shrink-0"
+                                    : "text-white/70 font-mono flex-shrink-0"
+                                }
+                              >
+                                {useTerminal ? `[${item.time}]` : item.time}
                               </span>
                             </div>
                           </div>
