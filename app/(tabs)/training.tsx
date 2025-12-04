@@ -1003,7 +1003,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               onClick={handleStravaConnect}
               className={
                 useTerminal
-                  ? "bg-accent-yellow text-terminal-bg px-4 md:px-6 py-2 md:py-3 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0 border-2 border-accent-yellow"
+                  ? "bg-[#FC4C02] text-white px-4 md:px-6 py-2 md:py-3 font-mono font-bold tracking-wider hover:bg-[#FC4C02]/90 transition-colors flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0 border-2 border-[#FC4C02]"
                   : "bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0"
               }
               style={useTerminal ? { borderRadius: 0 } : undefined}
@@ -1294,64 +1294,100 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               return (
                 <div
                   key={workout.id}
-                  className="p-4 bg-white/5 rounded-xl hover:bg-white/10 cursor-pointer transition-colors border border-white/10"
+                  className={
+                    useTerminal
+                      ? "p-4 bg-terminal-panel border-2 border-terminal-border hover:border-accent-yellow cursor-pointer transition-colors"
+                      : "p-4 bg-white/5 rounded-xl hover:bg-white/10 cursor-pointer transition-colors border border-white/10"
+                  }
+                  style={useTerminal ? { borderRadius: 0 } : undefined}
                   onClick={() => handleWorkoutClick(workout)}
                 >
                   <div className="flex items-start justify-between gap-4">
                     {/* Left side - Activity info */}
                     <div className="flex items-start space-x-3 flex-1 min-w-0">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          workout.discipline === "swim"
-                            ? "bg-blue-500/20"
-                            : workout.discipline === "bike"
-                              ? "bg-orange-500/20"
-                              : workout.discipline === "run"
-                                ? "bg-green-500/20"
-                                : "bg-purple-500/20"
-                        }`}
+                        className={
+                          useTerminal
+                            ? `w-10 h-10 border-2 flex items-center justify-center flex-shrink-0 ${
+                                workout.discipline === "swim"
+                                  ? "bg-[#00D4FF]/20 border-[#00D4FF]"
+                                  : workout.discipline === "bike"
+                                    ? "bg-[#FF6B35]/20 border-[#FF6B35]"
+                                    : workout.discipline === "run"
+                                      ? "bg-[#4ECDC4]/20 border-[#4ECDC4]"
+                                      : "bg-accent-yellow/20 border-accent-yellow"
+                              }`
+                            : `w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                workout.discipline === "swim"
+                                  ? "bg-blue-500/20"
+                                  : workout.discipline === "bike"
+                                    ? "bg-orange-500/20"
+                                    : workout.discipline === "run"
+                                      ? "bg-green-500/20"
+                                      : "bg-purple-500/20"
+                              }`
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
                       >
                         <span className="text-lg">
                           {workout.discipline === "swim" ? (
-                            <TbSwimming className="w-4 h-4 text-blue-400" />
+                            <TbSwimming className={useTerminal ? "w-4 h-4 text-[#00D4FF]" : "w-4 h-4 text-blue-400"} />
                           ) : workout.discipline === "bike" ? (
-                            <TbBike className="w-4 h-4 text-orange-400" />
+                            <TbBike className={useTerminal ? "w-4 h-4 text-[#FF6B35]" : "w-4 h-4 text-orange-400"} />
                           ) : workout.discipline === "run" ? (
-                            <TbRun className="w-4 h-4 text-green-400" />
+                            <TbRun className={useTerminal ? "w-4 h-4 text-[#4ECDC4]" : "w-4 h-4 text-green-400"} />
                           ) : (
-                            <TbFlame className="w-4 h-4 text-purple-400" />
+                            <TbFlame className={useTerminal ? "w-4 h-4 text-accent-yellow" : "w-4 h-4 text-purple-400"} />
                           )}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
                         {/* Activity name and performance score */}
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="text-white font-semibold truncate">
-                            {workout.notes &&
-                            workout.notes !==
-                              `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} workout`
-                              ? workout.notes
-                              : `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} Workout`}
+                          <h4 className={useTerminal ? "text-text-primary font-mono font-bold truncate tracking-wider" : "text-white font-semibold truncate"}>
+                            {useTerminal
+                              ? (workout.notes &&
+                                workout.notes !==
+                                  `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} workout`
+                                  ? workout.notes.toUpperCase()
+                                  : `${workout.discipline.toUpperCase()} WORKOUT`)
+                              : (workout.notes &&
+                                workout.notes !==
+                                  `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} workout`
+                                  ? workout.notes
+                                  : `${workout.discipline.charAt(0).toUpperCase() + workout.discipline.slice(1)} Workout`)}
                           </h4>
                           <div
-                            className={`px-2 py-1 rounded-lg text-xs font-bold ${performanceColor} bg-white/10 flex-shrink-0`}
+                            className={
+                              useTerminal
+                                ? `px-2 py-1 text-xs font-mono font-bold ${performanceColor} bg-terminal-bg border border-current flex-shrink-0`
+                                : `px-2 py-1 rounded-lg text-xs font-bold ${performanceColor} bg-white/10 flex-shrink-0`
+                            }
+                            style={useTerminal ? { borderRadius: 0 } : undefined}
                           >
                             {performanceScore}
                           </div>
                           {workout.trainer && (
-                            <span className="px-2 py-1 rounded-lg text-xs font-medium bg-purple-500/20 text-purple-400 flex-shrink-0">
-                              🏠 Indoor
+                            <span
+                              className={
+                                useTerminal
+                                  ? "px-2 py-1 text-xs font-mono font-bold bg-accent-yellow/20 text-accent-yellow border border-accent-yellow flex-shrink-0"
+                                  : "px-2 py-1 rounded-lg text-xs font-medium bg-purple-500/20 text-purple-400 flex-shrink-0"
+                              }
+                              style={useTerminal ? { borderRadius: 0 } : undefined}
+                            >
+                              {useTerminal ? "[INDOOR]" : "🏠 Indoor"}
                             </span>
                           )}
                         </div>
 
                         {/* Date and key metrics */}
-                        <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-white/70 mb-2">
+                        <div className={useTerminal ? "flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-text-secondary mb-2 font-mono" : "flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-white/70 mb-2"}>
                           <span className="whitespace-nowrap">
-                            📅 {new Date(workout.date).toLocaleDateString()}
+                            {useTerminal ? "[" : "📅 "}{new Date(workout.date).toLocaleDateString()}{useTerminal ? "]" : ""}
                           </span>
                           <span className="whitespace-nowrap font-mono">
-                            {Math.round(workout.duration_minutes || 0)}min
+                            {Math.round(workout.duration_minutes || 0)}{useTerminal ? "MIN" : "min"}
                           </span>
                           {workout.distance && (
                             <span className="whitespace-nowrap">
