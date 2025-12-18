@@ -2,9 +2,16 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
-## [Unreleased] - 2025-12-04
+## [Unreleased] - 2025-12-18
 
 ### Added
+- **Landing Page** - New terminal-styled hero landing page for unauthenticated visitors
+  - Compelling headline and CTA driving sign-ups
+  - Dashboard preview screenshot with angled display and glow effect
+  - Opens AuthModal in signup mode when CTA clicked
+  - Authenticated users automatically redirect to dashboard
+  - Files: `src/components/LandingPage.tsx`, `src/app/index.tsx`, `app/index.tsx`
+
 - **Split-Flap Terminal Design System - Phase 3 Complete** ✅
   - Retro-futuristic terminal design system (airport departure board aesthetic)
   - **Phase 3 Complete**: All screens, navigation, and widgets migrated to terminal styling
