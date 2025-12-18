@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <!-- Dark background circle -->
-  <circle cx="24" cy="24" r="24" fill="#0A0E14"/>
-  <!-- Lightning bolt in accent yellow -->
-  <path d="M27 6L13 26h9l-3 16 14-20h-9l3-16z" fill="#FFD866" stroke="#FFD866" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Dark background -->
+  <rect width="48" height="48" fill="#0A0E14"/>
+  <!-- Yellow outlined square -->
+  <rect x="4" y="4" width="40" height="40" fill="none" stroke="#FFD866" stroke-width="2"/>
+  <!-- Yellow outlined lightning bolt -->
+  <path d="M27 8L14 26h8l-2 14 13-18h-8l2-14z" fill="none" stroke="#FFD866" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 </svg>
