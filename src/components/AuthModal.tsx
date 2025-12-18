@@ -65,7 +65,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         setPassword('');
         setName('');
         // Redirect to Dashboard after successful sign-in
-        router.replace('/(tabs)/index');
+        router.replace('/');
       }
     } catch (err) {
       setError('An unexpected error occurred');
