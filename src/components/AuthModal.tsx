@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useTerminalModeToggle } from '../hooks/useTerminalModeToggle';
 import { getTerminalModeState } from '../utils/featureFlags';
@@ -9,6 +10,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  const router = useRouter();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,11 +59,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       if (result.error) {
         setError(result.error.message);
       } else {
-        // Success - close modal
+        // Success - close modal and navigate to Dashboard
         onClose();
         setEmail('');
         setPassword('');
         setName('');
+        // Redirect to Dashboard after successful sign-in
+        router.replace('/(tabs)/index');
       }
     } catch (err) {
       setError('An unexpected error occurred');
