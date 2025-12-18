@@ -84,7 +84,7 @@ export const LandingPage: React.FC = () => {
                 color: '#0A0E14',
               }}
             >
-              GET RACE READY
+              GET STARTED NOW
             </button>
 
             <p
