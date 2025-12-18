@@ -54,7 +54,7 @@ function generateUUID() {
 function getRandomDate(daysAgo) {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
-  return date.toISOString();
+  return date.toISOString().split('T')[0]; // Return date-only format (YYYY-MM-DD)
 }
 
 function getFutureDate(daysAhead) {
@@ -139,66 +139,158 @@ async function seedDemoUser() {
   // Step 3: Create training sessions (last 60 days)
   console.log('3️⃣  Creating training sessions...');
   try {
+    // First, delete any existing training sessions for this user
+    const { error: deleteError } = await supabase
+      .from('training_sessions')
+      .delete()
+      .eq('user_id', userId);
+
+    if (deleteError) {
+      console.log('   ⚠️  Could not clear old sessions:', deleteError.message);
+    } else {
+      console.log('   🗑️  Cleared existing training sessions');
+    }
+
     const sessions = [];
 
-    // Generate 60 days of varied training
-    for (let i = 0; i < 60; i++) {
-      const dayOfWeek = (new Date().getDay() - i + 7) % 7;
+    // Generate training for the last 8 weeks (56 days) with consistent weekly schedule
+    // Week structure: Mon-swim/run, Tue-bike, Wed-swim/run, Thu-bike, Fri-swim/run, Sat-bike/run, Sun-rest
+    for (let week = 0; week < 8; week++) {
+      const weekStartDaysAgo = week * 7;
 
-      // Rest days (Sundays and occasional Wednesdays)
-      if (dayOfWeek === 0 || (dayOfWeek === 3 && Math.random() > 0.5)) {
-        continue;
-      }
+      // Monday (swim + run)
+      sessions.push({
+        user_id: userId,
+        type: 'swim',
+        date: getRandomDate(weekStartDaysAgo + 6), // Monday is 6 days before Sunday
+        name: week % 3 === 0 ? 'Interval Training' : 'Endurance Swim',
+        distance: Math.round(2000 + Math.random() * 1000),
+        moving_time: Math.round(2400 + Math.random() * 600),
+        average_speed: Math.round((1.2 + Math.random() * 0.3) * 100) / 100,
+        average_heartrate: Math.round(140 + Math.random() * 15)
+      });
+      sessions.push({
+        user_id: userId,
+        type: 'run',
+        date: getRandomDate(weekStartDaysAgo + 6),
+        name: 'Easy Run',
+        distance: Math.round(8000 + Math.random() * 4000),
+        moving_time: Math.round(2700 + Math.random() * 900),
+        average_speed: Math.round((10 + Math.random() * 2) * 100) / 100,
+        total_elevation_gain: Math.round(50 + Math.random() * 100),
+        average_heartrate: Math.round(145 + Math.random() * 15),
+        average_cadence: Math.round(170 + Math.random() * 10)
+      });
 
-      // Swim sessions (Mon, Wed, Fri)
-      if ([1, 3, 5].includes(dayOfWeek)) {
-        sessions.push({
-          user_id: userId,
-          type: 'swim',
-          date: getRandomDate(i),
-          name: i % 10 === 0 ? 'Interval Training' : 'Endurance Swim',
-          distance: Math.round(2000 + Math.random() * 1000), // 2-3km
-          moving_time: Math.round(2400 + Math.random() * 600), // 40-50 min
-          average_speed: Math.round((1.2 + Math.random() * 0.3) * 100) / 100,
-          average_heartrate: Math.round(140 + Math.random() * 15)
-        });
-      }
+      // Tuesday (bike)
+      sessions.push({
+        user_id: userId,
+        type: 'bike',
+        date: getRandomDate(weekStartDaysAgo + 5),
+        name: 'Tempo Ride',
+        distance: Math.round(40000 + Math.random() * 20000),
+        moving_time: Math.round(5400 + Math.random() * 1800),
+        average_speed: Math.round((25 + Math.random() * 5) * 100) / 100,
+        total_elevation_gain: Math.round(200 + Math.random() * 300),
+        average_heartrate: Math.round(145 + Math.random() * 20),
+        average_watts: Math.round(180 + Math.random() * 40),
+        average_cadence: Math.round(85 + Math.random() * 10),
+        trainer: true
+      });
 
-      // Bike sessions (Tue, Thu, Sat)
-      if ([2, 4, 6].includes(dayOfWeek)) {
-        const isLongRide = dayOfWeek === 6;
-        sessions.push({
-          user_id: userId,
-          type: 'bike',
-          date: getRandomDate(i),
-          name: isLongRide ? 'Long Ride' : (i % 7 === 0 ? 'Tempo Ride' : 'Endurance Ride'),
-          distance: Math.round(isLongRide ? 80000 + Math.random() * 40000 : 40000 + Math.random() * 20000), // 40-60km or 80-120km
-          moving_time: Math.round(isLongRide ? 10800 + Math.random() * 3600 : 5400 + Math.random() * 1800), // 90-120min or 180-240min
-          average_speed: Math.round((25 + Math.random() * 5) * 100) / 100, // km/h
-          total_elevation_gain: Math.round(isLongRide ? 800 + Math.random() * 400 : 200 + Math.random() * 300),
-          average_heartrate: Math.round(145 + Math.random() * 20),
-          average_watts: Math.round(180 + Math.random() * 40),
-          average_cadence: Math.round(85 + Math.random() * 10),
-          trainer: dayOfWeek === 2 // Indoor on Tuesdays
-        });
-      }
+      // Wednesday (swim + run)
+      sessions.push({
+        user_id: userId,
+        type: 'swim',
+        date: getRandomDate(weekStartDaysAgo + 4),
+        name: 'Drill Session',
+        distance: Math.round(2500 + Math.random() * 500),
+        moving_time: Math.round(2700 + Math.random() * 300),
+        average_speed: Math.round((1.3 + Math.random() * 0.2) * 100) / 100,
+        average_heartrate: Math.round(135 + Math.random() * 10)
+      });
+      sessions.push({
+        user_id: userId,
+        type: 'run',
+        date: getRandomDate(weekStartDaysAgo + 4),
+        name: week % 2 === 0 ? 'Interval Run' : 'Tempo Run',
+        distance: Math.round(8000 + Math.random() * 3000),
+        moving_time: Math.round(2400 + Math.random() * 600),
+        average_speed: Math.round((11 + Math.random() * 2) * 100) / 100,
+        total_elevation_gain: Math.round(30 + Math.random() * 70),
+        average_heartrate: Math.round(155 + Math.random() * 15),
+        average_cadence: Math.round(175 + Math.random() * 10)
+      });
 
-      // Run sessions (Mon, Wed, Fri, Sat)
-      if ([1, 3, 5, 6].includes(dayOfWeek)) {
-        const isLongRun = dayOfWeek === 6;
-        sessions.push({
-          user_id: userId,
-          type: 'run',
-          date: getRandomDate(i),
-          name: isLongRun ? 'Long Run' : (i % 6 === 0 ? 'Interval Run' : 'Easy Run'),
-          distance: Math.round(isLongRun ? 15000 + Math.random() * 5000 : 8000 + Math.random() * 4000), // 8-12km or 15-20km
-          moving_time: Math.round(isLongRun ? 5400 + Math.random() * 1800 : 2700 + Math.random() * 900), // 45-60min or 90-120min
-          average_speed: Math.round((10 + Math.random() * 2) * 100) / 100, // km/h (5:00-6:00 min/km pace)
-          total_elevation_gain: Math.round(50 + Math.random() * 150),
-          average_heartrate: Math.round(150 + Math.random() * 20),
-          average_cadence: Math.round(170 + Math.random() * 15)
-        });
-      }
+      // Thursday (bike)
+      sessions.push({
+        user_id: userId,
+        type: 'bike',
+        date: getRandomDate(weekStartDaysAgo + 3),
+        name: 'Endurance Ride',
+        distance: Math.round(50000 + Math.random() * 20000),
+        moving_time: Math.round(6000 + Math.random() * 1800),
+        average_speed: Math.round((26 + Math.random() * 4) * 100) / 100,
+        total_elevation_gain: Math.round(300 + Math.random() * 200),
+        average_heartrate: Math.round(140 + Math.random() * 15),
+        average_watts: Math.round(170 + Math.random() * 30),
+        average_cadence: Math.round(88 + Math.random() * 8),
+        trainer: false
+      });
+
+      // Friday (swim + run)
+      sessions.push({
+        user_id: userId,
+        type: 'swim',
+        date: getRandomDate(weekStartDaysAgo + 2),
+        name: 'Open Water Prep',
+        distance: Math.round(2000 + Math.random() * 800),
+        moving_time: Math.round(2400 + Math.random() * 400),
+        average_speed: Math.round((1.25 + Math.random() * 0.25) * 100) / 100,
+        average_heartrate: Math.round(140 + Math.random() * 12)
+      });
+      sessions.push({
+        user_id: userId,
+        type: 'run',
+        date: getRandomDate(weekStartDaysAgo + 2),
+        name: 'Recovery Run',
+        distance: Math.round(6000 + Math.random() * 2000),
+        moving_time: Math.round(2100 + Math.random() * 600),
+        average_speed: Math.round((9.5 + Math.random() * 1.5) * 100) / 100,
+        total_elevation_gain: Math.round(20 + Math.random() * 40),
+        average_heartrate: Math.round(135 + Math.random() * 10),
+        average_cadence: Math.round(168 + Math.random() * 8)
+      });
+
+      // Saturday (long bike + long run - brick day)
+      sessions.push({
+        user_id: userId,
+        type: 'bike',
+        date: getRandomDate(weekStartDaysAgo + 1),
+        name: 'Long Ride',
+        distance: Math.round(80000 + Math.random() * 40000),
+        moving_time: Math.round(10800 + Math.random() * 3600),
+        average_speed: Math.round((24 + Math.random() * 4) * 100) / 100,
+        total_elevation_gain: Math.round(800 + Math.random() * 400),
+        average_heartrate: Math.round(138 + Math.random() * 12),
+        average_watts: Math.round(165 + Math.random() * 25),
+        average_cadence: Math.round(85 + Math.random() * 8),
+        trainer: false
+      });
+      sessions.push({
+        user_id: userId,
+        type: 'run',
+        date: getRandomDate(weekStartDaysAgo + 1),
+        name: 'Long Run',
+        distance: Math.round(15000 + Math.random() * 5000),
+        moving_time: Math.round(5400 + Math.random() * 1800),
+        average_speed: Math.round((9.8 + Math.random() * 1.2) * 100) / 100,
+        total_elevation_gain: Math.round(100 + Math.random() * 150),
+        average_heartrate: Math.round(148 + Math.random() * 12),
+        average_cadence: Math.round(172 + Math.random() * 8)
+      });
+
+      // Sunday is rest day - no sessions
     }
 
     const { error: sessionsError } = await supabase

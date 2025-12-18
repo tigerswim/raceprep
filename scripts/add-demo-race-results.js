@@ -19,10 +19,10 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-function getRandomDate(daysAgo) {
+function getPastDate(daysAgo) {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split('T')[0]; // Return date-only format (YYYY-MM-DD)
 }
 
 function formatTime(seconds) {
@@ -56,7 +56,7 @@ async function addRaceResults() {
         external_id: `demo-past-race-1-${Date.now()}`,
         api_source: 'manual',
         name: 'Summer Sprint Triathlon',
-        date: getRandomDate(120),
+        date: getPastDate(120),
         location: 'Atlanta, GA',
         city: 'Atlanta',
         state: 'GA',
@@ -70,7 +70,7 @@ async function addRaceResults() {
         external_id: `demo-past-race-2-${Date.now()}`,
         api_source: 'manual',
         name: 'Fall Olympic Triathlon',
-        date: getRandomDate(60),
+        date: getPastDate(60),
         location: 'Gainesville, GA',
         city: 'Gainesville',
         state: 'GA',
