@@ -2338,19 +2338,25 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       startOfThisWeek.getTime() - 7 * 24 * 60 * 60 * 1000,
     );
 
+    // Helper to parse date string as local date (avoiding UTC timezone issues)
+    const parseLocalDate = (dateStr: string): Date => {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    };
+
     // Filter workouts by time periods
     const currentMonthWorkouts = workouts.filter((w) => {
-      const date = new Date(w.date);
+      const date = parseLocalDate(w.date);
       return date >= currentMonth && date <= currentMonthEnd;
     });
 
     const previousMonthWorkouts = workouts.filter((w) => {
-      const date = new Date(w.date);
+      const date = parseLocalDate(w.date);
       return date >= previousMonth && date <= previousMonthEnd;
     });
 
     const pastWeekWorkouts = workouts.filter((w) => {
-      const date = new Date(w.date);
+      const date = parseLocalDate(w.date);
       return date >= pastWeek;
     });
 
@@ -2363,9 +2369,10 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
           startOfThisWeek.getTime() - weekIndex * 7 * 24 * 60 * 60 * 1000,
         );
         const weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+        weekEnd.setHours(23, 59, 59, 999); // Include the entire last day
 
         const weekWorkouts = workouts.filter((w) => {
-          const workoutDate = new Date(w.date);
+          const workoutDate = parseLocalDate(w.date);
           return workoutDate >= weekStart && workoutDate <= weekEnd;
         });
 
