@@ -1521,30 +1521,72 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   );
 
   const renderWorkoutLogger = () => {
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      // Would save to database here
-      const workout: WorkoutLog = {
-        id: Date.now().toString(),
-        ...newWorkout,
-        duration_minutes: parseInt(newWorkout.duration_minutes),
-        distance: newWorkout.distance
-          ? parseFloat(newWorkout.distance)
-          : undefined,
+
+      // Convert distance to meters for database storage
+      let distanceInMeters: number | undefined;
+      if (newWorkout.distance) {
+        const distanceValue = parseFloat(newWorkout.distance);
+        if (newWorkout.distance_unit === "miles") {
+          distanceInMeters = distanceValue * 1609.34; // miles to meters
+        } else {
+          distanceInMeters = distanceValue * 1000; // km to meters
+        }
+      }
+
+      // Convert duration to seconds for database storage
+      const durationInSeconds = parseInt(newWorkout.duration_minutes) * 60;
+
+      // Map discipline to type (brick workouts go as bike since that's typically the primary)
+      const sessionType = newWorkout.discipline === "brick" ? "bike" : newWorkout.discipline;
+
+      // Prepare session data for Supabase
+      const sessionData = {
+        type: sessionType,
+        date: newWorkout.date,
+        distance: distanceInMeters,
+        moving_time: durationInSeconds,
+        name: newWorkout.notes || `${newWorkout.discipline.charAt(0).toUpperCase() + newWorkout.discipline.slice(1)} workout`,
+        trainer: false, // Manual entries are outdoor by default
       };
-      setWorkoutLogs([workout, ...workoutLogs]);
-      // Reset form
-      setNewWorkout({
-        date: new Date().toISOString().split("T")[0],
-        discipline: "run",
-        duration_minutes: "",
-        distance: "",
-        distance_unit: "miles",
-        intensity: "moderate",
-        notes: "",
-        feeling_rating: 7,
-      });
-      alert("Workout logged successfully!");
+
+      try {
+        const { data, error } = await dbHelpers.trainingSessions.upsert(sessionData);
+
+        if (error) {
+          console.error("Error saving workout:", error);
+          alert("Failed to save workout. Please try again.");
+          return;
+        }
+
+        // Create local workout object for display
+        const workout: WorkoutLog = {
+          id: data?.id || Date.now().toString(),
+          ...newWorkout,
+          duration_minutes: parseInt(newWorkout.duration_minutes),
+          distance: newWorkout.distance ? parseFloat(newWorkout.distance) : undefined,
+        };
+
+        setWorkoutLogs([workout, ...workoutLogs]);
+
+        // Reset form
+        setNewWorkout({
+          date: new Date().toISOString().split("T")[0],
+          discipline: "run",
+          duration_minutes: "",
+          distance: "",
+          distance_unit: "miles",
+          intensity: "moderate",
+          notes: "",
+          feeling_rating: 7,
+        });
+
+        alert("Workout logged successfully!");
+      } catch (err) {
+        console.error("Exception saving workout:", err);
+        alert("Failed to save workout. Please try again.");
+      }
     };
 
     return (
