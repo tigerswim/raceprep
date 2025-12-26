@@ -4,6 +4,26 @@ All notable changes to the RacePrep project will be documented in this file.
 
 ## [Unreleased] - 2025-12-26
 
+### Added
+- **Delete Manually Created Workouts** - Users can now delete workouts they've manually logged
+  - Trash icon button on workout cards in Recent Workouts (Training → Overview)
+  - Trash icon button on workout cards in Workout History (Training → Log Workout)
+  - Confirmation dialog before deletion
+  - Removes from both Supabase database and local display
+
+- **Stacked Bar Chart for Monthly Training Volume** - Analytics now shows all disciplines
+  - Each week column displays stacked color segments for swim, bike, and run
+  - Swim (cyan #00D4FF), Bike (orange #FF6B35), Run (teal #4ECDC4)
+  - Proportional heights based on hours per discipline
+  - Replaces previous single-color "primary discipline" display
+
+### Fixed
+- **Timezone Bug for Workout Dates** - Dates now display correctly in user's local timezone
+  - Fixed form default date using UTC instead of local time
+  - Fixed date display in Recent Workouts showing previous day
+  - Fixed date display in Workout History showing previous day
+  - Added `parseLocalDateString()` helper for consistent local date parsing
+
 ### Changed
 - **Terminal Design Now Permanent** - Removed all conditional styling throughout the app
   - All screens, modals, and components now exclusively use terminal design

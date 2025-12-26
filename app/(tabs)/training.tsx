@@ -217,6 +217,13 @@ function formatPaceForCard(
 }
 
 // Helper function to filter workouts
+// Helper to parse date string as local date (avoiding UTC timezone issues)
+// "2025-12-26" should be Dec 26 in local time, not Dec 25 (due to UTC parsing)
+function parseLocalDateString(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function getFilteredWorkouts(
   workouts: WorkoutLog[],
   activityFilter: string,
@@ -245,12 +252,12 @@ function getFilteredWorkouts(
     }
 
     filtered = filtered.filter(
-      (workout) => new Date(workout.date) >= cutoffDate,
+      (workout) => parseLocalDateString(workout.date) >= cutoffDate,
     );
   }
 
   return filtered.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    (a, b) => parseLocalDateString(b.date).getTime() - parseLocalDateString(a.date).getTime(),
   );
 }
 
@@ -303,9 +310,15 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   // Initialize Strava mutation hook (not currently used)
   api.useConnectStravaMutation();
 
+  // Helper to get today's date in local timezone (YYYY-MM-DD format)
+  const getLocalDateString = () => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  };
+
   // Workout form state
   const [newWorkout, setNewWorkout] = useState({
-    date: new Date().toISOString().split("T")[0],
+    date: getLocalDateString(),
     discipline: "run" as "swim" | "bike" | "run" | "brick",
     duration_minutes: "",
     distance: "",
@@ -576,6 +589,30 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   const handleWorkoutClick = useCallback((workout: WorkoutLog) => {
     setSelectedWorkout(workout);
     setShowWorkoutDetail(true);
+  }, []);
+
+  const handleDeleteWorkout = useCallback(async (e: React.MouseEvent, workoutId: string) => {
+    e.stopPropagation(); // Prevent triggering workout click
+
+    if (!window.confirm("Delete this workout? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const { error } = await dbHelpers.trainingSessions.delete(workoutId);
+
+      if (error) {
+        console.error("Failed to delete workout:", error);
+        alert("Failed to delete workout. Please try again.");
+        return;
+      }
+
+      // Remove from local state
+      setWorkoutLogs(prev => prev.filter(w => w.id !== workoutId));
+    } catch (err) {
+      console.error("Error deleting workout:", err);
+      alert("An error occurred while deleting the workout.");
+    }
   }, []);
 
   const loadTrainingData = useCallback(async () => {
@@ -1312,7 +1349,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                         {/* Date and key metrics */}
                         <div className={useTerminal ? "flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-text-secondary mb-2 font-mono" : "flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-white/70 mb-2"}>
                           <span className="whitespace-nowrap">
-                            {useTerminal ? "[" : "📅 "}{new Date(workout.date).toLocaleDateString()}{useTerminal ? "]" : ""}
+                            {useTerminal ? "[" : "📅 "}{parseLocalDateString(workout.date).toLocaleDateString()}{useTerminal ? "]" : ""}
                           </span>
                           <span className="whitespace-nowrap font-mono">
                             {Math.round(workout.duration_minutes || 0)}{useTerminal ? "MIN" : "min"}
@@ -1360,22 +1397,29 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
                     {/* Right side - Quick actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {workout.strava_activity_id && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (workout.strava_activity_id) {
                             handleDeleteActivity(
                               workout.id,
                               workout.strava_activity_id,
                             );
-                          }}
-                          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1"
-                          title="Delete this activity"
-                        >
-                          <TbTrash className="w-4 h-4" />
-                        </button>
-                      )}
-                      <div className="text-white/40 text-xs">→</div>
+                          } else {
+                            handleDeleteWorkout(e, workout.id);
+                          }
+                        }}
+                        className={
+                          useTerminal
+                            ? "p-2 text-text-secondary hover:text-red-500 hover:bg-red-500/10 border border-transparent hover:border-red-500 transition-colors"
+                            : "bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1"
+                        }
+                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                        title="Delete this workout"
+                      >
+                        <TbTrash className="w-4 h-4" />
+                      </button>
+                      <div className={useTerminal ? "text-text-secondary text-xs font-mono" : "text-white/40 text-xs"}>→</div>
                     </div>
                   </div>
                 </div>
@@ -1572,7 +1616,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
         // Reset form
         setNewWorkout({
-          date: new Date().toISOString().split("T")[0],
+          date: getLocalDateString(),
           discipline: "run",
           duration_minutes: "",
           distance: "",
@@ -1992,7 +2036,7 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                             : "text-xs text-white/50 whitespace-nowrap ml-2"
                         }
                       >
-                        {new Date(workout.date).toLocaleDateString("en-US", {
+                        {parseLocalDateString(workout.date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                         }).toUpperCase()}
@@ -2060,6 +2104,20 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={(e) => handleDeleteWorkout(e, workout.id)}
+                    className={
+                      useTerminal
+                        ? "ml-2 p-2 text-text-secondary hover:text-red-500 hover:bg-red-500/10 border border-transparent hover:border-red-500 transition-colors"
+                        : "ml-2 p-2 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                    }
+                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    title="Delete workout"
+                  >
+                    <TbTrash className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -2382,24 +2440,22 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
         );
         const hours = totalMinutes / 60;
 
-        // Determine primary activity type for the week
-        const disciplineCounts = weekWorkouts.reduce(
-          (acc, w) => {
-            acc[w.discipline] =
-              (acc[w.discipline] || 0) + (w.duration_minutes || 0);
-            return acc;
-          },
-          {} as Record<string, number>,
-        );
-
-        const primaryDiscipline =
-          Object.entries(disciplineCounts).sort(
-            ([, a], [, b]) => b - a,
-          )[0]?.[0] || "run";
+        // Calculate hours per discipline for stacked bar chart
+        const swimMinutes = weekWorkouts
+          .filter((w) => w.discipline === "swim")
+          .reduce((sum, w) => sum + (w.duration_minutes || 0), 0);
+        const bikeMinutes = weekWorkouts
+          .filter((w) => w.discipline === "bike" || w.discipline === "brick")
+          .reduce((sum, w) => sum + (w.duration_minutes || 0), 0);
+        const runMinutes = weekWorkouts
+          .filter((w) => w.discipline === "run")
+          .reduce((sum, w) => sum + (w.duration_minutes || 0), 0);
 
         return {
           hours: Math.round(hours * 10) / 10,
-          primaryDiscipline,
+          swimHours: Math.round((swimMinutes / 60) * 10) / 10,
+          bikeHours: Math.round((bikeMinutes / 60) * 10) / 10,
+          runHours: Math.round((runMinutes / 60) * 10) / 10,
           workoutCount: weekWorkouts.length,
         };
       })
@@ -2665,69 +2721,11 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                 ...analytics.monthlyVolume.map((d) => d.hours),
                 1,
               );
-              // Ensure bars with data show meaningful height - minimum 60% for visibility
-              const heightPercentage =
-                weekData.hours > 0
-                  ? Math.max((weekData.hours / maxHours) * 100, 60)
-                  : 0;
 
-              const getColorForDiscipline = (discipline: string) => {
-                if (useTerminal) {
-                  switch (discipline) {
-                    case "swim":
-                      return "border-[#00D4FF]";
-                    case "bike":
-                      return "border-[#FF6B35]";
-                    case "run":
-                      return "border-[#4ECDC4]";
-                    case "brick":
-                      return "border-accent-yellow";
-                    default:
-                      return "border-terminal-border";
-                  }
-                }
-                switch (discipline) {
-                  case "swim":
-                    return "border-blue-400";
-                  case "bike":
-                    return "border-orange-400";
-                  case "run":
-                    return "border-green-400";
-                  case "brick":
-                    return "border-purple-400";
-                  default:
-                    return "border-gray-400";
-                }
-              };
-
-              const getColorForHeight = (discipline: string) => {
-                if (useTerminal) {
-                  switch (discipline) {
-                    case "swim":
-                      return "bg-[#00D4FF]";
-                    case "bike":
-                      return "bg-[#FF6B35]";
-                    case "run":
-                      return "bg-[#4ECDC4]";
-                    case "brick":
-                      return "bg-accent-yellow";
-                    default:
-                      return "bg-terminal-border";
-                  }
-                }
-                switch (discipline) {
-                  case "swim":
-                    return "bg-blue-400";
-                  case "bike":
-                    return "bg-orange-400";
-                  case "run":
-                    return "bg-green-400";
-                  case "brick":
-                    return "bg-purple-400";
-                  default:
-                    return "bg-gray-400";
-                }
-              };
+              // Calculate percentage of each discipline for stacked bar
+              const swimPercent = weekData.hours > 0 ? (weekData.swimHours / weekData.hours) * 100 : 0;
+              const bikePercent = weekData.hours > 0 ? (weekData.bikeHours / weekData.hours) * 100 : 0;
+              const runPercent = weekData.hours > 0 ? (weekData.runHours / weekData.hours) * 100 : 0;
 
               return (
                 <div key={index} className="text-center">
@@ -2742,40 +2740,60 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   </div>
                   <div
                     className={`h-20 flex flex-col justify-end relative border overflow-hidden ${
-                      weekData.hours > 0
-                        ? getColorForDiscipline(weekData.primaryDiscipline)
-                        : useTerminal
-                          ? "bg-terminal-bg border-terminal-border"
-                          : "bg-white/5 border-white/10"
+                      useTerminal
+                        ? "bg-terminal-bg border-terminal-border"
+                        : "bg-white/5 border-white/10"
                     } ${useTerminal ? "" : "rounded-lg"}`}
                     style={useTerminal ? { minHeight: "80px", borderRadius: 0 } : { minHeight: "80px" }}
                   >
-                    {weekData.hours > 0 && (
-                      <div
-                        className={`w-full flex items-end justify-center flex-1 ${getColorForHeight(weekData.primaryDiscipline)} ${useTerminal ? "" : "rounded-b-lg"}`}
-                        style={useTerminal ? { borderRadius: 0 } : undefined}
-                      >
+                    {weekData.hours > 0 ? (
+                      <div className="w-full flex flex-col justify-end flex-1">
+                        {/* Stacked bar segments - order: run (bottom), bike (middle), swim (top) */}
+                        <div className="flex flex-col w-full">
+                          {weekData.runHours > 0 && (
+                            <div
+                              className={useTerminal ? "bg-[#4ECDC4]" : "bg-green-400"}
+                              style={{ height: `${Math.max(runPercent * 0.7, runPercent > 0 ? 15 : 0)}px` }}
+                              title={`Run: ${weekData.runHours}h`}
+                            />
+                          )}
+                          {weekData.bikeHours > 0 && (
+                            <div
+                              className={useTerminal ? "bg-[#FF6B35]" : "bg-orange-400"}
+                              style={{ height: `${Math.max(bikePercent * 0.7, bikePercent > 0 ? 15 : 0)}px` }}
+                              title={`Bike: ${weekData.bikeHours}h`}
+                            />
+                          )}
+                          {weekData.swimHours > 0 && (
+                            <div
+                              className={useTerminal ? "bg-[#00D4FF]" : "bg-blue-400"}
+                              style={{ height: `${Math.max(swimPercent * 0.7, swimPercent > 0 ? 15 : 0)}px` }}
+                              title={`Swim: ${weekData.swimHours}h`}
+                            />
+                          )}
+                        </div>
+                        {/* Hours label */}
                         <div
                           className={
                             useTerminal
-                              ? "text-xs text-terminal-bg mb-1 px-2 py-1 bg-text-primary font-mono font-bold border border-terminal-bg"
-                              : "text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg"
+                              ? "text-xs text-terminal-bg px-1 py-0.5 bg-text-primary font-mono font-bold border border-terminal-bg absolute bottom-1 left-1/2 transform -translate-x-1/2"
+                              : "text-xs text-white/90 px-1 py-0.5 rounded bg-black/40 backdrop-blur-sm absolute bottom-1 left-1/2 transform -translate-x-1/2"
                           }
                           style={useTerminal ? { borderRadius: 0 } : undefined}
                         >
                           {weekData.hours}{useTerminal ? "H" : "h"}
                         </div>
                       </div>
-                    )}
-                    {weekData.hours === 0 && (
+                    ) : (
                       <div
                         className={
                           useTerminal
-                            ? "text-xs text-terminal-bg mb-1 px-2 py-1 bg-text-primary font-mono font-bold border border-terminal-bg"
-                            : "text-xs text-white/90 mb-1 px-2 py-1 rounded bg-black/20 backdrop-blur-sm shadow-lg"
+                            ? "text-xs text-text-secondary font-mono text-center py-2"
+                            : "text-xs text-white/40 text-center py-2"
                         }
-                        style={useTerminal ? { borderRadius: 0 } : undefined}
-                      ></div>
+                      >
+                        {useTerminal ? "0H" : "0h"}
+                      </div>
                     )}
                     {weekData.workoutCount > 1 && (
                       <div
