@@ -207,13 +207,18 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        style={{ borderRadius: 0 }}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Edit Race Result</h2>
+            <h2 className="text-2xl font-bold text-text-primary font-mono tracking-wider">
+              EDIT RACE RESULT
+            </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
             >
               ×
             </button>
@@ -222,17 +227,22 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Race Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Race Information</h3>
-              
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                RACE INFORMATION
+              </h3>
+
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">Race</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  RACE
+                </label>
                 <select
                   value={formData.race_id}
                   onChange={(e) => handleRaceChange(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   required
                 >
-                  <option value="">Select a race</option>
+                  <option value="">SELECT A RACE</option>
                   {races.map((race) => (
                     <option key={race.id} value={race.id}>
                       {race.name} - {race.date}
@@ -242,34 +252,43 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
               </div>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">Result Date</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  RESULT DATE
+                </label>
                 <input
                   type="date"
                   value={formData.result_date}
                   onChange={(e) => setFormData({ ...formData, result_date: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Overall Place</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    OVERALL PLACE
+                  </label>
                   <input
                     type="number"
                     value={formData.overall_place}
                     onChange={(e) => setFormData({ ...formData, overall_place: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="e.g. 42"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Age Group Place</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    AGE GROUP PLACE
+                  </label>
                   <input
                     type="number"
                     value={formData.age_group_place}
                     onChange={(e) => setFormData({ ...formData, age_group_place: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="e.g. 8"
                   />
                 </div>
@@ -278,32 +297,43 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
 
             {/* Split Times */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Split Times</h3>
-                
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                SPLIT TIMES
+              </h3>
+
               <div className="grid gap-6">
                 {/* Swim */}
-                <div className="bg-blue-500/10 rounded-xl p-4">
-                  <h4 className="text-blue-400 font-semibold mb-3 flex items-center gap-2">
-                    🏊‍♂️ Swim
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-swim p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-discipline-swim font-semibold mb-3 flex items-center gap-2 font-mono tracking-wider">
+                    SWIM
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Time (MM:SS or HH:MM:SS)</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        TIME (MM:SS OR HH:MM:SS)
+                      </label>
                       <input
                         type="text"
                         value={formData.swim_time}
                         onChange={(e) => handleTimeChange('swim_time', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="12:30 or 1:12:30"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Pace per 100m</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        PACE PER 100M
+                      </label>
                       <input
                         type="text"
                         value={formData.swim_pace}
                         onChange={(e) => setFormData({ ...formData, swim_pace: e.target.value })}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="1:40"
                       />
                     </div>
@@ -311,40 +341,55 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                 </div>
 
                 {/* T1 */}
-                <div className="bg-white/5 rounded-xl p-4">
-                  <h4 className="text-white/80 font-semibold mb-3">T1: Swim → Bike</h4>
+                <div
+                  className="bg-terminal-panel border-2 border-terminal-border p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-text-secondary font-semibold mb-3 font-mono tracking-wider">
+                    T1: SWIM → BIKE
+                  </h4>
                   <input
                     type="text"
                     value={formData.t1_time}
                     onChange={(e) => handleTimeChange('t1_time', e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="2:15"
                   />
                 </div>
 
                 {/* Bike */}
-                <div className="bg-orange-500/10 rounded-xl p-4">
-                  <h4 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
-                    🚴‍♂️ Bike
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-bike p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-discipline-bike font-semibold mb-3 flex items-center gap-2 font-mono tracking-wider">
+                    BIKE
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Time (MM:SS or HH:MM:SS)</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        TIME (MM:SS OR HH:MM:SS)
+                      </label>
                       <input
                         type="text"
                         value={formData.bike_time}
                         onChange={(e) => handleTimeChange('bike_time', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="42:30 or 1:10:00"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Avg Speed (mph)</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        AVG SPEED (MPH)
+                      </label>
                       <input
                         type="text"
                         value={formData.avg_speed}
                         onChange={(e) => setFormData({ ...formData, avg_speed: e.target.value })}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="22.5"
                       />
                     </div>
@@ -352,40 +397,55 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                 </div>
 
                 {/* T2 */}
-                <div className="bg-white/5 rounded-xl p-4">
-                  <h4 className="text-white/80 font-semibold mb-3">T2: Bike → Run</h4>
+                <div
+                  className="bg-terminal-panel border-2 border-terminal-border p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-text-secondary font-semibold mb-3 font-mono tracking-wider">
+                    T2: BIKE → RUN
+                  </h4>
                   <input
                     type="text"
                     value={formData.t2_time}
                     onChange={(e) => handleTimeChange('t2_time', e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="1:45"
                   />
                 </div>
 
                 {/* Run */}
-                <div className="bg-green-500/10 rounded-xl p-4">
-                  <h4 className="text-green-400 font-semibold mb-3 flex items-center gap-2">
-                    🏃‍♂️ Run
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-run p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-discipline-run font-semibold mb-3 flex items-center gap-2 font-mono tracking-wider">
+                    RUN
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Time (MM:SS or HH:MM:SS)</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        TIME (MM:SS OR HH:MM:SS)
+                      </label>
                       <input
                         type="text"
                         value={formData.run_time}
                         onChange={(e) => handleTimeChange('run_time', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="23:45 or 1:23:45"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/80 text-sm font-medium mb-2">Pace per mile</label>
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        PACE PER MILE
+                      </label>
                       <input
                         type="text"
                         value={formData.run_pace}
                         onChange={(e) => setFormData({ ...formData, run_pace: e.target.value })}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                         placeholder="7:30"
                       />
                     </div>
@@ -394,48 +454,64 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
 
                 {/* Total Time Display */}
                 {(formData.swim_time || formData.bike_time || formData.run_time) && (
-                  <div className="bg-white/10 rounded-xl p-4 text-center mb-6">
-                    <h4 className="text-white/80 font-medium mb-2">Calculated Total Time</h4>
-                    <div className="text-2xl font-bold text-white font-mono">{formatTotalTime()}</div>
+                  <div
+                    className="bg-terminal-panel border-2 border-accent-yellow p-4 text-center mb-6"
+                    style={{ borderRadius: 0 }}
+                  >
+                    <h4 className="text-text-secondary font-medium mb-2 font-mono tracking-wider uppercase">
+                      CALCULATED TOTAL TIME
+                    </h4>
+                    <div className="text-2xl font-bold text-accent-yellow font-mono">
+                      {formatTotalTime()}
+                    </div>
                   </div>
                 )}
 
                 {/* Review Section */}
-                <div className="bg-white/5 rounded-xl p-4 mb-4">
-                  <h4 className="text-white font-semibold mb-3">📋 Review Changes</h4>
-                  <div className="text-white/70 space-y-2 text-sm">
+                <div
+                  className="bg-terminal-panel border-2 border-terminal-border p-4 mb-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-text-primary font-semibold mb-3 font-mono tracking-wider">
+                    REVIEW CHANGES
+                  </h4>
+                  <div className="text-text-secondary space-y-2 text-xs font-mono">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p><span className="text-white/90 font-medium">Race:</span> {races.find(r => r.id === formData.race_id)?.name || 'Not selected'}</p>
-                        <p><span className="text-white/90 font-medium">Date:</span> {formData.result_date || 'Not set'}</p>
-                        <p><span className="text-white/90 font-medium">Total Time:</span> {formatTotalTime()}</p>
+                        <p><span className="text-text-primary font-medium">RACE:</span> {races.find(r => r.id === formData.race_id)?.name || 'NOT SELECTED'}</p>
+                        <p><span className="text-text-primary font-medium">DATE:</span> {formData.result_date || 'NOT SET'}</p>
+                        <p><span className="text-text-primary font-medium">TOTAL TIME:</span> {formatTotalTime()}</p>
                       </div>
                       <div>
-                        {formData.overall_place && <p><span className="text-white/90 font-medium">Overall Place:</span> #{formData.overall_place}</p>}
-                        {formData.age_group_place && <p><span className="text-white/90 font-medium">Age Group Place:</span> #{formData.age_group_place}</p>}
-                        {formData.swim_pace && <p><span className="text-white/90 font-medium">Swim Pace:</span> {formData.swim_pace}/100m</p>}
-                        {formData.avg_speed && <p><span className="text-white/90 font-medium">Bike Speed:</span> {formData.avg_speed} mph</p>}
-                        {formData.run_pace && <p><span className="text-white/90 font-medium">Run Pace:</span> {formData.run_pace}/mile</p>}
+                        {formData.overall_place && <p><span className="text-text-primary font-medium">OVERALL PLACE:</span> #{formData.overall_place}</p>}
+                        {formData.age_group_place && <p><span className="text-text-primary font-medium">AGE GROUP PLACE:</span> #{formData.age_group_place}</p>}
+                        {formData.swim_pace && <p><span className="text-text-primary font-medium">SWIM PACE:</span> {formData.swim_pace}/100m</p>}
+                        {formData.avg_speed && <p><span className="text-text-primary font-medium">BIKE SPEED:</span> {formData.avg_speed} mph</p>}
+                        {formData.run_pace && <p><span className="text-text-primary font-medium">RUN PACE:</span> {formData.run_pace}/mile</p>}
                       </div>
                     </div>
                     {formData.notes && (
-                      <div className="mt-3 pt-3 border-t border-white/10">
-                        <p><span className="text-white/90 font-medium">Notes:</span></p>
-                        <p className="mt-1 text-white/60 italic">&quot;{formData.notes}&quot;</p>
+                      <div className="mt-3 pt-3 border-t-2 border-terminal-border">
+                        <p><span className="text-text-primary font-medium">NOTES:</span></p>
+                        <p className="mt-1 text-text-secondary italic">&quot;{formData.notes}&quot;</p>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Notes Section */}
-                <div className="bg-purple-500/10 rounded-xl p-4">
-                  <h4 className="text-purple-400 font-semibold mb-3 flex items-center gap-2">
-                    📝 Race Notes
+                <div
+                  className="bg-terminal-panel border-2 border-text-secondary p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <h4 className="text-text-secondary font-semibold mb-3 flex items-center gap-2 font-mono tracking-wider">
+                    RACE NOTES
                   </h4>
                   <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="Add any notes about this race - how you felt, weather conditions, strategy, etc."
                     rows={3}
                   />
@@ -447,17 +523,19 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                Cancel
+                CANCEL
               </button>
-              
+
               <button
                 type="submit"
                 disabled={!formData.race_id || !formData.result_date}
-                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                Update Race Result
+                UPDATE RACE RESULT
               </button>
             </div>
           </form>

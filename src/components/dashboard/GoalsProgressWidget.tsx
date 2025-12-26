@@ -67,15 +67,9 @@ interface GoalNotification {
   isNew: boolean;
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const GoalsProgressWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('goalsProgress');
-
-  if (useTerminal) {
-    return <GoalsProgressWidgetTerminal />;
-  }
-
-  return <GoalsProgressWidgetLegacy />;
+  return <GoalsProgressWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)

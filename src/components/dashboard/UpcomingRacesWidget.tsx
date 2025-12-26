@@ -46,15 +46,9 @@ interface LocalStorageRace {
   status?: string;
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const UpcomingRacesWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('upcomingRaces');
-
-  if (useTerminal) {
-    return <UpcomingRacesWidgetTerminal />;
-  }
-
-  return <UpcomingRacesWidgetLegacy />;
+  return <UpcomingRacesWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)

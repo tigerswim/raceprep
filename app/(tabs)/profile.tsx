@@ -6,8 +6,6 @@ import { userDataService } from "../../src/services/userDataService";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { AuthModal } from "../../src/components/AuthModal";
 import { ConfirmDialog } from "../../src/components/ConfirmDialog";
-import { useTerminalModeToggle } from "../../src/hooks/useTerminalModeToggle";
-import { getTerminalModeState } from "../../src/utils/featureFlags";
 import {
   TbTarget,
   TbChartBar,
@@ -50,29 +48,9 @@ function ProfileScreenContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
 
-  // Terminal mode
-  useTerminalModeToggle();
-  const [useTerminal, setUseTerminal] = useState(() => {
-    const override = getTerminalModeState();
-    if (override !== false) return override;
-    return true; // Terminal mode is enabled in featureFlags.ts
-  });
+  // Terminal design is always enabled
+  const useTerminal = true;
 
-  // Listen for terminal mode changes
-  useEffect(() => {
-    const handleTerminalModeChange = () => {
-      setUseTerminal(getTerminalModeState());
-    };
-    if (typeof window !== "undefined") {
-      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
-      return () => {
-        window.removeEventListener(
-          "terminalModeChanged",
-          handleTerminalModeChange,
-        );
-      };
-    }
-  }, []);
   const [userGoals, setUserGoals] = useState<any[]>([]);
   const [userSettings, setUserSettings] = useState<any>(null);
   const [raceStats, setRaceStats] = useState<any>(null);
@@ -503,10 +481,10 @@ function ProfileScreenContent() {
   if (loading) {
     return (
       <div
-        className="bg-slate-900 relative overflow-auto flex items-center justify-center"
+        className="bg-terminal-bg relative overflow-auto flex items-center justify-center"
         style={{ minHeight: "100vh", minHeight: "100dvh" }}
       >
-        <div className="text-white text-lg">Loading...</div>
+        <div className="text-text-primary text-lg font-mono tracking-wider">LOADING...</div>
       </div>
     );
   }
@@ -516,67 +494,28 @@ function ProfileScreenContent() {
     return (
       <>
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-bg relative overflow-auto"
-              : "bg-slate-900 relative overflow-auto"
-          }
+          className="bg-terminal-bg relative overflow-auto"
           style={{ minHeight: "100vh", minHeight: "100dvh" }}
         >
-          {/* Background Effects */}
-          {!useTerminal && (
-            <div className="fixed inset-0 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>
-              <div className="absolute top-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-            </div>
-          )}
-
           <div className="relative z-10 flex flex-col items-center justify-center h-full p-6">
             <div
-              className={
-                useTerminal
-                  ? "bg-terminal-panel border-2 border-terminal-border p-12 shadow-xl text-center max-w-md"
-                  : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 shadow-xl text-center max-w-md"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="bg-terminal-panel border-2 border-terminal-border p-12 shadow-xl text-center max-w-md"
+              style={{ borderRadius: 0 }}
             >
-              <TbTrophy
-                className={
-                  useTerminal
-                    ? "w-16 h-16 mb-4 text-accent-yellow"
-                    : "w-16 h-16 mb-4 text-yellow-400"
-                }
-              />
-              <h2
-                className={
-                  useTerminal
-                    ? "text-2xl font-bold text-text-primary mb-4 font-mono tracking-wider"
-                    : "text-2xl font-bold text-white mb-4"
-                }
-              >
-                {useTerminal ? "WELCOME TO RACEPREP" : "Welcome to RacePrep"}
+              <TbTrophy className="w-16 h-16 mb-4 text-accent-yellow" />
+              <h2 className="text-2xl font-bold text-text-primary mb-4 font-mono tracking-wider">
+                WELCOME TO RACEPREP
               </h2>
-              <p
-                className={
-                  useTerminal
-                    ? "text-text-secondary mb-6 font-mono"
-                    : "text-white/70 mb-6"
-                }
-              >
+              <p className="text-text-secondary mb-6 font-mono">
                 Sign in to access your triathlon profile, track goals, and
                 manage race planning.
               </p>
               <button
                 onClick={() => setShowAuthModal(true)}
-                className={
-                  useTerminal
-                    ? "bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all duration-300 font-mono tracking-wider"
-                    : "bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all duration-300 font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                {useTerminal ? "GET STARTED" : "Get Started"}
+                GET STARTED
               </button>
             </div>
           </div>
@@ -592,87 +531,46 @@ function ProfileScreenContent() {
   return (
     <Provider store={store}>
       <div
-        className={
-          useTerminal
-            ? "bg-terminal-bg relative overflow-auto"
-            : "bg-slate-900 relative overflow-auto"
-        }
+        className="bg-terminal-bg relative overflow-auto"
         style={{ minHeight: "100vh", minHeight: "100dvh" }}
       >
-        {/* Background Effects */}
-        {!useTerminal && (
-          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-orange-900/20"></div>
-            <div className="absolute top-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          </div>
-        )}
-
         <div className="relative z-10 p-6 pb-24">
           {/* Header */}
-          {useTerminal && (
-            <div className="flex items-center justify-between mb-8 border-b-2 border-terminal-border pb-4">
-              <div>
-                <h1 className="text-xl font-bold text-text-primary mb-2 font-mono tracking-wider">
-                  PROFILE
-                </h1>
-                <p className="text-sm text-text-secondary font-mono">
-                  {userProfile?.name
-                    ? `WELCOME BACK, ${userProfile.name.split(" ")[0].toUpperCase()}!`
-                    : `WELCOME, ${user.email.toUpperCase()}!`}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleSignOut}
-                  className="text-text-secondary hover:text-text-primary text-xs font-medium bg-terminal-panel hover:bg-terminal-border px-3 py-2 transition-all font-mono tracking-wider border-2 border-terminal-border"
-                  style={{ borderRadius: 0 }}
-                  title="Sign Out"
-                >
-                  SIGN OUT
-                </button>
-                <div
-                  className="w-12 h-12 bg-accent-yellow flex items-center justify-center shadow-xl border-2 border-accent-yellow"
-                  style={{ borderRadius: 0 }}
-                >
-                  <span className="text-terminal-bg text-lg font-bold font-mono">
-                    {getUserInitials()}
-                  </span>
-                </div>
+          <div className="flex items-center justify-between mb-8 border-b-2 border-terminal-border pb-4">
+            <div>
+              <h1 className="text-xl font-bold text-text-primary mb-2 font-mono tracking-wider">
+                PROFILE
+              </h1>
+              <p className="text-sm text-text-secondary font-mono">
+                {userProfile?.name
+                  ? `WELCOME BACK, ${userProfile.name.split(" ")[0].toUpperCase()}!`
+                  : `WELCOME, ${user.email.toUpperCase()}!`}
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleSignOut}
+                className="text-text-secondary hover:text-text-primary text-xs font-medium bg-terminal-panel hover:bg-terminal-border px-3 py-2 transition-all font-mono tracking-wider border-2 border-terminal-border"
+                style={{ borderRadius: 0 }}
+                title="Sign Out"
+              >
+                SIGN OUT
+              </button>
+              <div
+                className="w-12 h-12 bg-accent-yellow flex items-center justify-center shadow-xl border-2 border-accent-yellow"
+                style={{ borderRadius: 0 }}
+              >
+                <span className="text-terminal-bg text-lg font-bold font-mono">
+                  {getUserInitials()}
+                </span>
               </div>
             </div>
-          )}
-          {!useTerminal && (
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
-                <p className="text-lg text-white/70">
-                  {userProfile?.name
-                    ? `Welcome back, ${userProfile.name.split(" ")[0]}!`
-                    : `Welcome, ${user.email}!`}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleSignOut}
-                  className="text-white/70 hover:text-white text-sm font-medium bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition-all"
-                  title="Sign Out"
-                >
-                  Sign Out
-                </button>
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
-                  <span className="text-white text-xl font-bold">
-                    {getUserInitials()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
 
           {/* Loading State */}
           {isLoading && (
             <div className="flex justify-center items-center py-12">
-              <div className="text-white text-lg">Loading profile...</div>
+              <div className="text-text-primary text-lg font-mono tracking-wider">LOADING PROFILE...</div>
             </div>
           )}
 
@@ -682,23 +580,15 @@ function ProfileScreenContent() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={
-                  useTerminal
-                    ? `px-4 py-3 font-medium transition-all duration-300 flex items-center gap-2 font-mono text-sm ${
-                        activeSection === section.id
-                          ? "bg-terminal-panel text-accent-yellow border-2 border-accent-yellow"
-                          : "bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary"
-                      }`
-                    : `px-4 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
-                        activeSection === section.id
-                          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30"
-                          : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                      }`
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className={`px-4 py-3 font-medium transition-all duration-300 flex items-center gap-2 font-mono text-sm ${
+                  activeSection === section.id
+                    ? "bg-terminal-panel text-accent-yellow border-2 border-accent-yellow"
+                    : "bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary"
+                }`}
+                style={{ borderRadius: 0 }}
               >
                 {renderIcon(section.icon, "w-5 h-5")}
-                {useTerminal ? section.label.toUpperCase() : section.label}
+                {section.label.toUpperCase()}
               </button>
             ))}
           </div>
@@ -709,29 +599,17 @@ function ProfileScreenContent() {
               {activeSection === "profile" && (
                 <>
                   <div
-                    className={
-                      useTerminal
-                        ? "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
-                        : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
+                    style={{ borderRadius: 0 }}
                   >
-                    <h3
-                      className={
-                        useTerminal
-                          ? "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider"
-                          : "text-xl font-bold text-white mb-6"
-                      }
-                    >
-                      {useTerminal
-                        ? "PERSONAL INFORMATION"
-                        : "Personal Information"}
+                    <h3 className="text-lg font-bold text-text-primary mb-6 font-mono tracking-wider">
+                      PERSONAL INFORMATION
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div>
-                          <label className={useTerminal ? "block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider" : "block text-white/80 text-sm font-medium mb-2"}>
-                            {useTerminal ? "FULL NAME" : "Full Name"}
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            FULL NAME
                           </label>
                           <input
                             type="text"
@@ -742,32 +620,29 @@ function ProfileScreenContent() {
                                 name: e.target.value,
                               })
                             }
-                            placeholder={useTerminal ? "ENTER YOUR FULL NAME" : "Enter your full name"}
-                            className={
-                              useTerminal
-                                ? "w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow"
-                                : "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            }
-                            style={useTerminal ? { borderRadius: 0 } : undefined}
+                            placeholder="ENTER YOUR FULL NAME"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           />
                         </div>
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            Email
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            EMAIL
                           </label>
                           <input
                             type="email"
                             value={profileForm.email || ""}
                             disabled
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/60 placeholder-white/30 cursor-not-allowed"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-secondary font-mono cursor-not-allowed"
+                            style={{ borderRadius: 0 }}
                           />
-                          <p className="text-white/50 text-xs mt-1">
-                            Email cannot be changed
+                          <p className="text-text-secondary text-xs mt-1 font-mono">
+                            EMAIL CANNOT BE CHANGED
                           </p>
                         </div>
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            Age Group
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            AGE GROUP
                           </label>
                           <select
                             value={profileForm.age_group || ""}
@@ -777,36 +652,37 @@ function ProfileScreenContent() {
                                 age_group: e.target.value,
                               })
                             }
-                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           >
-                            <option value="">Select age group</option>
-                            <option value="M17 & Under">M17 & Under</option>
-                            <option value="M18-24">M18-24</option>
-                            <option value="M25-29">M25-29</option>
-                            <option value="M30-34">M30-34</option>
-                            <option value="M35-39">M35-39</option>
-                            <option value="M40-44">M40-44</option>
-                            <option value="M45-49">M45-49</option>
-                            <option value="M50-54">M50-54</option>
-                            <option value="M55-59">M55-59</option>
-                            <option value="M60+">M60+</option>
-                            <option value="F17 & Under">F17 & Under</option>
-                            <option value="F18-24">F18-24</option>
-                            <option value="F25-29">F25-29</option>
-                            <option value="F30-34">F30-34</option>
-                            <option value="F35-39">F35-39</option>
-                            <option value="F40-44">F40-44</option>
-                            <option value="F45-49">F45-49</option>
-                            <option value="F50-54">F50-54</option>
-                            <option value="F55-59">F55-59</option>
-                            <option value="F60+">F60+</option>
+                            <option value="" className="bg-terminal-bg">SELECT AGE GROUP</option>
+                            <option value="M17 & Under" className="bg-terminal-bg">M17 & UNDER</option>
+                            <option value="M18-24" className="bg-terminal-bg">M18-24</option>
+                            <option value="M25-29" className="bg-terminal-bg">M25-29</option>
+                            <option value="M30-34" className="bg-terminal-bg">M30-34</option>
+                            <option value="M35-39" className="bg-terminal-bg">M35-39</option>
+                            <option value="M40-44" className="bg-terminal-bg">M40-44</option>
+                            <option value="M45-49" className="bg-terminal-bg">M45-49</option>
+                            <option value="M50-54" className="bg-terminal-bg">M50-54</option>
+                            <option value="M55-59" className="bg-terminal-bg">M55-59</option>
+                            <option value="M60+" className="bg-terminal-bg">M60+</option>
+                            <option value="F17 & Under" className="bg-terminal-bg">F17 & UNDER</option>
+                            <option value="F18-24" className="bg-terminal-bg">F18-24</option>
+                            <option value="F25-29" className="bg-terminal-bg">F25-29</option>
+                            <option value="F30-34" className="bg-terminal-bg">F30-34</option>
+                            <option value="F35-39" className="bg-terminal-bg">F35-39</option>
+                            <option value="F40-44" className="bg-terminal-bg">F40-44</option>
+                            <option value="F45-49" className="bg-terminal-bg">F45-49</option>
+                            <option value="F50-54" className="bg-terminal-bg">F50-54</option>
+                            <option value="F55-59" className="bg-terminal-bg">F55-59</option>
+                            <option value="F60+" className="bg-terminal-bg">F60+</option>
                           </select>
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            Experience Level
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            EXPERIENCE LEVEL
                           </label>
                           <select
                             value={profileForm.experience_level || ""}
@@ -816,17 +692,18 @@ function ProfileScreenContent() {
                                 experience_level: e.target.value,
                               })
                             }
-                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           >
-                            <option value="">Select experience level</option>
-                            <option value="beginner">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
+                            <option value="" className="bg-terminal-bg">SELECT EXPERIENCE LEVEL</option>
+                            <option value="beginner" className="bg-terminal-bg">BEGINNER</option>
+                            <option value="intermediate" className="bg-terminal-bg">INTERMEDIATE</option>
+                            <option value="advanced" className="bg-terminal-bg">ADVANCED</option>
                           </select>
                         </div>
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            Location
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            LOCATION
                           </label>
                           <input
                             type="text"
@@ -837,13 +714,14 @@ function ProfileScreenContent() {
                                 location: e.target.value,
                               })
                             }
-                            placeholder="City, State"
-                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="CITY, STATE"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           />
                         </div>
                         <div>
-                          <label className="block text-white/80 text-sm font-medium mb-2">
-                            USAT ID (Optional)
+                          <label className="block text-text-secondary text-sm font-mono font-bold mb-2 tracking-wider">
+                            USAT ID (OPTIONAL)
                           </label>
                           <input
                             type="text"
@@ -854,8 +732,9 @@ function ProfileScreenContent() {
                                 usat_id: e.target.value,
                               })
                             }
-                            placeholder="Enter USAT ID"
-                            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="ENTER USAT ID"
+                            className="w-full bg-terminal-bg border-2 border-terminal-border px-4 py-3 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           />
                         </div>
                       </div>
@@ -864,17 +743,19 @@ function ProfileScreenContent() {
                       <button
                         onClick={handleProfileSave}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-accent-yellow text-terminal-bg px-6 py-3 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ borderRadius: 0 }}
                       >
-                        {isSaving ? "Saving..." : "Save Changes"}
+                        {isSaving ? "SAVING..." : "SAVE CHANGES"}
                       </button>
                       <button
                         onClick={() => {
                           setProfileForm(userProfile || {});
                         }}
-                        className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                        className="bg-transparent border-2 border-terminal-border text-text-secondary px-6 py-3 font-mono font-bold tracking-wider hover:border-accent-yellow hover:text-text-primary transition-colors"
+                        style={{ borderRadius: 0 }}
                       >
-                        Cancel
+                        CANCEL
                       </button>
                     </div>
                   </div>
@@ -884,28 +765,19 @@ function ProfileScreenContent() {
               {activeSection === "goals" && (
                 <>
                   <div
-                    className={
-                      useTerminal
-                        ? "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
-                        : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
+                    style={{ borderRadius: 0 }}
                   >
                     <div className="flex justify-between items-center mb-6">
-                      <h3
-                        className={
-                          useTerminal
-                            ? "text-lg font-bold text-text-primary font-mono tracking-wider"
-                            : "text-xl font-bold text-white"
-                        }
-                      >
-                        {useTerminal ? "MY GOALS" : "My Goals"}
+                      <h3 className="text-lg font-bold text-text-primary font-mono tracking-wider">
+                        MY GOALS
                       </h3>
                       <button
                         onClick={() => openGoalModal()}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                        className="bg-accent-yellow text-terminal-bg px-4 py-2 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors"
+                        style={{ borderRadius: 0 }}
                       >
-                        Add Goal
+                        ADD GOAL
                       </button>
                     </div>
 
@@ -914,37 +786,38 @@ function ProfileScreenContent() {
                         {userGoals.map((goal) => (
                           <div
                             key={goal.id}
-                            className="border border-white/10 rounded-xl p-4 bg-white/5"
+                            className="border-2 border-terminal-border p-4 bg-terminal-bg"
+                            style={{ borderRadius: 0 }}
                           >
                             <div className="flex justify-between items-start mb-3">
                               <div className="flex-1">
-                                <h4 className="text-white font-semibold mb-1">
+                                <h4 className="text-text-primary font-semibold mb-1 font-mono tracking-wider">
                                   {goal.goal_type === "time_target"
-                                    ? "Time Goal"
+                                    ? "TIME GOAL"
                                     : goal.goal_type === "race_count"
-                                      ? "Race Count Goal"
-                                      : "Transition Goal"}
+                                      ? "RACE COUNT GOAL"
+                                      : "TRANSITION GOAL"}
                                   {goal.distance_type &&
-                                    ` - ${goal.distance_type.charAt(0).toUpperCase() + goal.distance_type.slice(1)}`}
+                                    ` - ${goal.distance_type.toUpperCase()}`}
                                 </h4>
-                                <div className="text-white/70 text-sm">
-                                  Target: {goal.target_value}
+                                <div className="text-text-secondary text-sm font-mono">
+                                  TARGET: {goal.target_value}
                                   {goal.target_date &&
-                                    ` by ${new Date(goal.target_date).toLocaleDateString()}`}
+                                    ` BY ${new Date(goal.target_date).toLocaleDateString()}`}
                                 </div>
                               </div>
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => openGoalModal(goal)}
-                                  className="text-blue-400 hover:text-blue-300 text-sm"
+                                  className="text-accent-yellow hover:text-accent-yellow/80 text-sm font-mono tracking-wider"
                                 >
-                                  Edit
+                                  EDIT
                                 </button>
                                 <button
                                   onClick={() => deleteGoal(goal)}
-                                  className="text-red-400 hover:text-red-300 text-sm"
+                                  className="text-discipline-bike hover:text-discipline-bike/80 text-sm font-mono tracking-wider"
                                 >
-                                  Delete
+                                  DELETE
                                 </button>
                               </div>
                             </div>
@@ -952,19 +825,19 @@ function ProfileScreenContent() {
                             {goal.current_value && (
                               <div className="grid grid-cols-2 gap-4 text-center">
                                 <div>
-                                  <div className="text-lg font-bold text-white font-mono">
+                                  <div className="text-lg font-bold text-text-primary font-mono">
                                     {goal.target_value}
                                   </div>
-                                  <div className="text-white/70 text-xs">
-                                    Target
+                                  <div className="text-text-secondary text-xs font-mono tracking-wider">
+                                    TARGET
                                   </div>
                                 </div>
                                 <div>
-                                  <div className="text-lg font-bold text-blue-400 font-mono">
+                                  <div className="text-lg font-bold text-accent-yellow font-mono">
                                     {goal.current_value}
                                   </div>
-                                  <div className="text-white/70 text-xs">
-                                    Current
+                                  <div className="text-text-secondary text-xs font-mono tracking-wider">
+                                    CURRENT
                                   </div>
                                 </div>
                               </div>
@@ -972,8 +845,8 @@ function ProfileScreenContent() {
 
                             {goal.achieved && (
                               <div className="mt-3 text-center">
-                                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
-                                  ✅ Achieved!
+                                <span className="bg-accent-yellow/20 text-accent-yellow px-3 py-1 text-sm font-mono tracking-wider border-2 border-accent-yellow" style={{ borderRadius: 0 }}>
+                                  ACHIEVED
                                 </span>
                               </div>
                             )}
@@ -982,12 +855,12 @@ function ProfileScreenContent() {
                       </div>
                     ) : (
                       <div className="text-center py-12">
-                        <TbTarget className="w-8 h-8 mb-4 text-white/60" />
-                        <div className="text-white/70 mb-2">
-                          No goals set yet
+                        <TbTarget className="w-8 h-8 mb-4 text-text-secondary mx-auto" />
+                        <div className="text-text-secondary mb-2 font-mono tracking-wider">
+                          NO GOALS SET YET
                         </div>
-                        <div className="text-white/50 text-sm">
-                          Create your first goal to start tracking progress!
+                        <div className="text-text-secondary text-sm font-mono">
+                          CREATE YOUR FIRST GOAL TO START TRACKING PROGRESS
                         </div>
                       </div>
                     )}
@@ -997,81 +870,69 @@ function ProfileScreenContent() {
 
               {activeSection === "stats" && (
                 <div
-                  className={
-                    useTerminal
-                      ? "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
-                      : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
-                  }
-                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                  className="bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
+                  style={{ borderRadius: 0 }}
                 >
-                  <h3
-                    className={
-                      useTerminal
-                        ? "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider"
-                        : "text-xl font-bold text-white mb-6"
-                    }
-                  >
-                    {useTerminal
-                      ? "PERFORMANCE STATISTICS"
-                      : "Performance Statistics"}
+                  <h3 className="text-lg font-bold text-text-primary mb-6 font-mono tracking-wider">
+                    PERFORMANCE STATISTICS
                   </h3>
                   {raceStats ? (
                     <>
                       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="text-center p-4 bg-white/5 rounded-xl">
-                          <div className="text-3xl font-bold text-blue-400 font-mono mb-2">
+                        <div className="text-center p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <div className="text-3xl font-bold text-discipline-swim font-mono mb-2">
                             {raceStats.totalRaces}
                           </div>
-                          <div className="text-white/70">Total Races</div>
+                          <div className="text-text-secondary font-mono tracking-wider">TOTAL RACES</div>
                         </div>
-                        <div className="text-center p-4 bg-white/5 rounded-xl">
-                          <div className="text-3xl font-bold text-green-400 font-mono mb-2">
+                        <div className="text-center p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <div className="text-3xl font-bold text-accent-yellow font-mono mb-2">
                             {raceStats.podiumFinishes}
                           </div>
-                          <div className="text-white/70">Podium Finishes</div>
+                          <div className="text-text-secondary font-mono tracking-wider">PODIUM FINISHES</div>
                         </div>
-                        <div className="text-center p-4 bg-white/5 rounded-xl">
-                          <div className="text-3xl font-bold text-orange-400 font-mono mb-2">
+                        <div className="text-center p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <div className="text-3xl font-bold text-discipline-bike font-mono mb-2">
                             {raceStats.sprintBest || "--:--:--"}
                           </div>
-                          <div className="text-white/70">Sprint PR</div>
+                          <div className="text-text-secondary font-mono tracking-wider">SPRINT PR</div>
                         </div>
-                        <div className="text-center p-4 bg-white/5 rounded-xl">
-                          <div className="text-3xl font-bold text-purple-400 font-mono mb-2">
+                        <div className="text-center p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <div className="text-3xl font-bold text-discipline-run font-mono mb-2">
                             {raceStats.avgFinishPercentage}%
                           </div>
-                          <div className="text-white/70">Avg Finish %</div>
+                          <div className="text-text-secondary font-mono tracking-wider">AVG FINISH %</div>
                         </div>
                       </div>
 
                       <div className="mt-8">
-                        <h4 className="text-white font-semibold mb-4">
-                          Race History Summary
+                        <h4 className="text-text-primary font-semibold mb-4 font-mono tracking-wider">
+                          RACE HISTORY SUMMARY
                         </h4>
-                        <div className="bg-white/5 rounded-xl p-6">
+                        <div className="bg-terminal-bg border-2 border-terminal-border p-6" style={{ borderRadius: 0 }}>
                           {raceStats.totalRaces > 0 ? (
                             <div className="space-y-3">
                               <div className="flex justify-between">
-                                <span className="text-white/70">
-                                  Total Races Completed
+                                <span className="text-text-secondary font-mono tracking-wider">
+                                  TOTAL RACES COMPLETED
                                 </span>
-                                <span className="text-white font-semibold">
+                                <span className="text-text-primary font-semibold font-mono">
                                   {raceStats.totalRaces}
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-white/70">
-                                  Podium Finishes
+                                <span className="text-text-secondary font-mono tracking-wider">
+                                  PODIUM FINISHES
                                 </span>
-                                <span className="text-green-400 font-semibold">
+                                <span className="text-accent-yellow font-semibold font-mono">
                                   {raceStats.podiumFinishes}
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-white/70">
-                                  Podium Rate
+                                <span className="text-text-secondary font-mono tracking-wider">
+                                  PODIUM RATE
                                 </span>
-                                <span className="text-green-400 font-semibold">
+                                <span className="text-accent-yellow font-semibold font-mono">
                                   {Math.round(
                                     (raceStats.podiumFinishes /
                                       raceStats.totalRaces) *
@@ -1083,12 +944,12 @@ function ProfileScreenContent() {
                             </div>
                           ) : (
                             <div className="text-center py-8">
-                              <TbFlag className="w-8 h-8 mb-4 text-white/60" />
-                              <div className="text-white/70">
-                                No race results yet
+                              <TbFlag className="w-8 h-8 mb-4 text-text-secondary mx-auto" />
+                              <div className="text-text-secondary font-mono tracking-wider">
+                                NO RACE RESULTS YET
                               </div>
-                              <div className="text-white/50 text-sm">
-                                Complete some races to see your stats!
+                              <div className="text-text-secondary text-sm font-mono">
+                                COMPLETE SOME RACES TO SEE YOUR STATS
                               </div>
                             </div>
                           )}
@@ -1097,7 +958,7 @@ function ProfileScreenContent() {
                     </>
                   ) : (
                     <div className="text-center py-12">
-                      <div className="text-white/60">Loading statistics...</div>
+                      <div className="text-text-secondary font-mono tracking-wider">LOADING STATISTICS...</div>
                     </div>
                   )}
                 </div>
@@ -1105,30 +966,20 @@ function ProfileScreenContent() {
 
               {activeSection === "settings" && (
                 <div
-                  className={
-                    useTerminal
-                      ? "bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
-                      : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
-                  }
-                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                  className="bg-terminal-panel border-2 border-terminal-border p-6 shadow-xl"
+                  style={{ borderRadius: 0 }}
                 >
-                  <h3
-                    className={
-                      useTerminal
-                        ? "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider"
-                        : "text-xl font-bold text-white mb-6"
-                    }
-                  >
-                    {useTerminal ? "SETTINGS" : "Settings"}
+                  <h3 className="text-lg font-bold text-text-primary mb-6 font-mono tracking-wider">
+                    SETTINGS
                   </h3>
                   <div className="space-y-6">
                     <div>
-                      <h4 className="text-white font-semibold mb-4">
-                        Units & Preferences
+                      <h4 className="text-text-primary font-semibold mb-4 font-mono tracking-wider">
+                        UNITS & PREFERENCES
                       </h4>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <span className="text-white">Distance Units</span>
+                        <div className="flex items-center justify-between p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <span className="text-text-primary font-mono tracking-wider">DISTANCE UNITS</span>
                           <select
                             value={settingsForm.distance_units || "imperial"}
                             onChange={(e) =>
@@ -1137,14 +988,15 @@ function ProfileScreenContent() {
                                 distance_units: e.target.value,
                               })
                             }
-                            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="bg-terminal-bg border-2 border-terminal-border px-3 py-2 text-text-primary font-mono focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           >
-                            <option value="imperial">Miles/Feet</option>
-                            <option value="metric">Kilometers/Meters</option>
+                            <option value="imperial" className="bg-terminal-bg">MILES/FEET</option>
+                            <option value="metric" className="bg-terminal-bg">KILOMETERS/METERS</option>
                           </select>
                         </div>
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <span className="text-white">Temperature Units</span>
+                        <div className="flex items-center justify-between p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <span className="text-text-primary font-mono tracking-wider">TEMPERATURE UNITS</span>
                           <select
                             value={
                               settingsForm.temperature_units || "fahrenheit"
@@ -1155,14 +1007,15 @@ function ProfileScreenContent() {
                                 temperature_units: e.target.value,
                               })
                             }
-                            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="bg-terminal-bg border-2 border-terminal-border px-3 py-2 text-text-primary font-mono focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           >
-                            <option value="fahrenheit">Fahrenheit</option>
-                            <option value="celsius">Celsius</option>
+                            <option value="fahrenheit" className="bg-terminal-bg">FAHRENHEIT</option>
+                            <option value="celsius" className="bg-terminal-bg">CELSIUS</option>
                           </select>
                         </div>
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
-                          <span className="text-white">Years Racing</span>
+                        <div className="flex items-center justify-between p-4 bg-terminal-bg border-2 border-terminal-border" style={{ borderRadius: 0 }}>
+                          <span className="text-text-primary font-mono tracking-wider">YEARS RACING</span>
                           <input
                             type="number"
                             min="0"
@@ -1174,40 +1027,42 @@ function ProfileScreenContent() {
                                 years_racing: parseInt(e.target.value) || 0,
                               })
                             }
-                            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white w-20 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="bg-terminal-bg border-2 border-terminal-border px-3 py-2 text-text-primary font-mono w-20 text-center focus:outline-none focus:border-accent-yellow"
+                            style={{ borderRadius: 0 }}
                           />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="text-white font-semibold mb-4">
-                        Notifications
+                      <h4 className="text-text-primary font-semibold mb-4 font-mono tracking-wider">
+                        NOTIFICATIONS
                       </h4>
                       <div className="space-y-4">
                         {[
                           {
                             key: "notifications_race_reminders",
-                            label: "Race reminders",
+                            label: "RACE REMINDERS",
                           },
                           {
                             key: "notifications_training_updates",
-                            label: "Training plan updates",
+                            label: "TRAINING PLAN UPDATES",
                           },
                           {
                             key: "notifications_performance_insights",
-                            label: "Performance insights",
+                            label: "PERFORMANCE INSIGHTS",
                           },
                           {
                             key: "notifications_community_updates",
-                            label: "Community updates",
+                            label: "COMMUNITY UPDATES",
                           },
                         ].map((setting) => (
                           <div
                             key={setting.key}
-                            className="flex items-center justify-between p-4 bg-white/5 rounded-xl"
+                            className="flex items-center justify-between p-4 bg-terminal-bg border-2 border-terminal-border"
+                            style={{ borderRadius: 0 }}
                           >
-                            <span className="text-white">{setting.label}</span>
+                            <span className="text-text-primary font-mono tracking-wider">{setting.label}</span>
                             <button
                               onClick={() =>
                                 setSettingsForm({
@@ -1215,18 +1070,20 @@ function ProfileScreenContent() {
                                   [setting.key]: !settingsForm[setting.key],
                                 })
                               }
-                              className={`w-12 h-6 rounded-full relative transition-colors ${
+                              className={`w-12 h-6 relative transition-colors border-2 ${
                                 settingsForm[setting.key]
-                                  ? "bg-blue-500"
-                                  : "bg-white/20"
+                                  ? "bg-accent-yellow border-accent-yellow"
+                                  : "bg-terminal-bg border-terminal-border"
                               }`}
+                              style={{ borderRadius: 0 }}
                             >
                               <div
-                                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
+                                className={`w-4 h-4 bg-terminal-bg absolute top-0.5 transition-transform border border-terminal-border ${
                                   settingsForm[setting.key]
                                     ? "translate-x-6"
                                     : "translate-x-0.5"
                                 }`}
+                                style={{ borderRadius: 0 }}
                               ></div>
                             </button>
                           </div>
@@ -1238,36 +1095,37 @@ function ProfileScreenContent() {
                       <button
                         onClick={handleSettingsSave}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-accent-yellow text-terminal-bg px-6 py-3 font-mono font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ borderRadius: 0 }}
                       >
-                        {isSaving ? "Saving..." : "Save Settings"}
+                        {isSaving ? "SAVING..." : "SAVE SETTINGS"}
                       </button>
                       <button
                         onClick={() => {
                           setSettingsForm(userSettings || {});
                         }}
-                        className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                        className="bg-transparent border-2 border-terminal-border text-text-secondary px-6 py-3 font-mono font-bold tracking-wider hover:border-accent-yellow hover:text-text-primary transition-colors"
+                        style={{ borderRadius: 0 }}
                       >
-                        Cancel
+                        CANCEL
                       </button>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10">
-                      <h4 className="text-white font-semibold mb-4">
-                        Data Privacy
+                    <div className="pt-6 border-t-2 border-terminal-border">
+                      <h4 className="text-text-primary font-semibold mb-4 font-mono tracking-wider">
+                        DATA PRIVACY
                       </h4>
                       <div className="space-y-4">
-                        <div className="bg-white/5 rounded-xl p-4">
+                        <div className="bg-terminal-bg border-2 border-terminal-border p-4" style={{ borderRadius: 0 }}>
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                              <TbDownload className="w-5 h-5 text-blue-400" />
+                              <TbDownload className="w-5 h-5 text-discipline-swim" />
                               <div>
-                                <div className="text-white font-medium">
-                                  Export Your Data
+                                <div className="text-text-primary font-medium font-mono tracking-wider">
+                                  EXPORT YOUR DATA
                                 </div>
-                                <div className="text-white/60 text-sm">
-                                  Download all your training, race, and profile
-                                  data
+                                <div className="text-text-secondary text-sm font-mono">
+                                  DOWNLOAD ALL YOUR TRAINING, RACE, AND PROFILE DATA
                                 </div>
                               </div>
                             </div>
@@ -1276,42 +1134,44 @@ function ProfileScreenContent() {
                             <button
                               onClick={() => handleDataExport("json")}
                               disabled={dataOperationInProgress}
-                              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="bg-discipline-swim/20 hover:bg-discipline-swim/30 text-discipline-swim border-2 border-discipline-swim px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                              style={{ borderRadius: 0 }}
                             >
                               {dataOperationInProgress
-                                ? "Exporting..."
+                                ? "EXPORTING..."
                                 : "JSON"}
                             </button>
                             <button
                               onClick={() => handleDataExport("csv")}
                               disabled={dataOperationInProgress}
-                              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="bg-discipline-swim/20 hover:bg-discipline-swim/30 text-discipline-swim border-2 border-discipline-swim px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                              style={{ borderRadius: 0 }}
                             >
-                              {dataOperationInProgress ? "Exporting..." : "CSV"}
+                              {dataOperationInProgress ? "EXPORTING..." : "CSV"}
                             </button>
                             <button
                               onClick={() => handleDataExport("both")}
                               disabled={dataOperationInProgress}
-                              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="bg-discipline-swim/20 hover:bg-discipline-swim/30 text-discipline-swim border-2 border-discipline-swim px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                              style={{ borderRadius: 0 }}
                             >
                               {dataOperationInProgress
-                                ? "Exporting..."
-                                : "Both"}
+                                ? "EXPORTING..."
+                                : "BOTH"}
                             </button>
                           </div>
                         </div>
 
-                        <div className="bg-white/5 rounded-xl p-4">
+                        <div className="bg-terminal-bg border-2 border-terminal-border p-4" style={{ borderRadius: 0 }}>
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                              <TbShield className="w-5 h-5 text-orange-400" />
+                              <TbShield className="w-5 h-5 text-discipline-bike" />
                               <div>
-                                <div className="text-white font-medium">
-                                  Data Deletion Request
+                                <div className="text-text-primary font-medium font-mono tracking-wider">
+                                  DATA DELETION REQUEST
                                 </div>
-                                <div className="text-white/60 text-sm">
-                                  Schedule deletion of all your data (48-hour
-                                  notice)
+                                <div className="text-text-secondary text-sm font-mono">
+                                  SCHEDULE DELETION OF ALL YOUR DATA (48-HOUR NOTICE)
                                 </div>
                               </div>
                             </div>
@@ -1319,44 +1179,46 @@ function ProfileScreenContent() {
                           <button
                             onClick={() => setShowDeletionConfirm(true)}
                             disabled={dataOperationInProgress}
-                            className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-discipline-bike/20 hover:bg-discipline-bike/30 text-discipline-bike border-2 border-discipline-bike px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                            style={{ borderRadius: 0 }}
                           >
-                            Request Deletion
+                            REQUEST DELETION
                           </button>
                         </div>
 
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                        <div className="bg-discipline-run/10 border-2 border-discipline-run p-4" style={{ borderRadius: 0 }}>
                           <div className="flex items-center gap-3 mb-3">
-                            <TbTrash className="w-5 h-5 text-red-400" />
+                            <TbTrash className="w-5 h-5 text-discipline-run" />
                             <div>
-                              <div className="text-red-300 font-medium">
-                                Immediate Data Deletion
+                              <div className="text-discipline-run font-medium font-mono tracking-wider">
+                                IMMEDIATE DATA DELETION
                               </div>
-                              <div className="text-red-200/70 text-sm">
-                                Permanently delete all data immediately
-                                (irreversible)
+                              <div className="text-discipline-run/70 text-sm font-mono">
+                                PERMANENTLY DELETE ALL DATA IMMEDIATELY (IRREVERSIBLE)
                               </div>
                             </div>
                           </div>
                           <button
                             onClick={handleImmediateDataDeletion}
                             disabled={dataOperationInProgress}
-                            className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-discipline-run/20 hover:bg-discipline-run/30 text-discipline-run border-2 border-discipline-run px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                            style={{ borderRadius: 0 }}
                           >
                             {dataOperationInProgress
-                              ? "Deleting..."
-                              : "Delete All Data Now"}
+                              ? "DELETING..."
+                              : "DELETE ALL DATA NOW"}
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10">
+                    <div className="pt-6 border-t-2 border-terminal-border">
                       <button
                         onClick={handleSignOut}
-                        className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-6 py-3 rounded-xl font-medium transition-colors"
+                        className="bg-discipline-run/20 hover:bg-discipline-run/30 text-discipline-run border-2 border-discipline-run px-6 py-3 font-medium transition-colors font-mono tracking-wider"
+                        style={{ borderRadius: 0 }}
                       >
-                        Sign Out
+                        SIGN OUT
                       </button>
                     </div>
                   </div>
@@ -1367,40 +1229,40 @@ function ProfileScreenContent() {
 
           {/* Data Deletion Confirmation Modal */}
           {showDeletionConfirm && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-slate-800 rounded-2xl border border-red-500/20 p-6 w-full max-w-md">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div
+                className="bg-terminal-panel border-2 border-accent-yellow p-6 w-full max-w-md"
+                style={{ borderRadius: 0 }}
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <TbShield className="w-6 h-6 text-orange-400" />
-                  <h3 className="text-xl font-bold text-white">
-                    Schedule Data Deletion
+                  <TbShield className="w-6 h-6 text-accent-yellow" />
+                  <h3 className="text-xl font-bold text-text-primary font-mono tracking-wider uppercase">
+                    SCHEDULE DATA DELETION
                   </h3>
                 </div>
 
-                <div className="space-y-4 text-white/80">
+                <div className="space-y-4 text-text-primary font-mono">
                   <p>
-                    This will schedule the permanent deletion of all your data
-                    within 48 hours, including:
+                    THIS WILL SCHEDULE THE PERMANENT DELETION OF ALL YOUR DATA WITHIN 48 HOURS, INCLUDING:
                   </p>
-                  <ul className="space-y-1 text-sm text-white/70 ml-4">
-                    <li>• Training sessions and Strava data</li>
-                    <li>• Race results and planned races</li>
-                    <li>• User goals and preferences</li>
-                    <li>• Profile information and settings</li>
+                  <ul className="space-y-1 text-sm text-text-secondary ml-4 tracking-wide">
+                    <li>• TRAINING SESSIONS AND STRAVA DATA</li>
+                    <li>• RACE RESULTS AND PLANNED RACES</li>
+                    <li>• USER GOALS AND PREFERENCES</li>
+                    <li>• PROFILE INFORMATION AND SETTINGS</li>
                   </ul>
-                  <div className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3">
-                    <div className="text-orange-300 text-sm font-medium mb-1">
-                      Important Notes:
+                  <div
+                    className="bg-accent-yellow/10 border-2 border-accent-yellow p-3"
+                    style={{ borderRadius: 0 }}
+                  >
+                    <div className="text-accent-yellow text-sm font-medium mb-1 tracking-wider uppercase">
+                      IMPORTANT NOTES:
                     </div>
-                    <ul className="text-orange-200/80 text-xs space-y-1">
-                      <li>
-                        • This complies with Strava API data deletion
-                        requirements
-                      </li>
-                      <li>• You will receive a confirmation email</li>
-                      <li>
-                        • You can contact support to cancel before deletion
-                      </li>
-                      <li>• This action cannot be undone once executed</li>
+                    <ul className="text-text-secondary text-xs space-y-1 tracking-wide">
+                      <li>• THIS COMPLIES WITH STRAVA API DATA DELETION REQUIREMENTS</li>
+                      <li>• YOU WILL RECEIVE A CONFIRMATION EMAIL</li>
+                      <li>• YOU CAN CONTACT SUPPORT TO CANCEL BEFORE DELETION</li>
+                      <li>• THIS ACTION CANNOT BE UNDONE ONCE EXECUTED</li>
                     </ul>
                   </div>
                 </div>
@@ -1409,18 +1271,18 @@ function ProfileScreenContent() {
                   <button
                     onClick={handleDataDeletionRequest}
                     disabled={dataOperationInProgress}
-                    className="flex-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 py-3 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-accent-yellow/20 hover:bg-accent-yellow/30 text-accent-yellow border-2 border-accent-yellow py-3 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider uppercase"
+                    style={{ borderRadius: 0 }}
                   >
-                    {dataOperationInProgress
-                      ? "Scheduling..."
-                      : "Schedule Deletion"}
+                    {dataOperationInProgress ? "SCHEDULING..." : "SCHEDULE DELETION"}
                   </button>
                   <button
                     onClick={() => setShowDeletionConfirm(false)}
                     disabled={dataOperationInProgress}
-                    className="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
+                    className="flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider uppercase"
+                    style={{ borderRadius: 0 }}
                   >
-                    Cancel
+                    CANCEL
                   </button>
                 </div>
               </div>
@@ -1431,54 +1293,36 @@ function ProfileScreenContent() {
           {showGoalModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
               <div
-                className={useTerminal ?
-                  "bg-terminal-panel border-2 border-terminal-border p-6 w-full max-w-md" :
-                  "bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-md"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="bg-terminal-panel border-2 border-terminal-border p-6 w-full max-w-md"
+                style={{ borderRadius: 0 }}
               >
-                <h3 className={useTerminal ?
-                  "text-lg font-bold text-text-primary mb-6 font-mono tracking-wider" :
-                  "text-xl font-bold text-white mb-6"
-                }>
-                  {useTerminal ?
-                    (editingGoal ? "EDIT GOAL" : "CREATE NEW GOAL") :
-                    (editingGoal ? "Edit Goal" : "Create New Goal")
-                  }
+                <h3 className="text-lg font-bold text-text-primary mb-6 font-mono tracking-wider">
+                  {editingGoal ? "EDIT GOAL" : "CREATE NEW GOAL"}
                 </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className={useTerminal ?
-                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
-                      "block text-white/80 text-sm font-medium mb-2"
-                    }>
-                      {useTerminal ? 'GOAL TYPE' : 'Goal Type'}
+                    <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                      GOAL TYPE
                     </label>
                     <select
                       value={goalForm.goal_type}
                       onChange={(e) =>
                         setGoalForm({ ...goalForm, goal_type: e.target.value })
                       }
-                      className={useTerminal ?
-                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
-                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                     >
-                      <option value="time_target">{useTerminal ? 'TIME TARGET' : 'Time Target'}</option>
-                      <option value="race_count">{useTerminal ? 'RACE COUNT' : 'Race Count'}</option>
-                      <option value="transition_time">{useTerminal ? 'TRANSITION TIME' : 'Transition Time'}</option>
+                      <option value="time_target">TIME TARGET</option>
+                      <option value="race_count">RACE COUNT</option>
+                      <option value="transition_time">TRANSITION TIME</option>
                     </select>
                   </div>
 
                   {goalForm.goal_type === "time_target" && (
                     <div>
-                      <label className={useTerminal ?
-                        "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
-                        "block text-white/80 text-sm font-medium mb-2"
-                      }>
-                        {useTerminal ? 'DISTANCE TYPE' : 'Distance Type'}
+                      <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                        DISTANCE TYPE
                       </label>
                       <select
                         value={goalForm.distance_type}
@@ -1488,26 +1332,20 @@ function ProfileScreenContent() {
                             distance_type: e.target.value,
                           })
                         }
-                        className={useTerminal ?
-                          "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
-                          "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        }
-                        style={useTerminal ? { borderRadius: 0 } : undefined}
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                        style={{ borderRadius: 0 }}
                       >
-                        <option value="sprint">{useTerminal ? 'SPRINT' : 'Sprint'}</option>
-                        <option value="olympic">{useTerminal ? 'OLYMPIC' : 'Olympic'}</option>
-                        <option value="70.3">{useTerminal ? '70.3' : '70.3'}</option>
-                        <option value="ironman">{useTerminal ? 'IRONMAN' : 'Ironman'}</option>
+                        <option value="sprint">SPRINT</option>
+                        <option value="olympic">OLYMPIC</option>
+                        <option value="70.3">70.3</option>
+                        <option value="ironman">IRONMAN</option>
                       </select>
                     </div>
                   )}
 
                   <div>
-                    <label className={useTerminal ?
-                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
-                      "block text-white/80 text-sm font-medium mb-2"
-                    }>
-                      {useTerminal ? 'TARGET VALUE' : 'Target Value'}
+                    <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                      TARGET VALUE
                     </label>
                     <input
                       type="text"
@@ -1520,25 +1358,19 @@ function ProfileScreenContent() {
                       }
                       placeholder={
                         goalForm.goal_type === "time_target"
-                          ? (useTerminal ? "E.G., 1:30:00" : "e.g., 1:30:00")
+                          ? "E.G., 1:30:00"
                           : goalForm.goal_type === "race_count"
-                            ? (useTerminal ? "E.G., 5" : "e.g., 5")
-                            : (useTerminal ? "E.G., 1:30" : "e.g., 1:30")
+                            ? "E.G., 5"
+                            : "E.G., 1:30"
                       }
-                      className={useTerminal ?
-                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono" :
-                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                     />
                   </div>
 
                   <div>
-                    <label className={useTerminal ?
-                      "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase" :
-                      "block text-white/80 text-sm font-medium mb-2"
-                    }>
-                      {useTerminal ? 'TARGET DATE (OPTIONAL)' : 'Target Date (Optional)'}
+                    <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                      TARGET DATE (OPTIONAL)
                     </label>
                     <input
                       type="date"
@@ -1549,11 +1381,8 @@ function ProfileScreenContent() {
                           target_date: e.target.value,
                         })
                       }
-                      className={useTerminal ?
-                        "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono" :
-                        "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                     />
                   </div>
                 </div>
@@ -1561,26 +1390,17 @@ function ProfileScreenContent() {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={saveGoal}
-                    className={useTerminal ?
-                      "flex-1 bg-accent-yellow text-terminal-bg py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider" :
-                      "flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="flex-1 bg-accent-yellow text-terminal-bg py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider"
+                    style={{ borderRadius: 0 }}
                   >
-                    {useTerminal ?
-                      (editingGoal ? "UPDATE GOAL" : "CREATE GOAL") :
-                      (editingGoal ? "Update Goal" : "Create Goal")
-                    }
+                    {editingGoal ? "UPDATE GOAL" : "CREATE GOAL"}
                   </button>
                   <button
                     onClick={closeGoalModal}
-                    className={useTerminal ?
-                      "flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider" :
-                      "flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-medium transition-colors"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+                    style={{ borderRadius: 0 }}
                   >
-                    {useTerminal ? 'CANCEL' : 'Cancel'}
+                    CANCEL
                   </button>
                 </div>
               </div>

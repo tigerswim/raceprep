@@ -25,7 +25,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const courseData = {
       name: formData.name,
       location: formData.location,
@@ -52,7 +52,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
         .map(feature => feature.trim())
         .filter(feature => feature.length > 0)
         .filter(feature => !formData.features.includes(feature)); // Avoid duplicates
-      
+
       setFormData({
         ...formData,
         features: [...formData.features, ...featuresToAdd]
@@ -70,13 +70,18 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        style={{ borderRadius: 0 }}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Add New Course</h2>
+            <h2 className="text-xl font-bold text-text-primary font-mono tracking-wider">
+              ADD NEW COURSE
+            </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
             >
               ×
             </button>
@@ -85,60 +90,74 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
-              
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                BASIC INFORMATION
+              </h3>
+
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">Course Name *</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  COURSE NAME *
+                </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. Lake Lanier Olympic Course"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
+                  placeholder="E.G. LAKE LANIER OLYMPIC COURSE"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">Location *</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  LOCATION *
+                </label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. Lake Lanier, GA"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
+                  placeholder="E.G. LAKE LANIER, GA"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Distance Type *</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    DISTANCE TYPE *
+                  </label>
                   <select
                     value={formData.distance_type}
                     onChange={(e) => setFormData({ ...formData, distance_type: e.target.value as any })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     required
                   >
-                    <option value="sprint">Sprint</option>
-                    <option value="olympic">Olympic</option>
+                    <option value="sprint">SPRINT</option>
+                    <option value="olympic">OLYMPIC</option>
                     <option value="70.3">70.3</option>
-                    <option value="ironman">Ironman</option>
+                    <option value="ironman">IRONMAN</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Swim Type</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    SWIM TYPE
+                  </label>
                   <select
                     value={formData.swim_type || ''}
                     onChange={(e) => setFormData({ ...formData, swim_type: e.target.value as any || null })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                   >
-                    <option value="">Select type</option>
-                    <option value="lake">Lake</option>
-                    <option value="ocean">Ocean</option>
-                    <option value="river">River</option>
-                    <option value="pool">Pool</option>
+                    <option value="">SELECT TYPE</option>
+                    <option value="lake">LAKE</option>
+                    <option value="ocean">OCEAN</option>
+                    <option value="river">RIVER</option>
+                    <option value="pool">POOL</option>
                   </select>
                 </div>
               </div>
@@ -146,38 +165,49 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
             {/* Elevation & Difficulty */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Course Profile</h3>
-              
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                COURSE PROFILE
+              </h3>
+
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Bike Elevation Gain (ft)</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    BIKE ELEVATION (FT)
+                  </label>
                   <input
                     type="number"
                     value={formData.bike_elevation_gain}
                     onChange={(e) => setFormData({ ...formData, bike_elevation_gain: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="1200"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Run Elevation Gain (ft)</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    RUN ELEVATION (FT)
+                  </label>
                   <input
                     type="number"
                     value={formData.run_elevation_gain}
                     onChange={(e) => setFormData({ ...formData, run_elevation_gain: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Course Elevation (ft)</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    COURSE ELEVATION (FT)
+                  </label>
                   <input
                     type="number"
                     value={formData.overall_elevation}
                     onChange={(e) => setFormData({ ...formData, overall_elevation: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="1500"
                   />
                 </div>
@@ -185,34 +215,40 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Difficulty Score (1-10)</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    DIFFICULTY SCORE (1-10)
+                  </label>
                   <input
                     type="number"
                     min="1"
                     max="10"
                     value={formData.difficulty_score}
                     onChange={(e) => setFormData({ ...formData, difficulty_score: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     placeholder="7"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">Wetsuit Legal</label>
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    WETSUIT LEGAL
+                  </label>
                   <select
                     value={formData.wetsuit_legal === null ? '' : formData.wetsuit_legal.toString()}
                     onChange={(e) => {
                       const value = e.target.value;
-                      setFormData({ 
-                        ...formData, 
-                        wetsuit_legal: value === '' ? null : value === 'true' 
+                      setFormData({
+                        ...formData,
+                        wetsuit_legal: value === '' ? null : value === 'true'
                       });
                     }}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                   >
-                    <option value="">Unknown</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="">UNKNOWN</option>
+                    <option value="true">YES</option>
+                    <option value="false">NO</option>
                   </select>
                 </div>
               </div>
@@ -220,43 +256,54 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
             {/* Features */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Course Features</h3>
-              
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                COURSE FEATURES
+              </h3>
+
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">Add Feature</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  ADD FEATURE
+                </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
-                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. Rolling hills, Technical bike course, Beginner friendly"
+                    className="flex-1 bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
+                    placeholder="E.G. ROLLING HILLS, TECHNICAL"
                   />
                   <button
                     type="button"
                     onClick={addFeature}
-                    className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-4 py-3 rounded-xl font-medium transition-colors"
+                    className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-4 py-3 font-medium hover:bg-discipline-swim/10 transition-colors font-mono tracking-wider"
+                    style={{ borderRadius: 0 }}
                   >
-                    Add
+                    ADD
                   </button>
                 </div>
-                <p className="text-white/50 text-sm mt-1">Separate multiple features with commas</p>
+                <p className="text-text-secondary text-xs mt-1 font-mono">
+                  SEPARATE MULTIPLE FEATURES WITH COMMAS
+                </p>
               </div>
 
               {formData.features.length > 0 && (
                 <div className="space-y-2">
-                  <label className="block text-white/80 text-sm font-medium">Current Features</label>
+                  <label className="block text-text-secondary text-xs font-medium font-mono tracking-wider uppercase">
+                    CURRENT FEATURES
+                  </label>
                   <div className="flex flex-wrap gap-2">
                     {formData.features.map((feature, index) => (
                       <span
                         key={index}
-                        className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
+                        className="bg-terminal-panel border-2 border-discipline-bike text-discipline-bike px-3 py-1 text-xs font-medium flex items-center gap-2 font-mono tracking-wider uppercase"
+                        style={{ borderRadius: 0 }}
                       >
                         {feature}
                         <button
                           type="button"
                           onClick={() => removeFeature(index)}
-                          className="text-orange-400 hover:text-orange-300"
+                          className="text-discipline-bike hover:text-accent-yellow font-mono"
                         >
                           ×
                         </button>
@@ -269,44 +316,54 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
 
             {/* Description */}
             <div>
-              <label className="block text-white/80 text-sm font-medium mb-2">Description</label>
+              <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                DESCRIPTION
+              </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
-                placeholder="Describe the course layout, key challenges, and notable characteristics..."
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                style={{ borderRadius: 0 }}
+                placeholder="DESCRIBE THE COURSE LAYOUT, KEY CHALLENGES, AND NOTABLE CHARACTERISTICS..."
                 rows={4}
               />
             </div>
 
             {/* Website URL */}
             <div>
-              <label className="block text-white/80 text-sm font-medium mb-2">Course Website</label>
+              <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                COURSE WEBSITE
+              </label>
               <input
                 type="url"
                 value={formData.website_url}
                 onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://www.example.com/course-info"
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                style={{ borderRadius: 0 }}
+                placeholder="HTTPS://WWW.EXAMPLE.COM/COURSE-INFO"
               />
-              <p className="text-white/50 text-sm mt-1">Link to the official course information or race website</p>
+              <p className="text-text-secondary text-xs mt-1 font-mono">
+                LINK TO THE OFFICIAL COURSE INFORMATION OR RACE WEBSITE
+              </p>
             </div>
 
             <div className="flex justify-between mt-8">
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                Cancel
+                CANCEL
               </button>
-              
+
               <button
                 type="submit"
                 disabled={!formData.name || !formData.location}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                Add Course
+                ADD COURSE
               </button>
             </div>
           </form>

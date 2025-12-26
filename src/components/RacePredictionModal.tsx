@@ -55,97 +55,149 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-3xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className="bg-terminal-panel border-2 border-terminal-border max-w-3xl w-full max-h-[90vh] overflow-auto"
+        style={{ borderRadius: 0 }}
+      >
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Race Time Prediction</h2>
-              <p className="text-lg text-white/70">{course.name}</p>
-              <p className="text-white/60 capitalize">{course.distance_type} • {course.location}</p>
+              <h2 className="text-xl font-bold text-text-primary mb-2 font-mono tracking-wider">
+                RACE TIME PREDICTION
+              </h2>
+              <p className="text-sm text-text-primary font-mono">
+                {course.name}
+              </p>
+              <p className="text-text-secondary text-xs font-mono uppercase">
+                {course.distance_type} • {course.location}
+              </p>
             </div>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
             >
               ×
             </button>
           </div>
 
           {/* Course Factors */}
-          <div className="bg-white/5 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Course Difficulty Factors</h3>
+          <div
+            className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+            style={{ borderRadius: 0 }}
+          >
+            <h3 className="text-sm font-semibold text-text-primary mb-3 font-mono tracking-wider">
+              COURSE DIFFICULTY FACTORS
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <div className="text-white/60">Difficulty Score</div>
-                <div className="text-white font-medium">{course.difficulty_score || 'N/A'}/10</div>
+                <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                  DIFFICULTY SCORE
+                </div>
+                <div className="text-accent-yellow font-medium font-mono">
+                  {course.difficulty_score || 'N/A'}/10
+                </div>
               </div>
               <div>
-                <div className="text-white/60">Total Elevation</div>
-                <div className="text-white font-medium">{course.overall_elevation ? `+${course.overall_elevation}ft` : 'N/A'}</div>
+                <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                  TOTAL ELEVATION
+                </div>
+                <div className="text-accent-yellow font-medium font-mono">
+                  {course.overall_elevation ? `+${course.overall_elevation}ft` : 'N/A'}
+                </div>
               </div>
               <div>
-                <div className="text-white/60">Swim Type</div>
-                <div className="text-white font-medium capitalize">{course.swim_type || 'Open Water'}</div>
+                <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                  SWIM TYPE
+                </div>
+                <div className="text-accent-yellow font-medium font-mono uppercase">
+                  {course.swim_type || 'OPEN WATER'}
+                </div>
               </div>
               <div>
-                <div className="text-white/60">Wetsuit Legal</div>
-                <div className="text-white font-medium">{course.wetsuit_legal === null ? 'Unknown' : course.wetsuit_legal ? 'Yes' : 'No'}</div>
+                <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                  WETSUIT LEGAL
+                </div>
+                <div className="text-accent-yellow font-medium font-mono">
+                  {course.wetsuit_legal === null ? 'UNKNOWN' : course.wetsuit_legal ? 'YES' : 'NO'}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Your Times Input (Optional) */}
-          <div className="bg-white/5 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-3">Your Recent Times (Optional)</h3>
-            <p className="text-white/60 text-sm mb-4">Enter your recent times for more accurate predictions</p>
+          <div
+            className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+            style={{ borderRadius: 0 }}
+          >
+            <h3 className="text-sm font-semibold text-text-primary mb-3 font-mono tracking-wider">
+              YOUR RECENT TIMES (OPTIONAL)
+            </h3>
+            <p className="text-text-secondary text-xs mb-4 font-mono">
+              ENTER YOUR RECENT TIMES FOR MORE ACCURATE PREDICTIONS
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div>
-                <label className="block text-white/70 text-sm mb-1">Swim (min)</label>
+                <label className="block text-text-secondary text-xs mb-1 font-mono tracking-wider uppercase">
+                  SWIM (MIN)
+                </label>
                 <input
                   type="number"
                   value={userTimes.swimTime}
                   onChange={(e) => setUserTimes({...userTimes, swimTime: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   placeholder="20"
                 />
               </div>
               <div>
-                <label className="block text-white/70 text-sm mb-1">Bike (min)</label>
+                <label className="block text-text-secondary text-xs mb-1 font-mono tracking-wider uppercase">
+                  BIKE (MIN)
+                </label>
                 <input
                   type="number"
                   value={userTimes.bikeTime}
                   onChange={(e) => setUserTimes({...userTimes, bikeTime: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   placeholder="70"
                 />
               </div>
               <div>
-                <label className="block text-white/70 text-sm mb-1">Run (min)</label>
+                <label className="block text-text-secondary text-xs mb-1 font-mono tracking-wider uppercase">
+                  RUN (MIN)
+                </label>
                 <input
                   type="number"
                   value={userTimes.runTime}
                   onChange={(e) => setUserTimes({...userTimes, runTime: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   placeholder="45"
                 />
               </div>
               <div>
-                <label className="block text-white/70 text-sm mb-1">T1 (min)</label>
+                <label className="block text-text-secondary text-xs mb-1 font-mono tracking-wider uppercase">
+                  T1 (MIN)
+                </label>
                 <input
                   type="number"
                   value={userTimes.t1Time}
                   onChange={(e) => setUserTimes({...userTimes, t1Time: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                 />
               </div>
               <div>
-                <label className="block text-white/70 text-sm mb-1">T2 (min)</label>
+                <label className="block text-text-secondary text-xs mb-1 font-mono tracking-wider uppercase">
+                  T2 (MIN)
+                </label>
                 <input
                   type="number"
                   value={userTimes.t2Time}
                   onChange={(e) => setUserTimes({...userTimes, t2Time: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                 />
               </div>
             </div>
@@ -155,46 +207,76 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
           <div className="flex justify-center mb-6">
             <button
               onClick={calculatePrediction}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+              className="bg-accent-yellow text-terminal-bg px-8 py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider"
+              style={{ borderRadius: 0 }}
             >
-              Calculate Prediction
+              CALCULATE PREDICTION
             </button>
           </div>
 
           {/* Prediction Results */}
           {prediction && (
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-6 mb-6 border border-blue-400/30">
-              <h3 className="text-xl font-bold text-white mb-4">Predicted Race Times</h3>
-              
+            <div
+              className="bg-terminal-panel border-2 border-accent-yellow p-6 mb-6"
+              style={{ borderRadius: 0 }}
+            >
+              <h3 className="text-lg font-bold text-accent-yellow mb-4 font-mono tracking-wider">
+                PREDICTED RACE TIMES
+              </h3>
+
               <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">{formatTime(prediction.swim)}</div>
-                  <div className="text-white/60 text-sm">Swim</div>
+                  <div className="text-2xl font-bold text-discipline-swim font-mono">
+                    {formatTime(prediction.swim)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    SWIM
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{formatTime(prediction.t1)}</div>
-                  <div className="text-white/60 text-sm">T1</div>
+                  <div className="text-2xl font-bold text-accent-yellow font-mono">
+                    {formatTime(prediction.t1)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    T1
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">{formatTime(prediction.bike)}</div>
-                  <div className="text-white/60 text-sm">Bike</div>
+                  <div className="text-2xl font-bold text-discipline-bike font-mono">
+                    {formatTime(prediction.bike)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    BIKE
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">{formatTime(prediction.t2)}</div>
-                  <div className="text-white/60 text-sm">T2</div>
+                  <div className="text-2xl font-bold text-accent-yellow font-mono">
+                    {formatTime(prediction.t2)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    T2
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">{formatTime(prediction.run)}</div>
-                  <div className="text-white/60 text-sm">Run</div>
+                  <div className="text-2xl font-bold text-discipline-run font-mono">
+                    {formatTime(prediction.run)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    RUN
+                  </div>
                 </div>
-                <div className="text-center border-l border-white/20 pl-4">
-                  <div className="text-3xl font-bold text-purple-400">{formatTime(prediction.total)}</div>
-                  <div className="text-white/60 text-sm">Total</div>
+                <div className="text-center border-l-2 border-terminal-border pl-4">
+                  <div className="text-3xl font-bold text-accent-yellow font-mono">
+                    {formatTime(prediction.total)}
+                  </div>
+                  <div className="text-text-secondary text-xs font-mono tracking-wider uppercase">
+                    TOTAL
+                  </div>
                 </div>
               </div>
-              
-              <div className="text-center text-white/70 text-sm">
-                * Prediction based on course difficulty, elevation, and conditions
+
+              <div className="text-center text-text-secondary text-xs font-mono">
+                * PREDICTION BASED ON COURSE DIFFICULTY, ELEVATION, AND CONDITIONS
               </div>
             </div>
           )}
@@ -203,17 +285,24 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
           <div className="flex justify-between">
             <button
               onClick={onClose}
-              className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+              style={{ borderRadius: 0 }}
             >
-              Close
+              CLOSE
             </button>
             {prediction && (
               <div className="flex gap-3">
-                <button className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 px-6 py-3 rounded-xl font-medium transition-colors">
-                  Save Prediction
+                <button
+                  className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-6 py-3 font-medium hover:bg-discipline-swim/10 transition-colors font-mono tracking-wider"
+                  style={{ borderRadius: 0 }}
+                >
+                  SAVE PREDICTION
                 </button>
-                <button className="bg-green-500/20 hover:bg-green-500/30 text-green-300 px-6 py-3 rounded-xl font-medium transition-colors">
-                  Create Training Plan
+                <button
+                  className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors font-mono tracking-wider"
+                  style={{ borderRadius: 0 }}
+                >
+                  CREATE TRAINING PLAN
                 </button>
               </div>
             )}

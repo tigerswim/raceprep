@@ -27,15 +27,9 @@ interface PersonalBests {
   ironman?: PersonalBest;
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const PersonalBestsWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('personalBests');
-
-  if (useTerminal) {
-    return <PersonalBestsWidgetTerminal />;
-  }
-
-  return <PersonalBestsWidgetLegacy />;
+  return <PersonalBestsWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)

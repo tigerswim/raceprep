@@ -1,39 +1,13 @@
 import { Tabs } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Platform } from "react-native";
-import { useTerminalModeToggle } from "../../src/hooks/useTerminalModeToggle";
-import { getTerminalModeState } from "../../src/utils/featureFlags";
 
 export default function TabLayout() {
-  // Terminal mode
-  useTerminalModeToggle();
-  const [useTerminal, setUseTerminal] = useState(() => {
-    const override = getTerminalModeState();
-    if (override !== false) return override;
-    return true; // Terminal mode is enabled in featureFlags.ts
-  });
-
-  // Listen for terminal mode changes
-  useEffect(() => {
-    const handleTerminalModeChange = () => {
-      setUseTerminal(getTerminalModeState());
-    };
-    if (typeof window !== "undefined") {
-      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
-      return () => {
-        window.removeEventListener(
-          "terminalModeChanged",
-          handleTerminalModeChange,
-        );
-      };
-    }
-  }, []);
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: useTerminal ? "#fbbf24" : "#3b82f6",
-        tabBarInactiveTintColor: useTerminal ? "#9ca3af" : "#64748b",
+        tabBarActiveTintColor: "#fbbf24",
+        tabBarInactiveTintColor: "#9ca3af",
         headerShown: false,
         sceneStyle:
           Platform.OS === "web"
@@ -45,9 +19,9 @@ export default function TabLayout() {
               }
             : undefined,
         tabBarStyle: {
-          backgroundColor: useTerminal ? "#1a1a1a" : "#1e293b",
-          borderTopColor: useTerminal ? "#333333" : "#334155",
-          borderTopWidth: useTerminal ? 2 : 1,
+          backgroundColor: "#1a1a1a",
+          borderTopColor: "#333333",
+          borderTopWidth: 2,
           position: Platform.OS === "web" ? ("fixed" as any) : "absolute",
           bottom: 0,
           left: 0,

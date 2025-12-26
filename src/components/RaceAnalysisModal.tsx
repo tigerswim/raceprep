@@ -14,6 +14,7 @@ interface RaceAnalysisModalProps {
 }
 
 export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, result, races }) => {
+
   if (!result) return null;
 
   const race = races.find(r => r.id === result.race_id);
@@ -213,41 +214,56 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className="bg-terminal-panel border-2 border-terminal-border max-w-4xl w-full max-h-[90vh] overflow-auto"
+        style={{ borderRadius: 0 }}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Race Performance Analysis</h2>
+            <h2 className="text-2xl font-bold text-text-primary font-mono tracking-wider">
+              RACE PERFORMANCE ANALYSIS
+            </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
             >
               ×
             </button>
           </div>
 
           {/* Race Info */}
-          <div className="bg-white/5 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-2">{race?.name || 'Unknown Race'}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div
+            className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+            style={{ borderRadius: 0 }}
+          >
+            <h3 className="text-lg font-semibold text-text-primary mb-2 font-mono tracking-wider">
+              {(race?.name || 'UNKNOWN RACE').toUpperCase()}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
               <div>
-                <span className="text-white/70">Date:</span>
-                <span className="text-white ml-2">{result.result_date}</span>
+                <span className="text-text-secondary">DATE:</span>
+                <span className="text-text-primary ml-2">{result.result_date}</span>
               </div>
               <div>
-                <span className="text-white/70">Distance:</span>
-                <span className="text-white ml-2 capitalize">{race?.distance_type || 'Unknown'}</span>
+                <span className="text-text-secondary">DISTANCE:</span>
+                <span className="text-text-primary ml-2 uppercase">{race?.distance_type || 'UNKNOWN'}</span>
               </div>
               <div>
-                <span className="text-white/70">Total Time:</span>
-                <span className="text-white ml-2 font-mono">{formatTime(result.overall_time)}</span>
+                <span className="text-text-secondary">TOTAL TIME:</span>
+                <span className="text-accent-yellow ml-2 font-mono">{formatTime(result.overall_time)}</span>
               </div>
             </div>
           </div>
 
           {/* Race Timeline Visualization */}
           {splitPercentages && (
-            <div className="bg-white/5 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Race Timeline</h3>
+            <div
+              className="bg-terminal-panel border-2 border-terminal-border p-6 mb-6"
+              style={{ borderRadius: 0 }}
+            >
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                RACE TIMELINE
+              </h3>
               <div className="relative w-full h-16 bg-white/10 rounded-xl overflow-hidden flex">
                 <div
                   className="bg-blue-500 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
@@ -297,7 +313,9 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
 
           {/* Combined Split Times & Distribution */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Split Times & Distribution</h3>
+            <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+              SPLIT TIMES & DISTRIBUTION
+            </h3>
             {splitPercentages && (
               <div className="space-y-3">
                 <div className="bg-blue-500/10 rounded-lg p-4">
@@ -424,8 +442,13 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
           </div>
 
           {/* Performance Insights */}
-          <div className="bg-white/5 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2"><TbChartBar className="w-5 h-5" /> Performance Insights</h3>
+          <div
+            className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+            style={{ borderRadius: 0 }}
+          >
+            <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2 font-mono tracking-wider">
+              PERFORMANCE INSIGHTS
+            </h3>
             <div className="space-y-3">
               {insights.map((insight, index) => (
                 <div key={index} className="bg-white/5 rounded-lg p-3">
@@ -437,9 +460,12 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
 
           {/* Age Group Comparison */}
           {ageGroupComparison && (
-            <div className="bg-white/5 rounded-xl p-4 mb-6">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <TbTrophy className="w-5 h-5" /> Age Group Comparison
+            <div
+              className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+              style={{ borderRadius: 0 }}
+            >
+              <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2 font-mono tracking-wider">
+                AGE GROUP COMPARISON
               </h3>
               <p className="text-white/60 text-sm mb-4">
                 Compare your performance to age group averages for {race?.distance_type} distance
@@ -575,8 +601,13 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
 
           {/* Placements */}
           {(result.overall_placement || result.age_group_placement) && (
-            <div className="bg-white/5 rounded-xl p-4 mb-6">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2"><TbTrophy className="w-5 h-5" /> Race Results</h3>
+            <div
+              className="bg-terminal-panel border-2 border-terminal-border p-4 mb-6"
+              style={{ borderRadius: 0 }}
+            >
+              <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2 font-mono tracking-wider">
+                RACE RESULTS
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {result.overall_placement && (
                   <div className="bg-yellow-500/10 rounded-lg p-4 text-center">
@@ -597,9 +628,10 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+              className="bg-terminal-panel text-text-primary border-2 border-accent-yellow px-6 py-3 font-medium hover:bg-accent-yellow/10 transition-colors font-mono tracking-wider"
+              style={{ borderRadius: 0 }}
             >
-              Close Analysis
+              CLOSE ANALYSIS
             </button>
           </div>
         </div>

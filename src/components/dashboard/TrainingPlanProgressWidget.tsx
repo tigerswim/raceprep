@@ -14,15 +14,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTerminalDesign } from '../../utils/featureFlags';
 import { TrainingPlanProgressWidgetTerminal } from './TrainingPlanProgressWidget.terminal';
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const TrainingPlanProgressWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('trainingPlan');
-
-  if (useTerminal) {
-    return <TrainingPlanProgressWidgetTerminal />;
-  }
-
-  return <TrainingPlanProgressWidgetLegacy />;
+  return <TrainingPlanProgressWidgetTerminal />;
 };
 
 // Legacy implementation

@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import { trainingPlanService } from '../../services/trainingPlanService';
 import type { WorkoutWithCompletion } from '../../types/trainingPlans';
@@ -123,19 +124,19 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
   const getDisciplineColor = (discipline: string): string => {
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return '#007AFF';
+        return '#06b6d4'; // discipline-swim
       case 'bike':
-        return '#FF9500';
+        return '#fb923c'; // discipline-bike
       case 'run':
-        return '#34C759';
+        return '#4ade80'; // discipline-run
       case 'brick':
-        return '#AF52DE';
+        return '#fbbf24'; // accent-yellow
       case 'strength':
-        return '#FF3B30';
+        return '#f87171'; // red
       case 'rest':
-        return '#8E8E93';
+        return '#6b7f86'; // text-secondary
       default:
-        return '#8E8E93';
+        return '#6b7f86';
     }
   };
 
@@ -302,27 +303,42 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
       transparent={true}
       onRequestClose={handleClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <View style={terminalStyles.modalOverlay}>
+        <View style={terminalStyles.modalContent}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Header */}
-            <View style={[styles.header, { backgroundColor: disciplineColor }]}>
-              <Text style={styles.headerTitle}>{workout.discipline.toUpperCase()}</Text>
-              <Text style={styles.headerSubtitle}>{workout.workout_type}</Text>
+            <View style={[
+              terminalStyles.header,
+              { borderColor: disciplineColor, borderWidth: 2, borderTopWidth: 0, borderLeftWidth: 0, borderRightWidth: 0 }
+            ]}>
+              <Text style={terminalStyles.headerTitle}>
+                {workout.discipline.toUpperCase()}
+              </Text>
+              <Text style={terminalStyles.headerSubtitle}>
+                {workout.workout_type.toUpperCase()}
+              </Text>
             </View>
 
             {/* Quick Stats */}
-            <View style={styles.quickStats}>
+            <View style={terminalStyles.quickStats}>
               {workout.duration_minutes && (
-                <View style={styles.quickStat}>
-                  <Text style={styles.quickStatValue}>{workout.duration_minutes}</Text>
-                  <Text style={styles.quickStatLabel}>minutes</Text>
+                <View style={terminalStyles.quickStat}>
+                  <Text style={terminalStyles.quickStatValue}>
+                    {workout.duration_minutes}
+                  </Text>
+                  <Text style={terminalStyles.quickStatLabel}>
+                    MINUTES
+                  </Text>
                 </View>
               )}
               {workout.distance_miles && (
-                <View style={styles.quickStat}>
-                  <Text style={styles.quickStatValue}>{workout.distance_miles}</Text>
-                  <Text style={styles.quickStatLabel}>miles</Text>
+                <View style={terminalStyles.quickStat}>
+                  <Text style={terminalStyles.quickStatValue}>
+                    {workout.distance_miles}
+                  </Text>
+                  <Text style={terminalStyles.quickStatLabel}>
+                    MILES
+                  </Text>
                 </View>
               )}
             </View>
@@ -424,8 +440,10 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
           )}
 
           {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
+          <TouchableOpacity style={terminalStyles.closeButton} onPress={handleClose}>
+            <Text style={terminalStyles.closeButtonText}>
+              CLOSE
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -675,5 +693,281 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3B82F6',
     fontWeight: '600',
+  },
+});
+
+const terminalStyles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(10, 14, 15, 0.98)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    backgroundColor: '#0d1418',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    maxHeight: '90%',
+  },
+  header: {
+    padding: 24,
+    backgroundColor: '#0d1418',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#e0e0e0',
+    marginBottom: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 2,
+  },
+  headerSubtitle: {
+    fontSize: 18,
+    color: '#6b7f86',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  quickStats: {
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 20,
+    backgroundColor: '#0a0e0f',
+  },
+  quickStat: {
+    alignItems: 'center',
+  },
+  quickStatValue: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#fbbf24',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  quickStatLabel: {
+    fontSize: 12,
+    color: '#6b7f86',
+    marginTop: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  section: {
+    padding: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: '#1a2e35',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#e0e0e0',
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  sectionText: {
+    fontSize: 14,
+    color: '#6b7f86',
+    lineHeight: 22,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  structureBlock: {
+    marginBottom: 16,
+  },
+  structureTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#06b6d4',
+    marginBottom: 6,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  structureDescription: {
+    fontSize: 13,
+    color: '#6b7f86',
+    lineHeight: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  goalItem: {
+    fontSize: 13,
+    color: '#6b7f86',
+    marginBottom: 8,
+    lineHeight: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  completionSection: {
+    backgroundColor: '#0a0e0f',
+    borderColor: '#4ade80',
+    borderWidth: 2,
+  },
+  skippedSection: {
+    backgroundColor: '#0a0e0f',
+    borderColor: '#f87171',
+    borderWidth: 2,
+  },
+  completionText: {
+    fontSize: 13,
+    color: '#6b7f86',
+    marginBottom: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  formContainer: {
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    padding: 20,
+    backgroundColor: '#0a0e0f',
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#e0e0e0',
+    marginBottom: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 2,
+  },
+  formField: {
+    marginBottom: 16,
+  },
+  formLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#e0e0e0',
+    marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  formInput: {
+    borderColor: '#1a2e35',
+    color: '#e0e0e0',
+    backgroundColor: '#0d1418',
+    borderRadius: 0,
+    padding: 12,
+    fontSize: 14,
+    borderWidth: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  formInputMultiline: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  effortButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  effortButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 0,
+    backgroundColor: '#0d1418',
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  effortButtonActive: {
+    backgroundColor: '#0a0e0f',
+    borderColor: '#fbbf24',
+  },
+  effortButtonText: {
+    fontSize: 14,
+    color: '#e0e0e0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  effortButtonTextActive: {
+    color: '#fbbf24',
+    fontWeight: 'bold',
+  },
+  formActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20,
+  },
+  formCancelButton: {
+    backgroundColor: '#0d1418',
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    alignItems: 'center',
+  },
+  formCancelButtonText: {
+    fontSize: 14,
+    color: '#6b7f86',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  formSubmitButton: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: 0,
+    backgroundColor: '#0d1418',
+    borderWidth: 2,
+    borderColor: '#4ade80',
+    alignItems: 'center',
+  },
+  formSubmitButtonSkip: {
+    borderColor: '#f87171',
+  },
+  formSubmitButtonDisabled: {
+    opacity: 0.5,
+  },
+  formSubmitButtonText: {
+    fontSize: 14,
+    color: '#4ade80',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  actions: {
+    borderWidth: 2,
+    borderColor: '#1a2e35',
+    flexDirection: 'row',
+    gap: 12,
+    padding: 20,
+    borderTopWidth: 2,
+    borderTopColor: '#1a2e35',
+    backgroundColor: '#0d1418',
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 0,
+    alignItems: 'center',
+  },
+  skipButton: {
+    borderColor: '#1a2e35',
+    backgroundColor: '#0d1418',
+    borderWidth: 2,
+  },
+  completeButton: {
+    backgroundColor: '#0d1418',
+    borderWidth: 2,
+    borderColor: '#4ade80',
+  },
+  actionButtonText: {
+    fontSize: 14,
+    color: '#6b7f86',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
+  },
+  completeButtonText: {
+    color: '#4ade80',
+  },
+  closeButton: {
+    padding: 20,
+    alignItems: 'center',
+    backgroundColor: '#0d1418',
+  },
+  closeButtonText: {
+    fontSize: 14,
+    color: '#fbbf24',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 1,
   },
 });

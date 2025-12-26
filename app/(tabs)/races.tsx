@@ -18,8 +18,6 @@ import {
   TbClock,
   TbSearch,
 } from "react-icons/tb";
-import { useTerminalModeToggle } from "../../src/hooks/useTerminalModeToggle";
-import { getTerminalModeState } from "../../src/utils/featureFlags";
 
 // Icon component mapping
 const iconComponents = {
@@ -236,33 +234,6 @@ const determineRaceDistance = (race: any): string => {
 
 function RacesScreenContent() {
   const { user } = useAuth();
-
-  // Terminal mode
-  useTerminalModeToggle();
-  // Check if terminal design is enabled (either via flags or keyboard toggle)
-  const [useTerminal, setUseTerminal] = useState(() => {
-    const override = getTerminalModeState();
-    if (override !== false) return override;
-    // Fallback to checking feature flags directly
-    return true; // Terminal mode is enabled in featureFlags.ts
-  });
-
-  // Listen for terminal mode changes
-  useEffect(() => {
-    const handleTerminalModeChange = () => {
-      setUseTerminal(getTerminalModeState());
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
-      return () => {
-        window.removeEventListener(
-          "terminalModeChanged",
-          handleTerminalModeChange,
-        );
-      };
-    }
-  }, []);
 
   // State management
   const [activeSection, setActiveSection] = useState<
@@ -1430,62 +1401,30 @@ function RacesScreenContent() {
   const renderRaceCard = (race: any, showSaveButton: boolean = true) => (
     <div
       key={`${race.id}-${race.status}-${race._lastUpdated}-${renderKey}`}
-      className={
-        useTerminal
-          ? "bg-terminal-panel border-2 border-terminal-border p-4 sm:p-6 hover:border-accent-yellow transition-colors w-full max-w-full overflow-hidden"
-          : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-6 shadow-xl hover:bg-white/10 transition-all duration-300 w-full max-w-full overflow-hidden"
-      }
-      style={useTerminal ? { borderRadius: 0 } : undefined}
+      className="bg-terminal-panel border-2 border-terminal-border p-4 sm:p-6 hover:border-accent-yellow transition-colors w-full max-w-full overflow-hidden"
+      style={{ borderRadius: 0 }}
     >
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-3">
         <div className="flex-1 min-w-0">
-          <h3
-            className={
-              useTerminal
-                ? "text-lg sm:text-xl font-bold text-text-primary mb-1 truncate font-mono tracking-wider uppercase"
-                : "text-lg sm:text-xl font-bold text-white mb-1 truncate"
-            }
-          >
+          <h3 className="text-lg sm:text-xl font-bold text-text-primary mb-1 truncate font-mono tracking-wider uppercase">
             {race.name}
           </h3>
-          <p
-            className={
-              useTerminal
-                ? "text-accent-yellow font-medium font-mono"
-                : "text-blue-400 font-medium"
-            }
-          >
+          <p className="text-accent-yellow font-medium font-mono">
             {new Date(race.date).toLocaleDateString()}
           </p>
-          <p
-            className={
-              useTerminal
-                ? "text-text-secondary text-sm break-words font-mono"
-                : "text-white/70 text-sm break-words"
-            }
-          >
+          <p className="text-text-secondary text-sm break-words font-mono">
             {race.location}
           </p>
           {race.source && (
-            <p
-              className={
-                useTerminal
-                  ? "text-text-secondary text-xs mt-1 font-mono uppercase"
-                  : "text-white/50 text-xs mt-1"
-              }
-            >
+            <p className="text-text-secondary text-xs mt-1 font-mono uppercase">
               Source: {race.source}
             </p>
           )}
         </div>
         <div className="flex sm:flex-col items-start sm:items-end gap-2">
           <span
-            className={
-              useTerminal
-                ? "bg-accent-yellow text-terminal-bg px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold uppercase whitespace-nowrap font-mono"
-                : "bg-orange-500/20 text-orange-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium capitalize whitespace-nowrap"
-            }
-            style={useTerminal ? { borderRadius: 0 } : undefined}
+            className="bg-accent-yellow text-terminal-bg px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold uppercase whitespace-nowrap font-mono"
+            style={{ borderRadius: 0 }}
           >
             {race.distance_type}
           </span>
@@ -1499,34 +1438,18 @@ function RacesScreenContent() {
                     e.target.value as "interested" | "registered" | "completed",
                   )
                 }
-                className={
-                  useTerminal
-                    ? `px-3 py-1 text-xs sm:text-sm font-bold font-mono uppercase border-2 cursor-pointer ${
-                        race.status === "registered"
-                          ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
-                          : race.status === "completed"
-                            ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
-                            : "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
-                      }`
-                    : `px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-transparent border-0 outline-none cursor-pointer ${
-                        race.status === "registered"
-                          ? "bg-green-500/20 text-green-300"
-                          : race.status === "completed"
-                            ? "bg-blue-500/20 text-blue-300"
-                            : "bg-yellow-500/20 text-yellow-300"
-                      }`
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className={`px-3 py-1 text-xs sm:text-sm font-bold font-mono uppercase border-2 cursor-pointer ${
+                  race.status === "registered"
+                    ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4]"
+                    : race.status === "completed"
+                      ? "bg-[#00D4FF]/20 text-[#00D4FF] border-[#00D4FF]"
+                      : "bg-accent-yellow/20 text-accent-yellow border-accent-yellow"
+                }`}
+                style={{ borderRadius: 0 }}
               >
-                <option value="interested">
-                  {useTerminal ? "INTERESTED" : "Interested"}
-                </option>
-                <option value="registered">
-                  {useTerminal ? "REGISTERED" : "Registered"}
-                </option>
-                <option value="completed">
-                  {useTerminal ? "COMPLETE" : "Complete"}
-                </option>
+                <option value="interested">INTERESTED</option>
+                <option value="registered">REGISTERED</option>
+                <option value="completed">COMPLETE</option>
               </select>
             </div>
           )}
@@ -1534,13 +1457,7 @@ function RacesScreenContent() {
       </div>
 
       {race.description && (
-        <p
-          className={
-            useTerminal
-              ? "text-text-secondary mb-4 text-sm line-clamp-2 break-words font-mono"
-              : "text-white/70 mb-4 text-sm line-clamp-2 break-words"
-          }
-        >
+        <p className="text-text-secondary mb-4 text-sm line-clamp-2 break-words font-mono">
           {race.description}
         </p>
       )}
@@ -1571,20 +1488,12 @@ function RacesScreenContent() {
           {showSaveButton && user && (
             <>
               <button
-                className={
-                  useTerminal
-                    ? `py-2 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1 border-2 ${
-                        savedRaces.includes(race.id)
-                          ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4] hover:bg-[#4ECDC4]/30"
-                          : "bg-accent-yellow text-terminal-bg border-accent-yellow hover:bg-accent-yellow/90"
-                      }`
-                    : `py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1 ${
-                        savedRaces.includes(race.id)
-                          ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                          : "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
-                      }`
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className={`py-2 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1 border-2 ${
+                  savedRaces.includes(race.id)
+                    ? "bg-[#4ECDC4]/20 text-[#4ECDC4] border-[#4ECDC4] hover:bg-[#4ECDC4]/30"
+                    : "bg-accent-yellow text-terminal-bg border-accent-yellow hover:bg-accent-yellow/90"
+                }`}
+                style={{ borderRadius: 0 }}
                 onClick={() =>
                   savedRaces.includes(race.id)
                     ? unsaveRace(race.id)
@@ -1595,46 +1504,30 @@ function RacesScreenContent() {
                 {savingRaces.includes(race.id) ? (
                   <span className="flex items-center justify-center gap-1">
                     <div
-                      className={
-                        useTerminal
-                          ? "w-3 h-3 border-2 border-current border-t-transparent animate-spin"
-                          : "w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-3 h-3 border-2 border-current border-t-transparent animate-spin"
+                      style={{ borderRadius: 0 }}
                     ></div>
-                    {savedRaces.includes(race.id)
-                      ? useTerminal
-                        ? "REMOVING..."
-                        : "Removing..."
-                      : useTerminal
-                        ? "SAVING..."
-                        : "Saving..."}
+                    {savedRaces.includes(race.id) ? "REMOVING..." : "SAVING..."}
                   </span>
                 ) : savedRaces.includes(race.id) ? (
                   <span className="flex items-center justify-center gap-1">
-                    <TbTrash className="w-4 h-4" />{" "}
-                    {useTerminal ? "REMOVE" : "Remove"}
+                    <TbTrash className="w-4 h-4" /> REMOVE
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-1">
-                    <TbStar className="w-4 h-4" />{" "}
-                    {useTerminal ? "SAVE" : "Save"}
+                    <TbStar className="w-4 h-4" /> SAVE
                   </span>
                 )}
               </button>
               <button
-                className={
-                  useTerminal
-                    ? "py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
-                    : "py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                style={{ borderRadius: 0 }}
                 onClick={() =>
                   race.registration_url &&
                   window.open(race.registration_url, "_blank")
                 }
               >
-                {useTerminal ? "REGISTER" : "Register"}
+                REGISTER
               </button>
               <div className="col-span-1"></div>
             </>
@@ -1644,12 +1537,8 @@ function RacesScreenContent() {
             <>
               {/* Update Race Details button */}
               <button
-                className={
-                  useTerminal
-                    ? "py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
-                    : "py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                style={{ borderRadius: 0 }}
                 onClick={() => openUpdateModal(race)}
               >
                 <span className="flex items-center justify-center gap-1">
@@ -1666,18 +1555,14 @@ function RacesScreenContent() {
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                     />
                   </svg>
-                  {useTerminal ? "UPDATE" : "Update"}
+                  UPDATE
                 </span>
               </button>
 
               {/* Planning button for saved races */}
               <button
-                className={
-                  useTerminal
-                    ? "py-2 bg-[#FF6B35]/20 text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FF6B35]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
-                    : "py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="py-2 bg-[#FF6B35]/20 text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FF6B35]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                style={{ borderRadius: 0 }}
                 onClick={() => {
                   // Store the race data in localStorage for the Planning tab to access
                   localStorage.setItem(
@@ -1689,38 +1574,28 @@ function RacesScreenContent() {
                 }}
               >
                 <span className="flex items-center justify-center gap-1">
-                  <TbClipboard className="w-4 h-4" />{" "}
-                  {useTerminal ? "PLAN RACE" : "Plan Race"}
+                  <TbClipboard className="w-4 h-4" /> PLAN RACE
                 </span>
               </button>
 
               {/* Remove button for saved races */}
               <button
-                className={
-                  useTerminal
-                    ? "py-2 bg-red-500/20 text-red-400 border-2 border-red-400 hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
-                    : "py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-1"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="py-2 bg-red-500/20 text-red-400 border-2 border-red-400 hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                style={{ borderRadius: 0 }}
                 onClick={() => unsaveRace(race.externalRaceId || race.id)}
                 disabled={savingRaces.includes(race.externalRaceId || race.id)}
               >
                 {savingRaces.includes(race.externalRaceId || race.id) ? (
                   <span className="flex items-center justify-center gap-1">
                     <div
-                      className={
-                        useTerminal
-                          ? "w-3 h-3 border-2 border-current border-t-transparent animate-spin"
-                          : "w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-3 h-3 border-2 border-current border-t-transparent animate-spin"
+                      style={{ borderRadius: 0 }}
                     ></div>
-                    {useTerminal ? "REMOVING..." : "Removing..."}
+                    REMOVING...
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-1">
-                    <TbTrash className="w-4 h-4" />{" "}
-                    {useTerminal ? "REMOVE" : "Remove"}
+                    <TbTrash className="w-4 h-4" /> REMOVE
                   </span>
                 )}
               </button>
@@ -1734,88 +1609,51 @@ function RacesScreenContent() {
   return (
     <Provider store={store}>
       <div
-        className={
-          useTerminal
-            ? "bg-terminal-bg relative overflow-auto"
-            : "bg-slate-900 relative overflow-auto"
-        }
+        className="bg-terminal-bg relative overflow-auto"
         style={{ minHeight: "100vh", minHeight: "100dvh" }}
       >
-        {/* Background Effects - Hide in terminal mode */}
-        {!useTerminal && (
-          <div className="fixed inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>
-            <div className="absolute top-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          </div>
-        )}
 
         <div className="relative z-10 p-6 pb-24 w-full max-w-full overflow-hidden">
           {/* Header - Terminal Mode */}
-          {useTerminal && (
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 border-b-2 border-terminal-border pb-4">
-              <div className="mb-4 sm:mb-0">
-                <h1 className="text-3xl font-bold text-text-primary font-mono tracking-wider mb-2">
-                  MY RACES
-                </h1>
-                <p className="text-sm text-text-secondary font-mono uppercase tracking-wide">
-                  DISCOVER, SAVE, AND MANAGE YOUR TRIATHLON RACES
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="SEARCH RACES..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow uppercase"
-                  style={{ borderRadius: 0 }}
-                />
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 border-b-2 border-terminal-border pb-4">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-3xl font-bold text-text-primary font-mono tracking-wider mb-2">
+                MY RACES
+              </h1>
+              <p className="text-sm text-text-secondary font-mono uppercase tracking-wide">
+                DISCOVER, SAVE, AND MANAGE YOUR TRIATHLON RACES
+              </p>
             </div>
-          )}
-
-          {/* Header - Legacy Mode */}
-          {!useTerminal && (
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-              <div className="mb-4 sm:mb-0">
-                <h1 className="text-3xl font-bold text-white mb-2">My Races</h1>
-                <p className="text-lg text-white/70">
-                  Discover, save, and manage your triathlon races
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Search races..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="SEARCH RACES..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary font-mono placeholder-text-secondary focus:outline-none focus:border-accent-yellow uppercase"
+                style={{ borderRadius: 0 }}
+              />
             </div>
-          )}
+          </div>
 
           {/* Section Navigation */}
           <div className="flex flex-wrap gap-2 mb-6">
             {[
               {
                 id: "upcoming",
-                label: useTerminal ? "UPCOMING RACES" : "Upcoming Races",
+                label: "UPCOMING RACES",
                 icon: "TbFlag",
                 count: getUpcomingRaces().length,
               },
               {
                 id: "past",
-                label: useTerminal ? "PAST RACES" : "Past Races",
+                label: "PAST RACES",
                 icon: "TbTrophy",
                 count: getPastRaces().length,
               },
               {
                 id: "discover",
-                label: useTerminal
-                  ? "DISCOVER NEW RACES"
-                  : "Discover New Races",
+                label: "DISCOVER NEW RACES",
                 icon: "TbSearch",
                 count: getFilteredDiscoveredRaces().length,
               },
@@ -1823,31 +1661,19 @@ function RacesScreenContent() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id as any)}
-                className={
-                  useTerminal
-                    ? `px-4 py-3 font-medium transition-colors flex items-center gap-2 font-mono text-sm ${
-                        activeSection === section.id
-                          ? "bg-terminal-panel text-accent-yellow border-2 border-accent-yellow"
-                          : "bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary"
-                      }`
-                    : `px-4 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
-                        activeSection === section.id
-                          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/30"
-                          : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                      }`
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className={`px-4 py-3 font-medium transition-colors flex items-center gap-2 font-mono text-sm ${
+                  activeSection === section.id
+                    ? "bg-terminal-panel text-accent-yellow border-2 border-accent-yellow"
+                    : "bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary"
+                }`}
+                style={{ borderRadius: 0 }}
               >
                 {renderIcon(section.icon, "w-5 h-5")}
                 {section.label}
                 {section.count > 0 && (
                   <span
-                    className={
-                      useTerminal
-                        ? "bg-accent-yellow text-terminal-bg text-xs px-2 py-1 font-mono font-bold"
-                        : "bg-white/20 text-white text-xs px-2 py-1 rounded-full"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="bg-accent-yellow text-terminal-bg text-xs px-2 py-1 font-mono font-bold"
+                    style={{ borderRadius: 0 }}
                   >
                     {section.count}
                   </span>
@@ -1859,20 +1685,10 @@ function RacesScreenContent() {
           {/* Discovery Search Controls */}
           {activeSection === "discover" && (
             <div
-              className={
-                useTerminal
-                  ? "bg-terminal-panel border-2 border-terminal-border p-6 mb-8"
-                  : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 mb-8 shadow-xl"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="bg-terminal-panel border-2 border-terminal-border p-6 mb-8"
+              style={{ borderRadius: 0 }}
             >
-              <h3
-                className={
-                  useTerminal
-                    ? "text-lg font-bold text-text-primary font-mono tracking-wider mb-4 flex items-center gap-2"
-                    : "text-lg font-bold text-white mb-4 flex items-center gap-2"
-                }
-              >
+              <h3 className="text-lg font-bold text-text-primary font-mono tracking-wider mb-4 flex items-center gap-2">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -1886,105 +1702,57 @@ function RacesScreenContent() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                {useTerminal ? "RACE DISCOVERY" : "Race Discovery"}
+                RACE DISCOVERY
               </h3>
 
               <div className="grid md:grid-cols-4 gap-4 mb-4">
                 <div className="md:col-span-2">
-                  <label
-                    className={
-                      useTerminal
-                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
-                        : "block text-white/70 text-sm font-medium mb-2"
-                    }
-                  >
-                    {useTerminal ? "LOCATION" : "Location"}
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    LOCATION
                   </label>
                   <input
                     type="text"
                     value={locationQuery}
                     onChange={(e) => setLocationQuery(e.target.value)}
-                    placeholder={
-                      useTerminal
-                        ? "CITY, STATE, OR ZIP CODE"
-                        : "City, State, or Zip Code"
-                    }
-                    className={
-                      useTerminal
-                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
-                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    placeholder="CITY, STATE, OR ZIP CODE"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                   />
                 </div>
 
                 <div>
-                  <label
-                    className={
-                      useTerminal
-                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
-                        : "block text-white/70 text-sm font-medium mb-2"
-                    }
-                  >
-                    {useTerminal ? "SEARCH RADIUS" : "Search Radius"}
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    SEARCH RADIUS
                   </label>
                   <select
                     value={searchRadius}
                     onChange={(e) => setSearchRadius(e.target.value)}
-                    className={
-                      useTerminal
-                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
-                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                   >
-                    <option value="all">
-                      {useTerminal ? "NATIONWIDE" : "Nationwide"}
-                    </option>
-                    <option value="25">25 {useTerminal ? "MI" : "miles"}</option>
-                    <option value="50">50 {useTerminal ? "MI" : "miles"}</option>
-                    <option value="100">
-                      100 {useTerminal ? "MI" : "miles"}
-                    </option>
-                    <option value="250">
-                      250 {useTerminal ? "MI" : "miles"}
-                    </option>
+                    <option value="all">NATIONWIDE</option>
+                    <option value="25">25 MI</option>
+                    <option value="50">50 MI</option>
+                    <option value="100">100 MI</option>
+                    <option value="250">250 MI</option>
                   </select>
                 </div>
 
                 <div>
-                  <label
-                    className={
-                      useTerminal
-                        ? "block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase"
-                        : "block text-white/70 text-sm font-medium mb-2"
-                    }
-                  >
-                    {useTerminal ? "DISTANCE FILTER" : "Distance Filter"}
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    DISTANCE FILTER
                   </label>
                   <select
                     value={raceDistance}
                     onChange={(e) => setRaceDistance(e.target.value)}
-                    className={
-                      useTerminal
-                        ? "w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
-                        : "w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    }
-                    style={useTerminal ? { borderRadius: 0 } : undefined}
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-2 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                   >
-                    <option value="all">
-                      {useTerminal ? "ALL DISTANCES" : "All Distances"}
-                    </option>
-                    <option value="sprint">
-                      {useTerminal ? "SPRINT" : "Sprint"}
-                    </option>
-                    <option value="olympic">
-                      {useTerminal ? "OLYMPIC" : "Olympic"}
-                    </option>
+                    <option value="all">ALL DISTANCES</option>
+                    <option value="sprint">SPRINT</option>
+                    <option value="olympic">OLYMPIC</option>
                     <option value="70.3">70.3</option>
-                    <option value="ironman">
-                      {useTerminal ? "IRONMAN" : "Ironman"}
-                    </option>
+                    <option value="ironman">IRONMAN</option>
                   </select>
                 </div>
               </div>
@@ -1992,24 +1760,16 @@ function RacesScreenContent() {
               <button
                 onClick={discoverRaces}
                 disabled={isSyncing}
-                className={
-                  useTerminal
-                    ? "bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors flex items-center gap-2 font-mono text-xs font-bold tracking-wider disabled:opacity-50"
-                    : "bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors flex items-center gap-2 font-mono text-xs font-bold tracking-wider disabled:opacity-50"
+                style={{ borderRadius: 0 }}
               >
                 {isSyncing ? (
                   <>
                     <div
-                      className={
-                        useTerminal
-                          ? "w-4 h-4 border-2 border-current border-t-transparent animate-spin"
-                          : "w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                      }
-                      style={useTerminal ? { borderRadius: 0 } : undefined}
+                      className="w-4 h-4 border-2 border-current border-t-transparent animate-spin"
+                      style={{ borderRadius: 0 }}
                     ></div>
-                    {useTerminal ? "DISCOVERING RACES..." : "Discovering Races..."}
+                    DISCOVERING RACES...
                   </>
                 ) : (
                   <>
@@ -2026,7 +1786,7 @@ function RacesScreenContent() {
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                       />
                     </svg>
-                    {useTerminal ? "DISCOVER RACES" : "Discover Races"}
+                    DISCOVER RACES
                   </>
                 )}
               </button>
@@ -2052,7 +1812,7 @@ function RacesScreenContent() {
                       )}
                       {/* Add Create Race button at the end */}
                       <div className="col-span-full mt-6">
-                        <UserRaceManagement useTerminal={useTerminal} onRaceUpdate={handleRaceUpdate} />
+                        <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
                       </div>
                     </>
                   ) : (
@@ -2068,7 +1828,7 @@ function RacesScreenContent() {
                           Discover Races
                         </button>
                         <div className="sm:w-auto">
-                          <UserRaceManagement useTerminal={useTerminal} onRaceUpdate={handleRaceUpdate} />
+                          <UserRaceManagement onRaceUpdate={handleRaceUpdate} />
                         </div>
                       </div>
                     </div>

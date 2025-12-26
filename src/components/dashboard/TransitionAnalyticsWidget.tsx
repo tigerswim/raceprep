@@ -26,15 +26,9 @@ interface TransitionStats {
   recentRaces: TransitionData[];
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const TransitionAnalyticsWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('transitions');
-
-  if (useTerminal) {
-    return <TransitionAnalyticsWidgetTerminal />;
-  }
-
-  return <TransitionAnalyticsWidgetLegacy />;
+  return <TransitionAnalyticsWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)

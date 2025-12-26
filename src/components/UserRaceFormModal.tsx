@@ -19,6 +19,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [userSettings, setUserSettings] = useState<any>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     date: '',
@@ -270,15 +271,18 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-auto">
+      <div
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        style={{ borderRadius: 0 }}
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">
-              {mode === 'create' ? 'Create New Race' : 'Edit Race'}
+            <h2 className="text-xl font-bold text-text-primary font-mono tracking-wider">
+              {mode === 'create' ? 'CREATE NEW RACE' : 'EDIT RACE'}
             </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white text-2xl"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
             >
               ×
             </button>
@@ -287,87 +291,98 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Race Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Race Information</h3>
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                RACE INFORMATION
+              </h3>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Race Name *
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  RACE NAME *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Atlanta Sprint Triathlon 2025"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
+                  placeholder="E.G., ATLANTA SPRINT TRIATHLON 2025"
                   required
                 />
-                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-400 text-xs mt-1 font-mono">{errors.name}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Race Date *
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    RACE DATE *
                   </label>
                   <input
                     type="date"
                     value={formData.date}
                     onChange={(e) => handleInputChange('date', e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
                     required
                   />
-                  {errors.date && <p className="text-red-400 text-sm mt-1">{errors.date}</p>}
+                  {errors.date && <p className="text-red-400 text-xs mt-1 font-mono">{errors.date}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Location *
+                  <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                    LOCATION *
                   </label>
                   <input
                     type="text"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Atlanta, GA"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    style={{ borderRadius: 0 }}
+                    placeholder="E.G., ATLANTA, GA"
                     required
                   />
-                  {errors.location && <p className="text-red-400 text-sm mt-1">{errors.location}</p>}
+                  {errors.location && <p className="text-red-400 text-xs mt-1 font-mono">{errors.location}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Distance Type *
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  DISTANCE TYPE *
                 </label>
                 <select
                   value={formData.distance_type}
                   onChange={(e) => handleDistanceTypeChange(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
                   required
                 >
-                  <option value="sprint">Sprint</option>
-                  <option value="olympic">Olympic</option>
-                  <option value="half">Half Ironman (70.3)</option>
-                  <option value="ironman">Ironman</option>
-                  <option value="custom">Custom</option>
+                  <option value="sprint">SPRINT</option>
+                  <option value="olympic">OLYMPIC</option>
+                  <option value="half">HALF IRONMAN (70.3)</option>
+                  <option value="ironman">IRONMAN</option>
+                  <option value="custom">CUSTOM</option>
                 </select>
               </div>
             </div>
 
             {/* Distance Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Distance Details</h3>
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                DISTANCE DETAILS
+              </h3>
 
               {formData.distance_type === 'custom' && (
-                <p className="text-orange-400 text-sm mb-4">
-                  Please specify custom distances for your race
+                <p className="text-accent-yellow text-xs mb-4 font-mono">
+                  PLEASE SPECIFY CUSTOM DISTANCES FOR YOUR RACE
                 </p>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-500/10 rounded-xl p-4">
-                  <label className="block text-blue-400 font-semibold mb-2 flex items-center gap-2">
-                    <span>🏊‍♂️</span> Swim Distance
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-swim p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <label className="block text-discipline-swim font-semibold mb-2 flex items-center gap-2 text-xs font-mono tracking-wider">
+                    <span>🏊‍♂️</span> SWIM DISTANCE
                   </label>
                   <div className="space-y-2">
                     <input
@@ -375,18 +390,24 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.swim_distance}
                       onChange={(e) => handleInputChange('swim_distance', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                       placeholder="750"
                       disabled={formData.distance_type !== 'custom'}
                     />
-                    <p className="text-blue-400/70 text-xs">{getDistanceUnits().swim}</p>
-                    {errors.swim_distance && <p className="text-red-400 text-sm">{errors.swim_distance}</p>}
+                    <p className="text-discipline-swim/70 text-xs font-mono">
+                      {getDistanceUnits().swim}
+                    </p>
+                    {errors.swim_distance && <p className="text-red-400 text-xs font-mono">{errors.swim_distance}</p>}
                   </div>
                 </div>
 
-                <div className="bg-orange-500/10 rounded-xl p-4">
-                  <label className="block text-orange-400 font-semibold mb-2 flex items-center gap-2">
-                    <span>🚴‍♂️</span> Bike Distance
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-bike p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <label className="block text-discipline-bike font-semibold mb-2 flex items-center gap-2 text-xs font-mono tracking-wider">
+                    <span>🚴‍♂️</span> BIKE DISTANCE
                   </label>
                   <div className="space-y-2">
                     <input
@@ -394,18 +415,24 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.bike_distance}
                       onChange={(e) => handleInputChange('bike_distance', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                       placeholder="20"
                       disabled={formData.distance_type !== 'custom'}
                     />
-                    <p className="text-orange-400/70 text-xs">{getDistanceUnits().bike}</p>
-                    {errors.bike_distance && <p className="text-red-400 text-sm">{errors.bike_distance}</p>}
+                    <p className="text-discipline-bike/70 text-xs font-mono">
+                      {getDistanceUnits().bike}
+                    </p>
+                    {errors.bike_distance && <p className="text-red-400 text-xs font-mono">{errors.bike_distance}</p>}
                   </div>
                 </div>
 
-                <div className="bg-green-500/10 rounded-xl p-4">
-                  <label className="block text-green-400 font-semibold mb-2 flex items-center gap-2">
-                    <span>🏃‍♂️</span> Run Distance
+                <div
+                  className="bg-terminal-panel border-2 border-discipline-run p-4"
+                  style={{ borderRadius: 0 }}
+                >
+                  <label className="block text-discipline-run font-semibold mb-2 flex items-center gap-2 text-xs font-mono tracking-wider">
+                    <span>🏃‍♂️</span> RUN DISTANCE
                   </label>
                   <div className="space-y-2">
                     <input
@@ -413,12 +440,15 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.run_distance}
                       onChange={(e) => handleInputChange('run_distance', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      style={{ borderRadius: 0 }}
                       placeholder="5"
                       disabled={formData.distance_type !== 'custom'}
                     />
-                    <p className="text-green-400/70 text-xs">{getDistanceUnits().run}</p>
-                    {errors.run_distance && <p className="text-red-400 text-sm">{errors.run_distance}</p>}
+                    <p className="text-discipline-run/70 text-xs font-mono">
+                      {getDistanceUnits().run}
+                    </p>
+                    {errors.run_distance && <p className="text-red-400 text-xs font-mono">{errors.run_distance}</p>}
                   </div>
                 </div>
               </div>
@@ -426,11 +456,13 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
 
             {/* Additional Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Additional Details</h3>
+              <h3 className="text-sm font-semibold text-text-primary mb-4 font-mono tracking-wider">
+                ADDITIONAL DETAILS
+              </h3>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Difficulty (1-10 scale)
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  DIFFICULTY (1-10 SCALE)
                 </label>
                 <div className="space-y-3">
                   <input
@@ -441,49 +473,56 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                     onChange={(e) => handleInputChange('difficulty_score', parseInt(e.target.value))}
                     className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
                   />
-                  <div className="flex justify-between text-white/60 text-sm px-1">
-                    <span>Beginner</span>
-                    <span className="text-white font-medium">{formData.difficulty_score}/10</span>
-                    <span>Expert</span>
+                  <div className="flex justify-between text-text-secondary text-xs px-1 font-mono">
+                    <span>BEGINNER</span>
+                    <span className="text-accent-yellow font-medium">{formData.difficulty_score}/10</span>
+                    <span>EXPERT</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Description
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  DESCRIPTION
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
-                  placeholder="Optional description about the race, course details, etc."
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                  style={{ borderRadius: 0 }}
+                  placeholder="OPTIONAL DESCRIPTION ABOUT THE RACE, COURSE DETAILS, ETC."
                   rows={3}
                   maxLength={1000}
                 />
-                {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
-                <p className="text-white/50 text-xs mt-1">{formData.description.length}/1000 characters</p>
+                {errors.description && <p className="text-red-400 text-xs mt-1 font-mono">{errors.description}</p>}
+                <p className="text-text-secondary text-xs mt-1 font-mono">
+                  {formData.description.length}/1000 CHARACTERS
+                </p>
               </div>
 
               <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Website URL
+                <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
+                  WEBSITE URL
                 </label>
                 <input
                   type="url"
                   value={formData.website_url}
                   onChange={(e) => handleInputChange('website_url', e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/race-info"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  style={{ borderRadius: 0 }}
+                  placeholder="HTTPS://EXAMPLE.COM/RACE-INFO"
                 />
-                {errors.website_url && <p className="text-red-400 text-sm mt-1">{errors.website_url}</p>}
+                {errors.website_url && <p className="text-red-400 text-xs mt-1 font-mono">{errors.website_url}</p>}
               </div>
             </div>
 
             {/* Submit Error */}
             {errors.submit && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                <p className="text-red-400 text-sm">{errors.submit}</p>
+              <div
+                className="bg-terminal-panel border-2 border-red-400/50 p-4"
+                style={{ borderRadius: 0 }}
+              >
+                <p className="text-red-400 text-xs font-mono">{errors.submit}</p>
               </div>
             )}
 
@@ -493,23 +532,25 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
-                Cancel
+                CANCEL
               </button>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-mono tracking-wider"
+                style={{ borderRadius: 0 }}
               >
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    {mode === 'create' ? 'Creating...' : 'Updating...'}
+                    {mode === 'create' ? 'CREATING...' : 'UPDATING...'}
                   </>
                 ) : (
-                  mode === 'create' ? 'Create Race' : 'Update Race'
+                  mode === 'create' ? 'CREATE RACE' : 'UPDATE RACE'
                 )}
               </button>
             </div>

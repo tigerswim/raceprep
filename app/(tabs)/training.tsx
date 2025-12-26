@@ -4,8 +4,6 @@ import { AuthGuard } from "../../src/components/AuthGuard";
 import { dbHelpers } from "../../src/services/supabase";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { api } from "../../src/store/api";
-import { useTerminalModeToggle } from "../../src/hooks/useTerminalModeToggle";
-import { getTerminalModeState } from "../../src/utils/featureFlags";
 import { TrainingPlanSelectionScreen } from "../../src/screens/Training/TrainingPlanSelectionScreen";
 import {
   TbSwimming,
@@ -260,30 +258,8 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Terminal mode
-  useTerminalModeToggle();
-  const [useTerminal, setUseTerminal] = useState(() => {
-    const override = getTerminalModeState();
-    if (override !== false) return override;
-    return true; // Terminal mode is enabled in featureFlags.ts
-  });
-
-  // Listen for terminal mode changes
-  useEffect(() => {
-    const handleTerminalModeChange = () => {
-      setUseTerminal(getTerminalModeState());
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("terminalModeChanged", handleTerminalModeChange);
-      return () => {
-        window.removeEventListener(
-          "terminalModeChanged",
-          handleTerminalModeChange,
-        );
-      };
-    }
-  }, []);
+  // Terminal design is always enabled
+  const useTerminal = true;
 
   const [activeTab, setActiveTab] = useState("overview");
   const [trainingEvents, setTrainingEvents] = useState<TrainingEvent[]>([]);
@@ -824,182 +800,150 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       {/* Training Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-terminal-border p-4"
-              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-terminal-border p-4"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex items-center space-x-3 mb-3">
             <div
-              className={
-                useTerminal
-                  ? "w-8 h-8 bg-[#00D4FF]/20 border border-[#00D4FF]/50 flex items-center justify-center"
-                  : "w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="w-8 h-8 bg-[#00D4FF]/20 border border-[#00D4FF]/50 flex items-center justify-center"
+              style={{ borderRadius: 0 }}
             >
-              <TbSwimming className={useTerminal ? "w-5 h-5 text-[#00D4FF]" : "w-5 h-5 text-blue-400"} />
+              <TbSwimming className="w-5 h-5 text-[#00D4FF]" />
             </div>
             <div>
-              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
-                {useTerminal ? "THIS WEEK" : "This Week"}
+              <p className="text-xs text-text-secondary font-mono tracking-wider">
+                THIS WEEK
               </p>
-              <p className={useTerminal ? "text-sm text-[#00D4FF] font-mono font-bold" : "text-sm text-blue-300"}>
-                {useTerminal ? "SWIMMING" : "Swimming"}
+              <p className="text-sm text-[#00D4FF] font-mono font-bold">
+                SWIMMING
               </p>
             </div>
           </div>
           <div
-            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
-            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+            className="text-2xl font-bold text-text-primary font-mono"
+            style={{ fontFamily: 'monospace', fontSize: 28 }}
           >
             {stravaConnected
-              ? `${(weeklyStats.swim.distance / 1609.34).toFixed(1)} ${useTerminal ? "MI" : "miles"}`
-              : useTerminal ? "3.2 MI" : "3.2 miles"}
+              ? `${(weeklyStats.swim.distance / 1609.34).toFixed(1)} MI`
+              : "3.2 MI"}
           </div>
           <p
-            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
-            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            className="text-xs text-text-secondary font-mono"
+            style={{ fontFamily: 'monospace' }}
           >
             {stravaConnected
-              ? `${weeklyStats.swim.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
-              : useTerminal ? "4 SESSIONS" : "4 sessions"}
+              ? `${weeklyStats.swim.sessions} SESSIONS`
+              : "4 SESSIONS"}
           </p>
         </div>
 
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-terminal-border p-4"
-              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-terminal-border p-4"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex items-center space-x-3 mb-3">
             <div
-              className={
-                useTerminal
-                  ? "w-8 h-8 bg-[#FF6B35]/20 border border-[#FF6B35]/50 flex items-center justify-center"
-                  : "w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="w-8 h-8 bg-[#FF6B35]/20 border border-[#FF6B35]/50 flex items-center justify-center"
+              style={{ borderRadius: 0 }}
             >
-              <TbBike className={useTerminal ? "w-5 h-5 text-[#FF6B35]" : "w-5 h-5 text-orange-400"} />
+              <TbBike className="w-5 h-5 text-[#FF6B35]" />
             </div>
             <div>
-              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
-                {useTerminal ? "THIS WEEK" : "This Week"}
+              <p className="text-xs text-text-secondary font-mono tracking-wider">
+                THIS WEEK
               </p>
-              <p className={useTerminal ? "text-sm text-[#FF6B35] font-mono font-bold" : "text-sm text-orange-300"}>
-                {useTerminal ? "CYCLING" : "Cycling"}
+              <p className="text-sm text-[#FF6B35] font-mono font-bold">
+                CYCLING
               </p>
             </div>
           </div>
           <div
-            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
-            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+            className="text-2xl font-bold text-text-primary font-mono"
+            style={{ fontFamily: 'monospace', fontSize: 28 }}
           >
             {stravaConnected
-              ? `${(weeklyStats.bike.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
-              : useTerminal ? "85 MI" : "85 miles"}
+              ? `${(weeklyStats.bike.distance / 1609.34).toFixed(0)} MI`
+              : "85 MI"}
           </div>
           <p
-            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
-            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            className="text-xs text-text-secondary font-mono"
+            style={{ fontFamily: 'monospace' }}
           >
             {stravaConnected
-              ? `${weeklyStats.bike.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
-              : useTerminal ? "3 SESSIONS" : "3 sessions"}
+              ? `${weeklyStats.bike.sessions} SESSIONS`
+              : "3 SESSIONS"}
           </p>
         </div>
 
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-terminal-border p-4"
-              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-terminal-border p-4"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex items-center space-x-3 mb-3">
             <div
-              className={
-                useTerminal
-                  ? "w-8 h-8 bg-[#4ECDC4]/20 border border-[#4ECDC4]/50 flex items-center justify-center"
-                  : "w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="w-8 h-8 bg-[#4ECDC4]/20 border border-[#4ECDC4]/50 flex items-center justify-center"
+              style={{ borderRadius: 0 }}
             >
-              <TbRun className={useTerminal ? "w-5 h-5 text-[#4ECDC4]" : "w-5 h-5 text-green-400"} />
+              <TbRun className="w-5 h-5 text-[#4ECDC4]" />
             </div>
             <div>
-              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
-                {useTerminal ? "THIS WEEK" : "This Week"}
+              <p className="text-xs text-text-secondary font-mono tracking-wider">
+                THIS WEEK
               </p>
-              <p className={useTerminal ? "text-sm text-[#4ECDC4] font-mono font-bold" : "text-sm text-green-300"}>
-                {useTerminal ? "RUNNING" : "Running"}
+              <p className="text-sm text-[#4ECDC4] font-mono font-bold">
+                RUNNING
               </p>
             </div>
           </div>
           <div
-            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
-            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+            className="text-2xl font-bold text-text-primary font-mono"
+            style={{ fontFamily: 'monospace', fontSize: 28 }}
           >
             {stravaConnected
-              ? `${(weeklyStats.run.distance / 1609.34).toFixed(0)} ${useTerminal ? "MI" : "miles"}`
-              : useTerminal ? "22 MI" : "22 miles"}
+              ? `${(weeklyStats.run.distance / 1609.34).toFixed(0)} MI`
+              : "22 MI"}
           </div>
           <p
-            className={useTerminal ? "text-xs text-text-secondary font-mono" : "text-xs text-white/50"}
-            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            className="text-xs text-text-secondary font-mono"
+            style={{ fontFamily: 'monospace' }}
           >
             {stravaConnected
-              ? `${weeklyStats.run.sessions} ${useTerminal ? "SESSIONS" : "sessions"}`
-              : useTerminal ? "5 SESSIONS" : "5 sessions"}
+              ? `${weeklyStats.run.sessions} SESSIONS`
+              : "5 SESSIONS"}
           </p>
         </div>
 
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-terminal-border p-4"
-              : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-terminal-border p-4"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex items-center space-x-3 mb-3">
             <div
-              className={
-                useTerminal
-                  ? "w-8 h-8 bg-accent-yellow/20 border border-accent-yellow/50 flex items-center justify-center"
-                  : "w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="w-8 h-8 bg-accent-yellow/20 border border-accent-yellow/50 flex items-center justify-center"
+              style={{ borderRadius: 0 }}
             >
-              <TbBolt className={useTerminal ? "w-5 h-5 text-accent-yellow" : "w-5 h-5 text-purple-400"} />
+              <TbBolt className="w-5 h-5 text-accent-yellow" />
             </div>
             <div>
-              <p className={useTerminal ? "text-xs text-text-secondary font-mono tracking-wider" : "text-xs text-white/60 uppercase tracking-wide"}>
-                {useTerminal ? "TRAINING" : "Training"}
+              <p className="text-xs text-text-secondary font-mono tracking-wider">
+                TRAINING
               </p>
-              <p className={useTerminal ? "text-sm text-accent-yellow font-mono font-bold" : "text-sm text-purple-300"}>
-                {useTerminal ? "LOAD" : "Load"}
+              <p className="text-sm text-accent-yellow font-mono font-bold">
+                LOAD
               </p>
             </div>
           </div>
           <div
-            className={useTerminal ? "text-2xl font-bold text-text-primary font-mono" : "text-2xl font-bold text-white"}
-            style={useTerminal ? { fontFamily: 'monospace', fontSize: 28 } : undefined}
+            className="text-2xl font-bold text-text-primary font-mono"
+            style={{ fontFamily: 'monospace', fontSize: 28 }}
           >
             485
           </div>
           <p
-            className={useTerminal ? "text-xs text-[#4ECDC4] font-mono" : "text-xs text-green-300"}
-            style={useTerminal ? { fontFamily: 'monospace' } : undefined}
+            className="text-xs text-[#4ECDC4] font-mono"
+            style={{ fontFamily: 'monospace' }}
           >
-            {useTerminal ? "OPTIMAL" : "Optimal range"}
+            OPTIMAL
           </p>
         </div>
       </div>
@@ -1007,35 +951,25 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       {/* Strava Connection Status */}
       {!stravaConnected && (
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-[#FF6B35] p-4 md:p-6"
-              : "bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-2xl border border-orange-400/20 p-4 md:p-6 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-[#FF6B35] p-4 md:p-6"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className={useTerminal ? "text-lg md:text-xl font-bold text-text-primary mb-1 md:mb-2 font-mono tracking-wider" : "text-lg md:text-xl font-bold text-white mb-1 md:mb-2"}>
-                {useTerminal ? "CONNECT STRAVA" : "Connect Strava"}
+              <h3 className="text-lg md:text-xl font-bold text-text-primary mb-1 md:mb-2 font-mono tracking-wider">
+                CONNECT STRAVA
               </h3>
-              <p className={useTerminal ? "text-text-secondary text-sm md:text-base font-mono" : "text-white/70 text-sm md:text-base"}>
-                {useTerminal
-                  ? "IMPORT TRAINING ACTIVITIES FROM STRAVA FOR REAL-TIME STATS"
-                  : "Import your training activities automatically from Strava to get real-time stats and progress tracking."}
+              <p className="text-text-secondary text-sm md:text-base font-mono">
+                IMPORT TRAINING ACTIVITIES FROM STRAVA FOR REAL-TIME STATS
               </p>
             </div>
             <button
               onClick={handleStravaConnect}
-              className={
-                useTerminal
-                  ? "bg-[#FC4C02] text-white px-4 md:px-6 py-2 md:py-3 font-mono font-bold tracking-wider hover:bg-[#FC4C02]/90 transition-colors flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0 border-2 border-[#FC4C02]"
-                  : "bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0"
-              }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              className="bg-[#FC4C02] text-white px-4 md:px-6 py-2 md:py-3 font-mono font-bold tracking-wider hover:bg-[#FC4C02]/90 transition-colors flex items-center justify-center gap-2 text-sm md:text-base flex-shrink-0 border-2 border-[#FC4C02]"
+              style={{ borderRadius: 0 }}
             >
               <span>🔗</span>
-              {useTerminal ? "CONNECT STRAVA" : "Connect Strava"}
+              CONNECT STRAVA
             </button>
           </div>
         </div>
@@ -1044,48 +978,34 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       {/* Strava Sync Button */}
       {stravaConnected && (
         <div
-          className={
-            useTerminal
-              ? "bg-terminal-panel border-2 border-[#4ECDC4] p-4 md:p-6"
-              : "bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-xl rounded-2xl border border-green-400/20 p-4 md:p-6 shadow-xl"
-          }
-          style={useTerminal ? { borderRadius: 0 } : undefined}
+          className="bg-terminal-panel border-2 border-[#4ECDC4] p-4 md:p-6"
+          style={{ borderRadius: 0 }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className={useTerminal ? "text-lg font-bold text-text-primary mb-1 font-mono tracking-wider" : "text-lg font-bold text-white mb-1"}>
-                {useTerminal ? "STRAVA CONNECTED [✓]" : "Strava Connected ✅"}
+              <h3 className="text-lg font-bold text-text-primary mb-1 font-mono tracking-wider">
+                STRAVA CONNECTED [✓]
               </h3>
-              <p className={useTerminal ? "text-text-secondary text-sm font-mono" : "text-white/70 text-sm"}>
-                {useTerminal
-                  ? "DATA SYNCED FROM STRAVA. REFRESH FOR LATEST ACTIVITIES."
-                  : "Your training data is synced from Strava. Click refresh to get the latest activities."}
+              <p className="text-text-secondary text-sm font-mono">
+                DATA SYNCED FROM STRAVA. REFRESH FOR LATEST ACTIVITIES.
               </p>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto">
               <button
                 onClick={handleStravaSync}
                 disabled={!stravaAccessToken || isLoading}
-                className={
-                  useTerminal
-                    ? "flex-1 sm:flex-none bg-[#4ECDC4]/20 text-[#4ECDC4] border-2 border-[#4ECDC4] px-4 py-2 font-mono font-bold hover:bg-[#4ECDC4]/30 transition-colors flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                    : "flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="flex-1 sm:flex-none bg-[#4ECDC4]/20 text-[#4ECDC4] border-2 border-[#4ECDC4] px-4 py-2 font-mono font-bold hover:bg-[#4ECDC4]/30 transition-colors flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                style={{ borderRadius: 0 }}
               >
-                {isLoading ? (useTerminal ? "SYNCING..." : "Syncing...") : (useTerminal ? "REFRESH" : "Refresh")}
+                {isLoading ? "SYNCING..." : "REFRESH"}
               </button>
               <button
                 onClick={handleStravaDisconnect}
                 disabled={isLoading}
-                className={
-                  useTerminal
-                    ? "flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 font-mono font-bold transition-colors flex items-center justify-center text-sm border-2 border-red-400 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                    : "flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center justify-center text-sm border border-red-400/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                }
-                style={useTerminal ? { borderRadius: 0 } : undefined}
+                className="flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-4 py-2 font-mono font-bold transition-colors flex items-center justify-center text-sm border-2 border-red-400 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                style={{ borderRadius: 0 }}
               >
-                {useTerminal ? "DISCONNECT" : "Disconnect"}
+                DISCONNECT
               </button>
             </div>
           </div>
@@ -1094,43 +1014,29 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
       {/* Recent Workouts */}
       <div
-        className={
-          useTerminal
-            ? "bg-terminal-panel border-2 border-terminal-border p-6"
-            : "bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 shadow-xl"
-        }
-        style={useTerminal ? { borderRadius: 0 } : undefined}
+        className="bg-terminal-panel border-2 border-terminal-border p-6"
+        style={{ borderRadius: 0 }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className={useTerminal ? "text-xl font-bold text-text-primary font-mono tracking-wider" : "text-xl font-bold text-white"}>
-            {useTerminal ? "RECENT WORKOUTS" : "Recent Workouts"}
+          <h3 className="text-xl font-bold text-text-primary font-mono tracking-wider">
+            RECENT WORKOUTS
           </h3>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={
-                useTerminal
-                  ? showFilters
-                    ? "bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
-                    : "bg-terminal-bg text-text-secondary border-2 border-terminal-border hover:border-text-secondary px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
-                  : `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                      showFilters
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-400/30"
-                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
-                    }`
+                showFilters
+                  ? "bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
+                  : "bg-terminal-bg text-text-secondary border-2 border-terminal-border hover:border-text-secondary px-3 py-2 font-mono font-bold text-sm transition-colors flex items-center gap-2"
               }
-              style={useTerminal ? { borderRadius: 0 } : undefined}
+              style={{ borderRadius: 0 }}
             >
               <span>🔍</span>
-              {useTerminal ? "FILTERS" : "Filters"}
+              FILTERS
               {(activityFilter !== "all" || dateFilter !== "all") && (
                 <span
-                  className={
-                    useTerminal
-                      ? "bg-accent-yellow text-terminal-bg text-xs px-2 py-1 font-mono font-bold"
-                      : "bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
-                  }
-                  style={useTerminal ? { borderRadius: 0 } : undefined}
+                  className="bg-accent-yellow text-terminal-bg text-xs px-2 py-1 font-mono font-bold"
+                  style={{ borderRadius: 0 }}
                 >
                   {(activityFilter !== "all" ? 1 : 0) +
                     (dateFilter !== "all" ? 1 : 0)}
@@ -1139,13 +1045,9 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
             </button>
             <button
               onClick={() => setActiveTab("workouts")}
-              className={
-                useTerminal
-                  ? "text-accent-yellow hover:text-accent-yellow/80 text-sm font-mono font-bold"
-                  : "text-blue-400 hover:text-blue-300 text-sm font-medium"
-              }
+              className="text-accent-yellow hover:text-accent-yellow/80 text-sm font-mono font-bold"
             >
-              {useTerminal ? "LOG WORKOUT →" : "Log New Workout →"}
+              LOG WORKOUT →
             </button>
           </div>
         </div>
@@ -3821,19 +3723,19 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
       {/* Workout Detail Modal */}
       {showWorkoutDetail && selectedWorkout && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800/90 backdrop-blur-xl rounded-2xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
+          <div className="bg-terminal-panel border-2 border-terminal-border w-full max-w-2xl max-h-[90vh] overflow-auto shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
+            <div className="flex items-center justify-between p-6 border-b-2 border-terminal-border">
               <div className="flex items-center space-x-3">
                 <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  className={`w-10 h-10 flex items-center justify-center border-2 ${
                     selectedWorkout.discipline === "swim"
-                      ? "bg-blue-500/20"
+                      ? "border-discipline-swim text-discipline-swim bg-discipline-swim/10"
                       : selectedWorkout.discipline === "bike"
-                        ? "bg-orange-500/20"
+                        ? "border-discipline-bike text-discipline-bike bg-discipline-bike/10"
                         : selectedWorkout.discipline === "run"
-                          ? "bg-green-500/20"
-                          : "bg-purple-500/20"
+                          ? "border-discipline-run text-discipline-run bg-discipline-run/10"
+                          : "border-accent-yellow text-accent-yellow bg-accent-yellow/10"
                   }`}
                 >
                   <span className="text-lg">
@@ -3849,26 +3751,23 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                   </span>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white">
+                  <h2 className="text-xl font-bold text-text-primary font-mono tracking-wider uppercase">
                     {selectedWorkout.name ||
                       `${selectedWorkout.discipline.charAt(0).toUpperCase() + selectedWorkout.discipline.slice(1)} Workout`}
                   </h2>
-                  <p className="text-white/60 text-sm">
-                    {new Date(selectedWorkout.date).toLocaleDateString(
-                      "en-US",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      },
-                    )}
+                  <p className="text-text-secondary text-sm font-mono tracking-wide">
+                    {new Date(selectedWorkout.date).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }).toUpperCase()}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowWorkoutDetail(false)}
-                className="text-white/60 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="text-text-secondary hover:text-accent-yellow p-2 transition-colors font-mono"
               >
                 <span className="text-xl">✕</span>
               </button>
@@ -3879,37 +3778,43 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               {/* Basic Metrics */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {selectedWorkout.duration_minutes && (
-                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                    <div className="text-2xl font-bold text-white">
+                  <div className="bg-terminal-panel border-2 border-terminal-border p-3">
+                    <div className="text-2xl font-bold text-text-primary font-mono">
                       {selectedWorkout.duration_minutes}
                     </div>
-                    <div className="text-white/60 text-sm">Minutes</div>
+                    <div className="text-text-secondary text-sm font-mono tracking-wide uppercase">
+                      MINUTES
+                    </div>
                   </div>
                 )}
                 {selectedWorkout.distance && (
-                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                    <div className="text-2xl font-bold text-white">
+                  <div className="bg-terminal-panel border-2 border-terminal-border p-3">
+                    <div className="text-2xl font-bold text-text-primary font-mono">
                       {parseFloat(selectedWorkout.distance).toFixed(1)}
                     </div>
-                    <div className="text-white/60 text-sm">
-                      {selectedWorkout.distance_unit || "Miles"}
+                    <div className="text-text-secondary text-sm font-mono tracking-wide uppercase">
+                      {(selectedWorkout.distance_unit || "MILES").toUpperCase()}
                     </div>
                   </div>
                 )}
                 {selectedWorkout.feeling_rating && (
-                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                    <div className="text-2xl font-bold text-white">
+                  <div className="bg-terminal-panel border-2 border-terminal-border p-3">
+                    <div className="text-2xl font-bold text-text-primary font-mono">
                       {selectedWorkout.feeling_rating}/10
                     </div>
-                    <div className="text-white/60 text-sm">Feeling</div>
+                    <div className="text-text-secondary text-sm font-mono tracking-wide uppercase">
+                      FEELING
+                    </div>
                   </div>
                 )}
                 {selectedWorkout.intensity && (
-                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                    <div className="text-lg font-bold text-white capitalize">
-                      {selectedWorkout.intensity.replace("_", " ")}
+                  <div className="bg-terminal-panel border-2 border-terminal-border p-3">
+                    <div className="text-lg font-bold text-text-primary font-mono uppercase tracking-wider">
+                      {selectedWorkout.intensity.replace("_", " ").toUpperCase()}
                     </div>
-                    <div className="text-white/60 text-sm">Intensity</div>
+                    <div className="text-text-secondary text-sm font-mono tracking-wide uppercase">
+                      INTENSITY
+                    </div>
                   </div>
                 )}
               </div>
@@ -3920,45 +3825,42 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                 selectedWorkout.average_watts ||
                 selectedWorkout.total_elevation_gain) && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    <TbBolt className="w-4 h-4" /> Performance Metrics
+                  <h3 className="text-lg font-semibold text-text-primary mb-3 flex items-center gap-2 font-mono tracking-wider uppercase">
+                    <TbBolt className="w-4 h-4" /> PERFORMANCE METRICS
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {selectedWorkout.average_heartrate && (
-                      <div className="bg-red-500/10 rounded-lg p-3 border border-red-400/20">
+                      <div className="bg-terminal-panel border-2 border-accent-yellow/40 p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <TbHeart className="w-4 h-4" />
-                          <span className="text-red-400 font-medium">
-                            Heart Rate
+                          <span className="text-accent-yellow font-medium font-mono tracking-wide uppercase">
+                            HEART RATE
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-white">
-                          {Math.round(selectedWorkout.average_heartrate)} bpm
+                        <div className="text-xl font-bold text-text-primary font-mono">
+                          {Math.round(selectedWorkout.average_heartrate)} BPM
                         </div>
                         {selectedWorkout.max_heartrate && (
-                          <div className="text-white/60 text-sm">
-                            Max: {Math.round(selectedWorkout.max_heartrate)} bpm
+                          <div className="text-text-secondary text-sm font-mono tracking-wide">
+                            MAX: {Math.round(selectedWorkout.max_heartrate)} BPM
                           </div>
                         )}
                         {selectedWorkout.average_heartrate && (
-                          <div className="text-white/60 text-sm">
-                            Zone:{" "}
-                            {getHeartRateZone(
-                              selectedWorkout.average_heartrate,
-                            )}
+                          <div className="text-text-secondary text-sm font-mono tracking-wide uppercase">
+                            ZONE: {getHeartRateZone(selectedWorkout.average_heartrate).toUpperCase()}
                           </div>
                         )}
                       </div>
                     )}
                     {selectedWorkout.average_speed && (
-                      <div className="bg-blue-500/10 rounded-lg p-3 border border-blue-400/20">
+                      <div className="bg-terminal-panel border-2 border-discipline-swim/40 p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <span>🚀</span>
-                          <span className="text-blue-400 font-medium">
-                            Pace
+                          <span className="text-discipline-swim font-medium font-mono tracking-wide uppercase">
+                            PACE
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-text-primary font-mono">
                           {calculatePace(
                             selectedWorkout.average_speed,
                             selectedWorkout.discipline,
@@ -3967,58 +3869,58 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
                       </div>
                     )}
                     {selectedWorkout.average_watts && (
-                      <div className="bg-yellow-500/10 rounded-lg p-3 border border-yellow-400/20">
+                      <div className="bg-terminal-panel border-2 border-accent-yellow/40 p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <span>🔋</span>
-                          <span className="text-yellow-400 font-medium">
-                            Power
+                          <span className="text-accent-yellow font-medium font-mono tracking-wide uppercase">
+                            POWER
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-text-primary font-mono">
                           {Math.round(selectedWorkout.average_watts)}W
                         </div>
                       </div>
                     )}
                     {selectedWorkout.total_elevation_gain &&
                       selectedWorkout.total_elevation_gain > 0 && (
-                        <div className="bg-green-500/10 rounded-lg p-3 border border-green-400/20">
+                        <div className="bg-terminal-panel border-2 border-discipline-run/40 p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <TbMountain className="w-4 h-4" />
-                            <span className="text-green-400 font-medium">
-                              Elevation
+                            <span className="text-discipline-run font-medium font-mono tracking-wide uppercase">
+                              ELEVATION
                             </span>
                           </div>
-                          <div className="text-xl font-bold text-white">
+                          <div className="text-xl font-bold text-text-primary font-mono">
                             {Math.round(
                               selectedWorkout.total_elevation_gain * 3.28084,
                             )}{" "}
-                            ft
+                            FT
                           </div>
                         </div>
                       )}
                     {selectedWorkout.average_cadence && (
-                      <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-400/20">
+                      <div className="bg-terminal-panel border-2 border-accent-yellow/40 p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <span>🦵</span>
-                          <span className="text-purple-400 font-medium">
-                            Cadence
+                          <span className="text-accent-yellow font-medium font-mono tracking-wide uppercase">
+                            CADENCE
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-text-primary font-mono">
                           {Math.round(selectedWorkout.average_cadence)}{" "}
-                          {selectedWorkout.discipline === "run" ? "spm" : "rpm"}
+                          {selectedWorkout.discipline === "run" ? "SPM" : "RPM"}
                         </div>
                       </div>
                     )}
                     {selectedWorkout.suffer_score && (
-                      <div className="bg-orange-500/10 rounded-lg p-3 border border-orange-400/20">
+                      <div className="bg-terminal-panel border-2 border-discipline-bike/40 p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <TbTarget className="w-4 h-4" />
-                          <span className="text-orange-400 font-medium">
-                            Training Stress
+                          <span className="text-discipline-bike font-medium font-mono tracking-wide uppercase">
+                            TRAINING STRESS
                           </span>
                         </div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-text-primary font-mono">
                           {selectedWorkout.suffer_score} TSS
                         </div>
                       </div>
@@ -4030,11 +3932,11 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
               {/* Additional Details */}
               <div className="space-y-4">
                 {selectedWorkout.trainer && (
-                  <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-400/20">
+                  <div className="bg-terminal-panel border-2 border-accent-yellow/40 p-3">
                     <div className="flex items-center gap-2">
                       <span>🏠</span>
-                      <span className="text-purple-400 font-medium">
-                        Indoor Training
+                      <span className="text-accent-yellow font-medium font-mono tracking-wide uppercase">
+                        INDOOR TRAINING
                       </span>
                     </div>
                   </div>
@@ -4042,51 +3944,55 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
 
                 {selectedWorkout.sport_type &&
                   selectedWorkout.sport_type !== selectedWorkout.discipline && (
-                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                      <div className="text-white/60 text-sm mb-1">
-                        Sport Type
+                    <div className="bg-terminal-panel border-2 border-terminal-border p-3">
+                      <div className="text-text-secondary text-sm mb-1 font-mono tracking-wide uppercase">
+                        SPORT TYPE
                       </div>
-                      <div className="text-white font-medium">
+                      <div className="text-text-primary font-medium font-mono">
                         {selectedWorkout.sport_type}
                       </div>
                     </div>
                   )}
 
                 {selectedWorkout.notes && (
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <div className="text-white/60 text-sm mb-2">Notes</div>
-                    <div className="text-white">{selectedWorkout.notes}</div>
+                  <div className="bg-terminal-panel border-2 border-terminal-border p-4">
+                    <div className="text-text-secondary text-sm mb-2 font-mono tracking-wide uppercase">
+                      NOTES
+                    </div>
+                    <div className="text-text-primary font-mono">
+                      {selectedWorkout.notes}
+                    </div>
                   </div>
                 )}
 
                 {selectedWorkout.kudos_count &&
                   selectedWorkout.kudos_count > 0 && (
-                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="bg-terminal-panel border-2 border-terminal-border p-3">
                       <div className="flex items-center gap-2">
                         <span>👍</span>
-                        <span className="text-white">
-                          {selectedWorkout.kudos_count} Kudos
+                        <span className="text-text-primary font-mono tracking-wide">
+                          {selectedWorkout.kudos_count} KUDOS
                         </span>
                       </div>
                     </div>
                   )}
 
                 {selectedWorkout.strava_activity_id && (
-                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                  <div className="bg-terminal-panel border-2 border-discipline-bike/40 p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <TbChartBar className="w-4 h-4 text-orange-500" />
-                        <span className="text-white/80">
-                          Synced from Strava
+                        <TbChartBar className="w-4 h-4 text-discipline-bike" />
+                        <span className="text-text-primary font-mono tracking-wide uppercase">
+                          SYNCED FROM STRAVA
                         </span>
                       </div>
                       <a
                         href={`https://www.strava.com/activities/${selectedWorkout.strava_activity_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-orange-400 hover:text-orange-300 text-sm font-medium"
+                        className="text-discipline-bike hover:text-accent-yellow text-sm font-medium font-mono tracking-wide uppercase transition-colors"
                       >
-                        View on Strava →
+                        VIEW ON STRAVA →
                       </a>
                     </div>
                   </div>

@@ -2,7 +2,25 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
-## [Unreleased] - 2025-12-18
+## [Unreleased] - 2025-12-26
+
+### Changed
+- **Terminal Design Now Permanent** - Removed all conditional styling throughout the app
+  - All screens, modals, and components now exclusively use terminal design
+  - Removed `useTerminal` state variables and toggle functionality
+  - Removed `useTerminalModeToggle` hook usage from components
+  - Simplified codebase by eliminating legacy styling branches
+
+### Updated Components (Terminal-Only)
+- **All Modals**: AddResultModal, EditResultModal, AddCourseModal, EditCourseModal, RacePredictionModal, RaceComparisonModal, CourseDetailsModal, UserRaceManagement, AuthModal, ImportedRaceUpdateModal, WorkoutDetailModal, ConfirmDialog, UserRaceFormModal, RaceAnalysisModal
+- **App Tabs**: training.tsx, planning.tsx, races.tsx, profile.tsx, _layout.tsx
+- **Dashboard Widgets**: All widgets now use terminal versions exclusively
+- **Screens**: TrainingPlanSelectionScreen, WebDashboard
+- **Profile Page**: Complete terminal styling for all form fields, buttons, cards, and sections
+
+---
+
+## [Previous] - 2025-12-18
 
 ### Added
 - **Landing Page** - New terminal-styled hero landing page for unauthenticated visitors

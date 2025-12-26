@@ -42,19 +42,9 @@ interface TrainingStats {
   };
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const PerformanceOverviewWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('performance');
-
-  console.log('[PerformanceOverviewWidget WRAPPER] useTerminal:', useTerminal);
-
-  if (useTerminal) {
-    console.log('[PerformanceOverviewWidget WRAPPER] Returning TERMINAL version');
-    return <PerformanceOverviewWidgetTerminal />;
-  }
-
-  console.log('[PerformanceOverviewWidget WRAPPER] Returning LEGACY version');
-  return <PerformanceOverviewWidgetLegacy />;
+  return <PerformanceOverviewWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)

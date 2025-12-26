@@ -38,15 +38,9 @@ interface WeatherData {
   };
 }
 
-// Wrapper component that handles terminal vs legacy rendering
+// Widget always uses terminal design
 export const WeatherWidget: React.FC = () => {
-  const useTerminal = useTerminalDesign('weather');
-
-  if (useTerminal) {
-    return <WeatherWidgetTerminal />;
-  }
-
-  return <WeatherWidgetLegacy />;
+  return <WeatherWidgetTerminal />;
 };
 
 // Legacy implementation (moved to separate component to avoid hook violations)
