@@ -12,7 +12,6 @@ import { AuthProvider } from '../src/contexts/AuthContext';
 import { RacesProvider } from '../src/contexts/RacesContext';
 import { store } from '../src/store';
 import { ScanLineOverlay } from '../src/components/ui/terminal';
-import { featureFlags } from '../src/utils/featureFlags';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -25,9 +24,8 @@ export default function RootLayout() {
     return null;
   }
 
-  const terminalBackground = featureFlags.useTerminalDesign
-    ? { backgroundColor: '#0A0E14', flex: 1 }
-    : { flex: 1 };
+  // Terminal design is permanent - always use terminal background
+  const terminalBackground = { backgroundColor: '#0A0E14', flex: 1 };
 
   return (
     <Provider store={store}>
@@ -43,7 +41,7 @@ export default function RootLayout() {
               </Stack>
               <StatusBar style="auto" />
             </ThemeProvider>
-            {featureFlags.useTerminalDesign && <ScanLineOverlay />}
+            <ScanLineOverlay />
           </View>
         </RacesProvider>
       </AuthProvider>
