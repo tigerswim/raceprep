@@ -25,12 +25,12 @@ All notable changes to the RacePrep project will be documented in this file.
   - Added `parseLocalDateString()` helper for consistent local date parsing
 
 - **Race Discovery City/State Search** - City and state combinations now work properly in Discover New Races
-  - Changed geocoding from local server to direct Google Maps API calls
-  - Eliminates dependency on local proxy server for race searches
-  - City/state searches now geocode to zip codes for improved RunSignup API results
-  - Maintains fallback to city/state parameters if geocoding fails
+  - **CRITICAL FIX**: Removed zip code conversion that was too restrictive
+  - Now uses city/state parameters directly for better metropolitan area coverage
+  - Searching "Atlanta, GA" now finds races across entire metro area, not just downtown
+  - Zip codes still work when entered directly (e.g., "30062")
   - Expanded date range to search 12 months ahead (was only searching from today)
-  - Added better logging to help debug searches with no results
+  - Added detailed logging to show which parameters are being used
   - Results now sorted by date ascending
 
 ### Improved
