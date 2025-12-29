@@ -36,7 +36,30 @@ export const WeatherWidgetTerminal: React.FC = () => {
   const fetchWeatherData = async (latitude: number, longitude: number) => {
     setIsLoading(true);
     try {
-      const weatherData = await OpenWeatherMapAPIService.getCurrentWeather(latitude, longitude);
+      // Call OpenWeatherMap API directly
+      const apiKey = process.env.EXPO_PUBLIC_OPENWEATHERMAP_API_KEY;
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Weather API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Transform the data to match our expected format
+      const weatherData = {
+        temperature: data.main.temp,
+        feels_like: data.main.feels_like,
+        humidity: data.main.humidity,
+        wind_speed: data.wind.speed,
+        wind_direction: data.wind.deg,
+        conditions: data.weather[0].main,
+        description: data.weather[0].description,
+        visibility: data.visibility,
+        timestamp: new Date().toISOString()
+      };
 
       // Analyze triathlon conditions
       const conditions = OpenWeatherMapAPIService.analyzeTriathlonConditions(weatherData);
