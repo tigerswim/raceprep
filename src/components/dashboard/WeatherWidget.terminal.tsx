@@ -3,12 +3,24 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { terminalColors, terminalText, terminalView, mergeStyles } from '../ui/terminal/terminalStyles';
+import { OpenWeatherMapAPIService } from '../../services/apiIntegrations';
 
 interface WeatherData {
   temperature: number;
   conditions: string;
   humidity: number;
   windSpeed: number;
+  trainingConditions?: {
+    overall: string;
+    swim: string;
+    bike: string;
+    run: string;
+  };
+}
+
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
 }
 
 export const WeatherWidgetTerminal: React.FC = () => {
@@ -17,20 +29,49 @@ export const WeatherWidgetTerminal: React.FC = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useState<string>('Austin, TX');
+  const [locationCoords, setLocationCoords] = useState<LocationCoords>({ latitude: 30.2672, longitude: -97.7431 }); // Default: Austin, TX
   const [isGeolocating, setIsGeolocating] = useState(false);
 
-  useEffect(() => {
-    // Simplified - would normally fetch real weather data
-    setTimeout(() => {
+  // Fetch weather data for given coordinates
+  const fetchWeatherData = async (latitude: number, longitude: number) => {
+    setIsLoading(true);
+    try {
+      const weatherData = await OpenWeatherMapAPIService.getCurrentWeather(latitude, longitude);
+
+      // Analyze triathlon conditions
+      const conditions = OpenWeatherMapAPIService.analyzeTriathlonConditions(weatherData);
+
+      setWeather({
+        temperature: Math.round(weatherData.temperature),
+        conditions: weatherData.description.charAt(0).toUpperCase() + weatherData.description.slice(1),
+        humidity: weatherData.humidity,
+        windSpeed: Math.round(weatherData.wind_speed),
+        trainingConditions: conditions
+      });
+    } catch (error) {
+      console.error('[Weather] Failed to fetch weather data:', error);
+      // Fallback to default weather
       setWeather({
         temperature: 72,
         conditions: 'Partly Cloudy',
         humidity: 55,
-        windSpeed: 8
+        windSpeed: 8,
+        trainingConditions: {
+          overall: 'good',
+          swim: 'good',
+          bike: 'good',
+          run: 'good'
+        }
       });
+    } finally {
       setIsLoading(false);
-    }, 500);
-  }, [user]);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch weather data when component mounts or coordinates change
+    fetchWeatherData(locationCoords.latitude, locationCoords.longitude);
+  }, [locationCoords]);
 
   const handleGeolocate = async () => {
     setIsGeolocating(true);
@@ -39,6 +80,9 @@ export const WeatherWidgetTerminal: React.FC = () => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+
+          // Update coordinates state (this will trigger weather fetch via useEffect)
+          setLocationCoords({ latitude, longitude });
 
           try {
             // Reverse geocode to get city name
@@ -172,8 +216,13 @@ export const WeatherWidgetTerminal: React.FC = () => {
             <Text style={mergeStyles(terminalText.swim, { fontSize: 10 })}>
               [SWIM]
             </Text>
-            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
-              GOOD
+            <Text style={mergeStyles(terminalText.base, {
+              fontSize: 10,
+              color: weather.trainingConditions?.swim === 'good' ? terminalColors.green :
+                     weather.trainingConditions?.swim === 'challenging' ? terminalColors.yellow :
+                     terminalColors.red
+            })}>
+              {weather.trainingConditions?.swim.toUpperCase() || 'GOOD'}
             </Text>
           </View>
 
@@ -182,8 +231,13 @@ export const WeatherWidgetTerminal: React.FC = () => {
             <Text style={mergeStyles(terminalText.bike, { fontSize: 10 })}>
               [BIKE]
             </Text>
-            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
-              GOOD
+            <Text style={mergeStyles(terminalText.base, {
+              fontSize: 10,
+              color: weather.trainingConditions?.bike === 'good' ? terminalColors.green :
+                     weather.trainingConditions?.bike === 'challenging' ? terminalColors.yellow :
+                     terminalColors.red
+            })}>
+              {weather.trainingConditions?.bike.toUpperCase() || 'GOOD'}
             </Text>
           </View>
 
@@ -192,8 +246,13 @@ export const WeatherWidgetTerminal: React.FC = () => {
             <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
               [RUN]
             </Text>
-            <Text style={mergeStyles(terminalText.run, { fontSize: 10 })}>
-              EXCELLENT
+            <Text style={mergeStyles(terminalText.base, {
+              fontSize: 10,
+              color: weather.trainingConditions?.run === 'good' ? terminalColors.green :
+                     weather.trainingConditions?.run === 'challenging' ? terminalColors.yellow :
+                     terminalColors.red
+            })}>
+              {weather.trainingConditions?.run.toUpperCase() || 'GOOD'}
             </Text>
           </View>
         </View>
@@ -202,8 +261,13 @@ export const WeatherWidgetTerminal: React.FC = () => {
       {/* Footer */}
       <View style={mergeStyles(terminalView.borderTop, { marginTop: 16 })}>
         <View style={terminalView.spaceBetween}>
-          <Text style={mergeStyles(terminalText.small, { textTransform: 'uppercase' })}>
-            GOOD CONDITIONS
+          <Text style={mergeStyles(terminalText.small, {
+            textTransform: 'uppercase',
+            color: weather.trainingConditions?.overall === 'good' ? terminalColors.green :
+                   weather.trainingConditions?.overall === 'moderate' ? terminalColors.yellow :
+                   terminalColors.red
+          })}>
+            {weather.trainingConditions?.overall.toUpperCase() || 'GOOD'} CONDITIONS
           </Text>
           <TouchableOpacity onPress={() => router.push('/(tabs)/planning')}>
             <Text style={terminalText.yellow}>PLAN →</Text>

@@ -31,6 +31,13 @@ All notable changes to the RacePrep project will be documented in this file.
   - Guarantees new visitors see active, recent demo data when testing the app
   - Run `node scripts/seed-demo-user.js` to refresh demo user with latest 2 weeks of activities
 
+- **Weather Widget Real-Time Data** - Weather Conditions section now fetches live weather data
+  - Integrated OpenWeatherMap API for real-time weather information
+  - Weather data (temperature, conditions, humidity, wind speed) now updates when location changes
+  - Training conditions analysis (swim, bike, run) based on actual weather
+  - Color-coded condition indicators: green (good), yellow (challenging), red (poor)
+  - Overall conditions assessment updates dynamically based on temperature, wind, precipitation, and humidity
+
 ### Changed
 - **Terminal Design Now Permanent** - Removed all conditional styling throughout the app
   - All screens, modals, and components now exclusively use terminal design
