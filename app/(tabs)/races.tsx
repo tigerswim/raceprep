@@ -557,10 +557,17 @@ function RacesScreenContent() {
     try {
       // Discovering races from RunSignup API (debug log removed)
 
+      // Search for races in the next 12 months (more inclusive date range)
+      const today = new Date();
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
       const params = new URLSearchParams({
         results_per_page: "100",
-        start_date: new Date().toISOString().split("T")[0],
+        start_date: today.toISOString().split("T")[0],
+        end_date: oneYearFromNow.toISOString().split("T")[0],
         event_type: "triathlon",
+        sort: "date ASC",
       });
 
       if (locationQuery.trim()) {
@@ -675,14 +682,20 @@ function RacesScreenContent() {
       const apiBaseUrl =
         process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3001/api";
       const requestUrl = `${apiBaseUrl}/runsignup/search?${params.toString()}`;
-      // API request URL (debug log removed)
+
+      console.log(`[RACE DISCOVERY] Searching with params:`, {
+        location: locationQuery,
+        radius: searchRadius,
+        dateRange: `${params.get('start_date')} to ${params.get('end_date')}`,
+        fullUrl: requestUrl
+      });
 
       const response = await fetch(requestUrl);
-      // API response status and headers (debug logs removed)
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error("[RACE DISCOVERY] API error response:", errorText);
+        console.error("[RACE DISCOVERY] Request failed with status:", response.status);
 
         // If external API is not available, provide sample races for demo
         console.warn("External race API not available, using sample data");
@@ -786,9 +799,10 @@ function RacesScreenContent() {
           },
         }));
 
-        // Discovered races and cached (debug log removed)
+        console.log(`[RACE DISCOVERY] Found ${transformedRaces.length} races`);
       } else {
-        // No races found from RunSignup API (debug log removed)
+        console.warn(`[RACE DISCOVERY] No races found for location: ${locationQuery}, radius: ${searchRadius}mi`);
+        console.warn(`[RACE DISCOVERY] Try expanding search radius or checking a different location`);
         setDiscoveredRaces([]);
       }
     } catch (error) {

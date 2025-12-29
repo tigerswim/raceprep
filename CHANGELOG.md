@@ -29,6 +29,9 @@ All notable changes to the RacePrep project will be documented in this file.
   - Eliminates dependency on local proxy server for race searches
   - City/state searches now geocode to zip codes for improved RunSignup API results
   - Maintains fallback to city/state parameters if geocoding fails
+  - Expanded date range to search 12 months ahead (was only searching from today)
+  - Added better logging to help debug searches with no results
+  - Results now sorted by date ascending
 
 ### Improved
 - **Demo User Training Data** - Demo user now has consistent recent training activities
