@@ -576,7 +576,9 @@ function RacesScreenContent() {
 
           // Try geocoding the location to get lat/long, then reverse geocode to zip
           try {
-            const geocodeUrl = `http://localhost:3001/api/maps/geocode?address=${encodeURIComponent(location)}`;
+            // Call Google Maps Geocoding API directly
+            const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
             const geoResponse = await fetch(geocodeUrl);
 
             if (geoResponse.ok) {

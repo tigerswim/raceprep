@@ -24,6 +24,12 @@ All notable changes to the RacePrep project will be documented in this file.
   - Fixed date display in Workout History showing previous day
   - Added `parseLocalDateString()` helper for consistent local date parsing
 
+- **Race Discovery City/State Search** - City and state combinations now work properly in Discover New Races
+  - Changed geocoding from local server to direct Google Maps API calls
+  - Eliminates dependency on local proxy server for race searches
+  - City/state searches now geocode to zip codes for improved RunSignup API results
+  - Maintains fallback to city/state parameters if geocoding fails
+
 ### Improved
 - **Demo User Training Data** - Demo user now has consistent recent training activities
   - Seed script now generates 2 weeks (14 days) of training data instead of 8 weeks
