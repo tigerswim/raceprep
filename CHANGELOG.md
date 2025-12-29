@@ -49,6 +49,15 @@ All notable changes to the RacePrep project will be documented in this file.
   - Color-coded condition indicators: green (good), yellow (challenging), red (poor)
   - Overall conditions assessment updates dynamically based on temperature, wind, precipitation, and humidity
 
+### Removed
+- **Training Events and Training Tips Tabs** - Removed placeholder features from Training tab
+  - Removed "Training Events" tab (was showing empty state)
+  - Removed "Training Tips" tab (was showing empty state)
+  - Cleaned up ~250 lines of unused UI code
+  - Removed TrainingEvent and TrainingArticle TypeScript interfaces
+  - Database tables for these features were never created
+  - Focus on fully functional features: Overview, Training Plans, Log Workout, Analytics
+
 ### Changed
 - **Terminal Design Now Permanent** - Removed all conditional styling throughout the app
   - All screens, modals, and components now exclusively use terminal design
