@@ -24,6 +24,13 @@ All notable changes to the RacePrep project will be documented in this file.
   - Fixed date display in Workout History showing previous day
   - Added `parseLocalDateString()` helper for consistent local date parsing
 
+### Improved
+- **Demo User Training Data** - Demo user now has consistent recent training activities
+  - Seed script now generates 2 weeks (14 days) of training data instead of 8 weeks
+  - Ensures Performance Overview section on Dashboard always displays data for demo user
+  - Guarantees new visitors see active, recent demo data when testing the app
+  - Run `node scripts/seed-demo-user.js` to refresh demo user with latest 2 weeks of activities
+
 ### Changed
 - **Terminal Design Now Permanent** - Removed all conditional styling throughout the app
   - All screens, modals, and components now exclusively use terminal design

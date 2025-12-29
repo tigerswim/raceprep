@@ -153,9 +153,9 @@ async function seedDemoUser() {
 
     const sessions = [];
 
-    // Generate training for the last 8 weeks (56 days) with consistent weekly schedule
+    // Generate training for the last 2 weeks (14 days) with consistent weekly schedule
     // Week structure: Mon-swim/run, Tue-bike, Wed-swim/run, Thu-bike, Fri-swim/run, Sat-bike/run, Sun-rest
-    for (let week = 0; week < 8; week++) {
+    for (let week = 0; week < 2; week++) {
       const weekStartDaysAgo = week * 7;
 
       // Monday (swim + run)
