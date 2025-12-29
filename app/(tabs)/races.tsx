@@ -587,30 +587,51 @@ function RacesScreenContent() {
           // Try geocoding to get a central zip code for radius-based search
           try {
             const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
-            const geoResponse = await fetch(geocodeUrl);
 
-            if (geoResponse.ok) {
-              const geoData = await geoResponse.json();
-              if (geoData.results && geoData.results.length > 0) {
-                // Extract zip code from geocoding results
-                const addressComponents = geoData.results[0].address_components;
-                const zipComponent = addressComponents.find((comp: any) =>
-                  comp.types.includes("postal_code"),
-                );
+            if (!apiKey) {
+              console.error('[RACE DISCOVERY] Google Maps API key is not set! Cannot geocode.');
+            } else {
+              console.log(`[RACE DISCOVERY] Attempting to geocode "${location}"...`);
+              const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
+              const geoResponse = await fetch(geocodeUrl);
 
-                if (zipComponent) {
-                  zipCodeToUse = zipComponent.short_name;
-                  useZipCodeForRadius = true;
-                  console.log(
-                    `Geocoded "${location}" to zip code ${zipCodeToUse} for radius-based search`,
-                  );
+              console.log(`[RACE DISCOVERY] Geocoding response status: ${geoResponse.status}`);
+
+              if (geoResponse.ok) {
+                const geoData = await geoResponse.json();
+                console.log('[RACE DISCOVERY] Geocoding response:', geoData);
+
+                if (geoData.status !== 'OK') {
+                  console.error(`[RACE DISCOVERY] Geocoding API returned status: ${geoData.status}`);
                 }
+
+                if (geoData.results && geoData.results.length > 0) {
+                  // Extract zip code from geocoding results
+                  const addressComponents = geoData.results[0].address_components;
+                  const zipComponent = addressComponents.find((comp: any) =>
+                    comp.types.includes("postal_code"),
+                  );
+
+                  if (zipComponent) {
+                    zipCodeToUse = zipComponent.short_name;
+                    useZipCodeForRadius = true;
+                    console.log(
+                      `[RACE DISCOVERY] ✓ Geocoded "${location}" to zip code ${zipCodeToUse} for radius-based search`,
+                    );
+                  } else {
+                    console.warn(`[RACE DISCOVERY] No zip code found in geocoding results for "${location}"`);
+                  }
+                } else {
+                  console.warn(`[RACE DISCOVERY] No results from geocoding API for "${location}"`);
+                }
+              } else {
+                const errorText = await geoResponse.text();
+                console.error(`[RACE DISCOVERY] Geocoding request failed:`, errorText);
               }
             }
           } catch (geocodeError) {
-            console.warn(
-              "Geocoding failed, will try city/state parameters:",
+            console.error(
+              "[RACE DISCOVERY] Geocoding exception:",
               geocodeError,
             );
           }
