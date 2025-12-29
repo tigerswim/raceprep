@@ -619,7 +619,50 @@ function RacesScreenContent() {
                       `[RACE DISCOVERY] ✓ Geocoded "${location}" to zip code ${zipCodeToUse} for radius-based search`,
                     );
                   } else {
-                    console.warn(`[RACE DISCOVERY] No zip code found in geocoding results for "${location}"`);
+                    // No zip code in direct geocoding result (common for city names)
+                    // Try reverse geocoding using the lat/long to get a specific address
+                    console.log(`[RACE DISCOVERY] No zip code in city result, trying reverse geocode...`);
+
+                    const geometry = geoData.results[0].geometry;
+                    if (geometry && geometry.location) {
+                      const lat = geometry.location.lat;
+                      const lng = geometry.location.lng;
+                      console.log(`[RACE DISCOVERY] Using coordinates: ${lat}, ${lng}`);
+
+                      try {
+                        const reverseUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+                        const reverseResponse = await fetch(reverseUrl);
+
+                        if (reverseResponse.ok) {
+                          const reverseData = await reverseResponse.json();
+
+                          if (reverseData.results && reverseData.results.length > 0) {
+                            // Look through results for one with a postal code
+                            for (const result of reverseData.results) {
+                              const reverseComponents = result.address_components;
+                              const reverseZip = reverseComponents.find((comp: any) =>
+                                comp.types.includes("postal_code"),
+                              );
+
+                              if (reverseZip) {
+                                zipCodeToUse = reverseZip.short_name;
+                                useZipCodeForRadius = true;
+                                console.log(
+                                  `[RACE DISCOVERY] ✓ Reverse geocoded to zip code ${zipCodeToUse}`,
+                                );
+                                break;
+                              }
+                            }
+                          }
+                        }
+                      } catch (reverseError) {
+                        console.error('[RACE DISCOVERY] Reverse geocoding failed:', reverseError);
+                      }
+                    }
+
+                    if (!useZipCodeForRadius) {
+                      console.warn(`[RACE DISCOVERY] Could not get zip code for "${location}" via reverse geocoding`);
+                    }
                   }
                 } else {
                   console.warn(`[RACE DISCOVERY] No results from geocoding API for "${location}"`);
