@@ -19,10 +19,9 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  // Don't block render while fonts load - use fallback
+  // This improves LCP (Largest Contentful Paint) significantly
+  // Font will swap in when ready thanks to font-display: swap
 
   // Terminal design is permanent - always use terminal background
   const terminalBackground = { backgroundColor: '#0A0E14', flex: 1 };

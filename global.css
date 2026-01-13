@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font optimization - use font-display: swap for better performance */
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('../assets/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-display: swap; /* Prevent blocking render while font loads */
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Ensure proper scrolling on web and iOS Safari URL bar behavior */
 html {
   overflow-x: hidden;
