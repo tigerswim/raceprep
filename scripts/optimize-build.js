@@ -54,46 +54,28 @@ try {
 
   let html = fs.readFileSync(indexHtmlPath, 'utf-8');
 
-  // Find the CSS and JS files
-  const cssMatch = html.match(/href="(\/[^"]*\.css)"/);
-  const jsMatch = html.match(/src="(\/[^"]*\.js)"/);
+  // Check if Expo already added preload hints (it usually does)
+  const hasExistingPreload = html.includes('<link rel="preload"');
 
-  if (cssMatch || jsMatch) {
-    // Add preload hints for critical resources
-    const preloadHints = [];
+  if (!hasExistingPreload) {
+    console.log('  Adding resource hints...');
 
-    if (cssMatch) {
-      preloadHints.push(`<link rel="preload" href="${cssMatch[1]}" as="style">`);
-    }
-
-    if (jsMatch) {
-      preloadHints.push(`<link rel="preload" href="${jsMatch[1]}" as="script">`);
-    }
-
-    // Add DNS prefetch for external domains
+    // Only add DNS prefetch for external domains if no preloads exist
     const dnsPrefetch = [
       '<link rel="dns-prefetch" href="https://jpimixridnqwnpjhwdja.supabase.co">',
       '<link rel="preconnect" href="https://jpimixridnqwnpjhwdja.supabase.co" crossorigin>',
     ];
 
-    // Insert hints before the existing preload (if any) or after charset
-    const insertPoint = html.indexOf('<link rel="preload"');
-    if (insertPoint !== -1) {
-      html = html.slice(0, insertPoint) +
-             dnsPrefetch.join('\n    ') + '\n    ' +
-             preloadHints.join('\n    ') + '\n    ' +
-             html.slice(insertPoint);
-    } else {
-      const charsetPoint = html.indexOf('<meta charset');
-      const insertAfter = html.indexOf('>', charsetPoint) + 1;
-      html = html.slice(0, insertAfter) + '\n    ' +
-             dnsPrefetch.join('\n    ') + '\n    ' +
-             preloadHints.join('\n    ') +
-             html.slice(insertAfter);
-    }
+    const charsetPoint = html.indexOf('<meta charset');
+    const insertAfter = html.indexOf('>', charsetPoint) + 1;
+    html = html.slice(0, insertAfter) + '\n    ' +
+           dnsPrefetch.join('\n    ') +
+           html.slice(insertAfter);
 
     fs.writeFileSync(indexHtmlPath, html);
-    console.log('✅ index.html optimized with resource hints\n');
+    console.log('✅ index.html optimized with DNS prefetch\n');
+  } else {
+    console.log('✅ index.html already has resource hints from Expo\n');
   }
 } catch (err) {
   console.error('❌ HTML optimization failed:', err.message);
