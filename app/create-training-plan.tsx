@@ -15,6 +15,19 @@ import { useAuth } from '../src/contexts/AuthContext';
 import { trainingPlanService } from '../src/services/trainingPlanService';
 import type { TrainingPlanTemplate } from '../src/types/trainingPlans';
 
+// Terminal color palette
+const terminalColors = {
+  bg: '#0A0E14',
+  panel: '#0F1419',
+  border: '#1C2127',
+  textPrimary: '#F8F8F2',
+  textSecondary: '#B4B8C5',
+  yellow: '#FFD866',
+  swim: '#00D4FF',
+  bike: '#FF6B35',
+  run: '#4ECDC4',
+};
+
 export default function CreateTrainingPlanScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -116,18 +129,22 @@ export default function CreateTrainingPlanScreen() {
       <View style={styles.centerContainer}>
         <Stack.Screen
           options={{
-            title: 'Create Training Plan',
+            title: 'CREATE TRAINING PLAN',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#1a1a1a',
+              backgroundColor: terminalColors.bg,
             },
-            headerTintColor: '#fff',
+            headerTintColor: terminalColors.yellow,
             headerTitleStyle: {
-              color: '#fff',
+              color: terminalColors.textPrimary,
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              letterSpacing: 2,
             },
           }}
         />
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={terminalColors.yellow} />
+        <Text style={styles.loadingText}>LOADING TEMPLATE...</Text>
       </View>
     );
   }
@@ -137,18 +154,21 @@ export default function CreateTrainingPlanScreen() {
       <View style={styles.centerContainer}>
         <Stack.Screen
           options={{
-            title: 'Create Training Plan',
+            title: 'CREATE TRAINING PLAN',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#1a1a1a',
+              backgroundColor: terminalColors.bg,
             },
-            headerTintColor: '#fff',
+            headerTintColor: terminalColors.yellow,
             headerTitleStyle: {
-              color: '#fff',
+              color: terminalColors.textPrimary,
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              letterSpacing: 2,
             },
           }}
         />
-        <Text style={styles.errorText}>Template not found</Text>
+        <Text style={styles.errorText}>TEMPLATE NOT FOUND</Text>
       </View>
     );
   }
@@ -158,14 +178,17 @@ export default function CreateTrainingPlanScreen() {
       <View style={styles.container}>
         <Stack.Screen
           options={{
-            title: 'Create Training Plan',
+            title: 'CREATE TRAINING PLAN',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#1a1a1a',
+              backgroundColor: terminalColors.bg,
             },
-            headerTintColor: '#fff',
+            headerTintColor: terminalColors.yellow,
             headerTitleStyle: {
-              color: '#fff',
+              color: terminalColors.textPrimary,
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              letterSpacing: 2,
             },
           }}
         />
@@ -173,54 +196,59 @@ export default function CreateTrainingPlanScreen() {
         <ScrollView style={styles.content}>
           {/* Template Summary */}
           <View style={styles.templateSummary}>
-            <Text style={styles.templateName}>{template.name}</Text>
+            <Text style={styles.templateName}>{template.name.toUpperCase()}</Text>
             <View style={styles.templateStats}>
               <Text style={styles.templateStat}>
-                {template.duration_weeks} weeks
+                [{template.duration_weeks} WEEKS]
               </Text>
-              <Text style={styles.templateStat}>•</Text>
+              <Text style={styles.templateStatDivider}>•</Text>
               <Text style={styles.templateStat}>
-                {template.weekly_hours_min}-{template.weekly_hours_max} hrs/week
+                [{template.weekly_hours_min}-{template.weekly_hours_max} HRS/WEEK]
               </Text>
             </View>
+            {template.description && (
+              <Text style={styles.templateDescription}>{template.description}</Text>
+            )}
           </View>
 
           {/* Plan Name */}
           <View style={styles.formField}>
-            <Text style={styles.formLabel}>Plan Name</Text>
+            <Text style={styles.formLabel}>&gt; PLAN NAME:</Text>
             <TextInput
               style={styles.formInput}
               value={planName}
               onChangeText={setPlanName}
-              placeholder="My Training Plan"
-              placeholderTextColor="rgba(255, 255, 255, 0.4)"
+              placeholder="MY TRAINING PLAN"
+              placeholderTextColor={`${terminalColors.textSecondary}66`}
             />
           </View>
 
           {/* Start Date */}
           <View style={styles.formField}>
-            <Text style={styles.formLabel}>Start Date</Text>
+            <Text style={styles.formLabel}>&gt; START DATE:</Text>
             <TextInput
               style={styles.formInput}
               value={startDate}
               onChangeText={setStartDate}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor="rgba(255, 255, 255, 0.4)"
+              placeholderTextColor={`${terminalColors.textSecondary}66`}
             />
             <Text style={styles.formHint}>
-              Recommended: Start on a Monday. Your plan will end on{' '}
-              {calculateEndDate(startDate || new Date().toISOString().split('T')[0], template.duration_weeks)}
+              → RECOMMENDED: START ON A MONDAY
+            </Text>
+            <Text style={styles.formHint}>
+              → PLAN ENDS: {calculateEndDate(startDate || new Date().toISOString().split('T')[0], template.duration_weeks)}
             </Text>
           </View>
 
           {/* Race Selection (Optional - can be added later) */}
           <View style={styles.formField}>
-            <Text style={styles.formLabel}>Target Race (Optional)</Text>
+            <Text style={styles.formLabel}>&gt; TARGET RACE (OPTIONAL):</Text>
             <Text style={styles.formHint}>
-              You can link this plan to a specific race from your race calendar
+              → LINK THIS PLAN TO A SPECIFIC RACE FROM YOUR CALENDAR
             </Text>
             <TouchableOpacity style={styles.linkButton}>
-              <Text style={styles.linkButtonText}>Select Race</Text>
+              <Text style={styles.linkButtonText}>[SELECT RACE]</Text>
             </TouchableOpacity>
           </View>
 
@@ -231,7 +259,7 @@ export default function CreateTrainingPlanScreen() {
             disabled={submitting}
           >
             <Text style={styles.createButtonText}>
-              {submitting ? 'Creating...' : 'Create Training Plan'}
+              {submitting ? '[CREATING...]' : '[CREATE TRAINING PLAN]'}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -243,96 +271,130 @@ export default function CreateTrainingPlanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: terminalColors.bg,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: terminalColors.bg,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 20,
   },
   templateSummary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    backgroundColor: terminalColors.panel,
+    borderWidth: 2,
+    borderColor: terminalColors.border,
     padding: 20,
     marginBottom: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   templateName: {
+    fontFamily: 'monospace',
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 1)',
-    marginBottom: 8,
+    color: terminalColors.textPrimary,
+    marginBottom: 12,
+    letterSpacing: 1.5,
   },
   templateStats: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    marginBottom: 12,
   },
   templateStat: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.yellow,
+    fontWeight: 'bold',
+  },
+  templateStatDivider: {
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
+    marginHorizontal: 8,
+  },
+  templateDescription: {
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
+    lineHeight: 18,
   },
   formField: {
     marginBottom: 24,
   },
   formLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: terminalColors.yellow,
     marginBottom: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   formInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
+    backgroundColor: terminalColors.panel,
+    borderWidth: 2,
+    borderColor: terminalColors.border,
     padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    color: 'rgba(255, 255, 255, 1)',
+    fontFamily: 'monospace',
+    fontSize: 14,
+    color: terminalColors.textPrimary,
   },
   formHint: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 11,
+    color: terminalColors.textSecondary,
     marginTop: 6,
-    lineHeight: 20,
+    lineHeight: 16,
   },
   linkButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: terminalColors.border,
     padding: 12,
-    borderWidth: 1,
-    borderColor: '#3B82F6',
     marginTop: 8,
   },
   linkButtonText: {
-    fontSize: 16,
-    color: '#3B82F6',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.swim,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
   createButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
+    backgroundColor: terminalColors.yellow,
     padding: 16,
     marginTop: 8,
     marginBottom: 40,
+    borderWidth: 2,
+    borderColor: terminalColors.yellow,
   },
   createButtonDisabled: {
     opacity: 0.5,
   },
   createButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#fff',
+    fontFamily: 'monospace',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: terminalColors.bg,
     textAlign: 'center',
+    letterSpacing: 1.5,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
+    letterSpacing: 1.2,
   },
   errorText: {
-    fontSize: 16,
+    fontFamily: 'monospace',
+    fontSize: 14,
     color: '#FF3B30',
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
 });

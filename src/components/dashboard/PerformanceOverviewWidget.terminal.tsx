@@ -362,8 +362,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       borderWidth: 2,
       borderColor: colors.border,
       borderRadius: 0,
-      padding: 20,
-      margin: 10
+      padding: 20
     }}>
       {/* Header */}
       <Text style={mergeStyles(terminalText.header, { marginBottom: 24 })}>

@@ -2,6 +2,12 @@
  * Demo User Seed Script
  * Creates "John Doe" test user with complete data for all dashboard widgets
  *
+ * Features:
+ * - Auto-updating training data (4 weeks past + 8 weeks future)
+ * - Run anytime to refresh demo data - dates are always current!
+ * - Creates ~120 training sessions with realistic triathlon patterns
+ * - Includes race results, goals, planned races, and user settings
+ *
  * Usage: node scripts/seed-demo-user.js
  *
  * Requirements:
@@ -136,7 +142,16 @@ async function seedDemoUser() {
 
   console.log('');
 
-  // Step 3: Create training sessions (last 60 days)
+  // Step 3: Create training sessions (rolling 12-week window: 4 weeks past + 8 weeks future)
+  //
+  // AUTO-UPDATING TRAINING DATA:
+  // This generates training sessions dynamically based on the current date.
+  // - Past 4 weeks: Shows training history for analytics and trends
+  // - Future 8 weeks: Shows upcoming workouts and training plan
+  // - Total: ~120 sessions (10 sessions/week × 12 weeks)
+  //
+  // Run this script anytime to refresh demo data - it will automatically
+  // generate fresh dates relative to today, so the demo never goes stale!
   console.log('3️⃣  Creating training sessions...');
   try {
     // First, delete any existing training sessions for this user
@@ -153,16 +168,32 @@ async function seedDemoUser() {
 
     const sessions = [];
 
-    // Generate training for the last 2 weeks (14 days) with consistent weekly schedule
+    // Generate training for a rolling 12-week window (4 past + 8 future)
+    // This keeps demo data current without needing manual updates
     // Week structure: Mon-swim/run, Tue-bike, Wed-swim/run, Thu-bike, Fri-swim/run, Sat-bike/run, Sun-rest
-    for (let week = 0; week < 2; week++) {
-      const weekStartDaysAgo = week * 7;
+    const PAST_WEEKS = 4;
+    const FUTURE_WEEKS = 8;
+    const TOTAL_WEEKS = PAST_WEEKS + FUTURE_WEEKS;
+
+    for (let week = 0; week < TOTAL_WEEKS; week++) {
+      // Calculate days offset from today (negative = past, positive = future)
+      const weeksFromToday = week - PAST_WEEKS;
+      const weekStartDaysOffset = weeksFromToday * 7;
+
+      // Helper to get date for this week
+      const getWeekDate = (dayOffset) => {
+        if (weekStartDaysOffset + dayOffset < 0) {
+          return getRandomDate(Math.abs(weekStartDaysOffset + dayOffset));
+        } else {
+          return getFutureDate(weekStartDaysOffset + dayOffset);
+        }
+      };
 
       // Monday (swim + run)
       sessions.push({
         user_id: userId,
         type: 'swim',
-        date: getRandomDate(weekStartDaysAgo + 6), // Monday is 6 days before Sunday
+        date: getWeekDate(0), // Monday
         name: week % 3 === 0 ? 'Interval Training' : 'Endurance Swim',
         distance: Math.round(2000 + Math.random() * 1000),
         moving_time: Math.round(2400 + Math.random() * 600),
@@ -172,7 +203,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'run',
-        date: getRandomDate(weekStartDaysAgo + 6),
+        date: getWeekDate(0),
         name: 'Easy Run',
         distance: Math.round(8000 + Math.random() * 4000),
         moving_time: Math.round(2700 + Math.random() * 900),
@@ -186,7 +217,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'bike',
-        date: getRandomDate(weekStartDaysAgo + 5),
+        date: getWeekDate(1),
         name: 'Tempo Ride',
         distance: Math.round(40000 + Math.random() * 20000),
         moving_time: Math.round(5400 + Math.random() * 1800),
@@ -202,7 +233,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'swim',
-        date: getRandomDate(weekStartDaysAgo + 4),
+        date: getWeekDate(2),
         name: 'Drill Session',
         distance: Math.round(2500 + Math.random() * 500),
         moving_time: Math.round(2700 + Math.random() * 300),
@@ -212,7 +243,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'run',
-        date: getRandomDate(weekStartDaysAgo + 4),
+        date: getWeekDate(2),
         name: week % 2 === 0 ? 'Interval Run' : 'Tempo Run',
         distance: Math.round(8000 + Math.random() * 3000),
         moving_time: Math.round(2400 + Math.random() * 600),
@@ -226,7 +257,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'bike',
-        date: getRandomDate(weekStartDaysAgo + 3),
+        date: getWeekDate(3),
         name: 'Endurance Ride',
         distance: Math.round(50000 + Math.random() * 20000),
         moving_time: Math.round(6000 + Math.random() * 1800),
@@ -242,7 +273,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'swim',
-        date: getRandomDate(weekStartDaysAgo + 2),
+        date: getWeekDate(4),
         name: 'Open Water Prep',
         distance: Math.round(2000 + Math.random() * 800),
         moving_time: Math.round(2400 + Math.random() * 400),
@@ -252,7 +283,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'run',
-        date: getRandomDate(weekStartDaysAgo + 2),
+        date: getWeekDate(4),
         name: 'Recovery Run',
         distance: Math.round(6000 + Math.random() * 2000),
         moving_time: Math.round(2100 + Math.random() * 600),
@@ -266,7 +297,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'bike',
-        date: getRandomDate(weekStartDaysAgo + 1),
+        date: getWeekDate(5),
         name: 'Long Ride',
         distance: Math.round(80000 + Math.random() * 40000),
         moving_time: Math.round(10800 + Math.random() * 3600),
@@ -280,7 +311,7 @@ async function seedDemoUser() {
       sessions.push({
         user_id: userId,
         type: 'run',
-        date: getRandomDate(weekStartDaysAgo + 1),
+        date: getWeekDate(5),
         name: 'Long Run',
         distance: Math.round(15000 + Math.random() * 5000),
         moving_time: Math.round(5400 + Math.random() * 1800),
@@ -298,7 +329,7 @@ async function seedDemoUser() {
       .insert(sessions);
 
     if (sessionsError) throw sessionsError;
-    console.log(`   ✅ Created ${sessions.length} training sessions`);
+    console.log(`   ✅ Created ${sessions.length} training sessions (${PAST_WEEKS} weeks past + ${FUTURE_WEEKS} weeks future)`);
   } catch (error) {
     console.error('   ❌ Error creating training sessions:', error.message);
   }

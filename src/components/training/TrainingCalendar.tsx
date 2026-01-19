@@ -209,19 +209,19 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   const getDisciplineColor = (discipline: string): string => {
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return '#007AFF';
+        return '#00D4FF'; // terminal swim color
       case 'bike':
-        return '#FF9500';
+        return '#FF6B35'; // terminal bike color
       case 'run':
-        return '#34C759';
+        return '#4ECDC4'; // terminal run color
       case 'brick':
         return '#AF52DE';
       case 'strength':
         return '#FF3B30';
       case 'rest':
-        return '#8E8E93';
+        return '#B4B8C5'; // terminal text-secondary
       default:
-        return '#8E8E93';
+        return '#B4B8C5';
     }
   };
 
@@ -230,19 +230,19 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
 
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return <TbSwimming size={iconSize} color="#007AFF" />;
+        return <TbSwimming size={iconSize} color="#00D4FF" />;
       case 'bike':
-        return <TbBike size={iconSize} color="#FF9500" />;
+        return <TbBike size={iconSize} color="#FF6B35" />;
       case 'run':
-        return <TbRun size={iconSize} color="#34C759" />;
+        return <TbRun size={iconSize} color="#4ECDC4" />;
       case 'brick':
         return <TbFlame size={iconSize} color="#AF52DE" />;
       case 'strength':
         return <TbWeight size={iconSize} color="#FF3B30" />;
       case 'rest':
-        return <TbBed size={iconSize} color="#8E8E93" />;
+        return <TbBed size={iconSize} color="#B4B8C5" />;
       default:
-        return <TbBed size={iconSize} color="#8E8E93" />;
+        return <TbBed size={iconSize} color="#B4B8C5" />;
     }
   };
 
@@ -338,7 +338,8 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={terminalColors.yellow} />
+        <Text style={styles.errorText}>LOADING...</Text>
       </View>
     );
   }
@@ -475,42 +476,58 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   );
 };
 
+const terminalColors = {
+  bg: '#0A0E14',
+  panel: '#0F1419',
+  border: '#1C2127',
+  textPrimary: '#F8F8F2',
+  textSecondary: '#B4B8C5',
+  yellow: '#FFD866',
+  swim: '#00D4FF',
+  bike: '#FF6B35',
+  run: '#4ECDC4',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: terminalColors.bg,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: terminalColors.bg,
     padding: 24,
   },
   weekNavigation: {
-    borderWidth: 1,
+    borderWidth: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: terminalColors.panel,
+    borderBottomWidth: 2,
+    borderBottomColor: terminalColors.border,
   },
   navButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#3B82F6',
+    borderRadius: 0,
+    backgroundColor: terminalColors.yellow,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: terminalColors.yellow,
   },
   navButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: terminalColors.border,
+    borderColor: terminalColors.border,
   },
   navButtonText: {
     fontSize: 20,
-    color: '#fff',
+    fontFamily: 'monospace',
+    color: terminalColors.bg,
     fontWeight: 'bold',
   },
   weekInfo: {
@@ -518,35 +535,42 @@ const styles = StyleSheet.create({
   },
   weekLabel: {
     fontSize: 20,
+    fontFamily: 'monospace',
     fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 1)',
+    color: terminalColors.textPrimary,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   completionRate: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
     marginTop: 4,
   },
   statsBar: {
-    borderWidth: 1,
+    borderWidth: 2,
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: terminalColors.panel,
+    borderBottomWidth: 2,
+    borderBottomColor: terminalColors.border,
   },
   statItem: {
     alignItems: 'center',
   },
   statValue: {
+    fontFamily: 'monospace',
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3B82F6',
+    color: terminalColors.yellow,
   },
   statLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 11,
+    color: terminalColors.textSecondary,
     marginTop: 4,
+    textTransform: 'uppercase',
   },
   workoutsContainer: {
     flex: 1,
@@ -555,22 +579,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   workoutCard: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: terminalColors.border,
+    backgroundColor: terminalColors.panel,
+    borderRadius: 0,
     marginBottom: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   workoutCardCompleted: {
     opacity: 0.7,
     borderWidth: 2,
-    borderColor: '#34C759',
+    borderColor: terminalColors.run,
   },
   workoutCardSkipped: {
     opacity: 0.5,
@@ -579,7 +598,7 @@ const styles = StyleSheet.create({
   },
   workoutCardOverdue: {
     borderWidth: 2,
-    borderColor: '#FF9500',
+    borderColor: terminalColors.bike,
   },
   disciplineBar: {
     height: 4,
@@ -597,13 +616,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   dayName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
+    fontFamily: 'monospace',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: terminalColors.textPrimary,
+    textTransform: 'uppercase',
   },
   scheduledDate: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 10,
+    color: terminalColors.textSecondary,
     marginTop: 2,
   },
   dayIcon: {
@@ -612,8 +634,8 @@ const styles = StyleSheet.create({
   statusBadge: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: '#34C759',
+    borderRadius: 0,
+    backgroundColor: terminalColors.run,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -621,7 +643,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF3B30',
   },
   statusBadgeOverdue: {
-    backgroundColor: '#FF9500',
+    backgroundColor: terminalColors.bike,
   },
   statusBadgeText: {
     color: '#fff',
@@ -632,17 +654,19 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   disciplineText: {
-    fontSize: 14,
+    fontFamily: 'monospace',
+    fontSize: 11,
     fontWeight: 'bold',
-    color: '#3B82F6',
+    color: terminalColors.swim,
     marginBottom: 4,
+    letterSpacing: 1.2,
   },
   workoutType: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
+    fontFamily: 'monospace',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: terminalColors.textPrimary,
     marginBottom: 8,
-    textTransform: 'capitalize',
   },
   workoutDetails: {
     flexDirection: 'row',
@@ -650,45 +674,58 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
   },
   intensityText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontStyle: 'italic',
+    fontFamily: 'monospace',
+    fontSize: 11,
+    color: terminalColors.textSecondary,
   },
   emptyState: {
     padding: 40,
     alignItems: 'center',
   },
   emptyStateText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
     textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
   },
   errorText: {
-    fontSize: 16,
+    fontFamily: 'monospace',
+    fontSize: 14,
     color: '#FF3B30',
     textAlign: 'center',
     marginBottom: 16,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
   },
   errorDescription: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   retryButton: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
+    backgroundColor: terminalColors.yellow,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: terminalColors.yellow,
   },
   retryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'monospace',
+    color: terminalColors.bg,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
   header: {
     flexDirection: 'row',
@@ -701,21 +738,26 @@ const styles = StyleSheet.create({
   backButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: terminalColors.border,
   },
   backButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'monospace',
+    color: terminalColors.yellow,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
   headerTitle: {
-    fontSize: 24,
+    fontFamily: 'monospace',
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: terminalColors.textPrimary,
     flex: 1,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   headerActions: {
     flexDirection: 'row',
@@ -724,10 +766,10 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: terminalColors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -739,35 +781,42 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 16,
+    backgroundColor: terminalColors.panel,
+    borderRadius: 0,
     padding: 24,
     width: '100%',
     maxWidth: 400,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 2,
+    borderColor: terminalColors.border,
   },
   modalTitle: {
-    fontSize: 24,
+    fontFamily: 'monospace',
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: terminalColors.textPrimary,
     marginBottom: 24,
     textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   modalLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: terminalColors.yellow,
     marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
   },
   modalInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
+    backgroundColor: terminalColors.bg,
+    borderWidth: 2,
+    borderColor: terminalColors.border,
+    borderRadius: 0,
     padding: 12,
-    fontSize: 16,
-    color: '#ffffff',
+    fontFamily: 'monospace',
+    fontSize: 14,
+    color: terminalColors.textPrimary,
     marginBottom: 24,
   },
   modalButtons: {
@@ -778,20 +827,24 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 0,
     alignItems: 'center',
   },
   modalButtonCancel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: terminalColors.border,
   },
   modalButtonSave: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: terminalColors.yellow,
+    borderWidth: 2,
+    borderColor: terminalColors.yellow,
   },
   modalButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: terminalColors.textPrimary,
+    letterSpacing: 1.2,
   },
 });

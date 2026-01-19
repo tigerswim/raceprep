@@ -9,7 +9,6 @@ import { RacePredictionModal } from './RacePredictionModal';
 import { AddResultModal } from './AddResultModal';
 import { PerformanceOverviewWidget } from './dashboard/PerformanceOverviewWidget';
 import { UpcomingRacesWidget } from './dashboard/UpcomingRacesWidget';
-import { GoalsProgressWidget } from './dashboard/GoalsProgressWidget';
 import { WeatherWidget } from './dashboard/WeatherWidget';
 import { TrainingPlanProgressWidget } from './dashboard/TrainingPlanProgressWidget';
 import {
@@ -459,11 +458,12 @@ export const WebDashboard: React.FC = () => {
           </div>
 
           {/* Dashboard Widgets */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PerformanceOverviewWidget />
             <UpcomingRacesWidget />
             <TrainingPlanProgressWidget />
-            <GoalsProgressWidget />
+            <WeatherWidget />
+
             {/* Latest Race Performance */}
             {userRaceResults.length > 0 && (
               <div className="bg-terminal-panel border-2 border-terminal-border p-6">
@@ -523,16 +523,11 @@ export const WebDashboard: React.FC = () => {
                 </div>
               </div>
             )}
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <WeatherWidget />
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-terminal-panel border-2 border-terminal-border p-6">
+            {/* Quick Actions */}
+            <div className="bg-terminal-panel border-2 border-terminal-border p-6">
               <h2 className="text-lg font-bold text-text-primary font-mono tracking-wider mb-4">QUICK ACTIONS</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {/* Add Race Result */}
                 <button
                   onClick={() => setShowAddResultModal(true)}
@@ -590,6 +585,7 @@ export const WebDashboard: React.FC = () => {
                   <div className="text-[9px] opacity-80">LOG WORKOUTS</div>
                 </button>
               </div>
+            </div>
           </div>
 
         </div>

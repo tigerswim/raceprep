@@ -2,6 +2,66 @@
 
 ## Recent Updates (January 2025)
 
+### 🎨 Terminal Design & Dashboard Improvements (January 19, 2026)
+
+#### Dashboard Layout Optimization
+- **REMOVED**: Goals Progress widget from dashboard (`src/components/WebDashboard.tsx`)
+  - Removed import and component reference for `GoalsProgressWidget`
+  - Consolidated dashboard into single 2-column grid for consistent layout
+- **FIXED**: Dashboard section width consistency
+  - All widgets now use same grid layout (`grid-cols-1 lg:grid-cols-2`)
+  - Weather widget moved into main grid instead of separate container
+  - Quick Actions resized to match other sections (2-column instead of 4-column)
+- **FIXED**: Performance Overview widget margin issue
+  - Removed `margin: 10` from widget container (`src/components/dashboard/PerformanceOverviewWidget.terminal.tsx:366`)
+  - Widget now aligns properly with other dashboard sections
+
+#### Terminal Design Consistency
+- **UPDATED**: Create Training Plan page to terminal design (`src/app/create-training-plan.tsx`)
+  - Applied terminal color palette: `bg: #0A0E14`, `panel: #0F1419`, `border: #1C2127`, `yellow: #FFD866`
+  - All text converted to monospace font with uppercase styling
+  - Form labels with `>` prefix (terminal prompt style)
+  - Square borders (borderRadius: 0) throughout
+  - Yellow accent color for labels and primary button
+  - Terminal-style headers and error states
+
+- **UPDATED**: Training Calendar to full terminal design
+  - Screen wrapper (`app/training-calendar.tsx`): Terminal header, colors, and error states
+  - Calendar component (`src/components/training/TrainingCalendar.tsx`):
+    - All discipline colors updated to terminal palette: swim `#00D4FF`, bike `#FF6B35`, run `#4ECDC4`
+    - Dark terminal backgrounds and borders throughout
+    - Monospace font family with uppercase text and letter spacing
+    - Square buttons and cards (borderRadius: 0)
+    - Navigation buttons: yellow background for active, border style for disabled
+    - Stats display with yellow values and monospace styling
+    - Modal forms with terminal input styling and borders
+
+- **UPDATED**: Workout Detail Modal to terminal design (`src/components/training/WorkoutDetailModal.tsx`)
+  - Converted all style references to use existing `terminalStyles` object
+  - Updated discipline color functions to match terminal palette
+  - Removed old `styles` StyleSheet object (no longer used)
+  - All sections, forms, buttons now use terminal styling
+  - Consistent monospace fonts and square borders throughout modal
+
+#### Demo User Data System
+- **ENHANCED**: Auto-updating demo training data (`scripts/seed-demo-user.js`)
+  - Generates rolling 12-week window: 4 weeks past + 8 weeks future
+  - Creates ~120 training sessions with realistic triathlon schedule
+  - Dates dynamically calculated from current date (never goes stale)
+  - Weekly pattern: Mon (swim/run), Tue (bike), Wed (swim/run), Thu (bike), Fri (swim/run), Sat (long bike/run), Sun (rest)
+  - Simply re-run script to refresh demo data with current dates
+  - Updated documentation in script comments
+
+#### Files Modified
+- `src/components/WebDashboard.tsx` - Dashboard layout improvements
+- `src/components/dashboard/PerformanceOverviewWidget.terminal.tsx` - Fixed margin
+- `src/app/create-training-plan.tsx` - Terminal design implementation
+- `app/create-training-plan.tsx` - Synced with src version
+- `app/training-calendar.tsx` - Terminal header and error states
+- `src/components/training/TrainingCalendar.tsx` - Full terminal styling
+- `src/components/training/WorkoutDetailModal.tsx` - Terminal design consistency
+- `scripts/seed-demo-user.js` - Auto-updating rolling window data generation
+
 ### 🚀 Training Plan & Strava Integration (January 12, 2025)
 
 #### Strava Workout Matching System

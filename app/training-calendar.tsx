@@ -6,6 +6,19 @@ import { WorkoutDetailModal } from '../src/components/training/WorkoutDetailModa
 import { AuthGuard } from '../src/components/AuthGuard';
 import type { WorkoutWithCompletion } from '../src/types/trainingPlans';
 
+// Terminal color palette
+const terminalColors = {
+  bg: '#0A0E14',
+  panel: '#0F1419',
+  border: '#1C2127',
+  textPrimary: '#F8F8F2',
+  textSecondary: '#B4B8C5',
+  yellow: '#FFD866',
+  swim: '#00D4FF',
+  bike: '#FF6B35',
+  run: '#4ECDC4',
+};
+
 export default function TrainingCalendarScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -27,27 +40,30 @@ export default function TrainingCalendarScreen() {
         <View style={styles.container}>
           <Stack.Screen
             options={{
-              title: 'Training Calendar',
+              title: 'TRAINING CALENDAR',
               headerShown: true,
               headerStyle: {
-                backgroundColor: '#1a1a1a',
+                backgroundColor: terminalColors.bg,
               },
-              headerTintColor: '#fff',
+              headerTintColor: terminalColors.yellow,
               headerTitleStyle: {
-                color: '#fff',
+                color: terminalColors.textPrimary,
+                fontFamily: 'monospace',
+                fontWeight: 'bold',
+                letterSpacing: 2,
               },
             }}
           />
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>No training plan specified</Text>
+            <Text style={styles.errorText}>ERROR: NO TRAINING PLAN SPECIFIED</Text>
             <Text style={styles.errorDescription}>
-              Please select a training plan to view your calendar.
+              → PLEASE SELECT A TRAINING PLAN TO VIEW YOUR CALENDAR
             </Text>
             <TouchableOpacity
               style={styles.goToPlansButton}
               onPress={() => router.push('/training-plans')}
             >
-              <Text style={styles.goToPlansButtonText}>Go to Training Plans</Text>
+              <Text style={styles.goToPlansButtonText}>[GO TO TRAINING PLANS]</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -60,14 +76,17 @@ export default function TrainingCalendarScreen() {
       <View style={styles.container}>
         <Stack.Screen
           options={{
-            title: 'Training Calendar',
+            title: 'TRAINING CALENDAR',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#1a1a1a',
+              backgroundColor: terminalColors.bg,
             },
-            headerTintColor: '#fff',
+            headerTintColor: terminalColors.yellow,
             headerTitleStyle: {
-              color: '#fff',
+              color: terminalColors.textPrimary,
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              letterSpacing: 2,
             },
           }}
         />
@@ -94,7 +113,7 @@ export default function TrainingCalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: terminalColors.bg,
   },
   errorContainer: {
     flex: 1,
@@ -103,28 +122,35 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   errorText: {
-    fontSize: 20,
+    fontFamily: 'monospace',
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FF3B30',
     marginBottom: 12,
     textAlign: 'center',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
   errorDescription: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: terminalColors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
-    lineHeight: 22,
+    lineHeight: 18,
   },
   goToPlansButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: terminalColors.yellow,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 8,
   },
   goToPlansButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'monospace',
+    color: terminalColors.yellow,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
 });

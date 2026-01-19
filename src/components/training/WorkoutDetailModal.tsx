@@ -124,19 +124,19 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
   const getDisciplineColor = (discipline: string): string => {
     switch (discipline.toLowerCase()) {
       case 'swim':
-        return '#06b6d4'; // discipline-swim
+        return '#00D4FF'; // terminal swim
       case 'bike':
-        return '#fb923c'; // discipline-bike
+        return '#FF6B35'; // terminal bike
       case 'run':
-        return '#4ade80'; // discipline-run
+        return '#4ECDC4'; // terminal run
       case 'brick':
-        return '#fbbf24'; // accent-yellow
+        return '#FFD866'; // terminal yellow
       case 'strength':
-        return '#f87171'; // red
+        return '#FF3B30'; // red
       case 'rest':
-        return '#6b7f86'; // text-secondary
+        return '#B4B8C5'; // terminal text-secondary
       default:
-        return '#6b7f86';
+        return '#B4B8C5';
     }
   };
 
@@ -146,27 +146,27 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     const structure = workout.structure as any;
 
     return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Workout Structure</Text>
-        
+      <View style={terminalStyles.section}>
+        <Text style={terminalStyles.sectionTitle}>Workout Structure</Text>
+
         {structure.warmup && (
-          <View style={styles.structureBlock}>
-            <Text style={styles.structureTitle}>Warmup ({structure.warmup.duration} min)</Text>
-            <Text style={styles.structureDescription}>{structure.warmup.description}</Text>
+          <View style={terminalStyles.structureBlock}>
+            <Text style={terminalStyles.structureTitle}>Warmup ({structure.warmup.duration} min)</Text>
+            <Text style={terminalStyles.structureDescription}>{structure.warmup.description}</Text>
           </View>
         )}
 
         {structure.main_set && (
-          <View style={styles.structureBlock}>
-            <Text style={styles.structureTitle}>Main Set ({structure.main_set.duration} min)</Text>
-            <Text style={styles.structureDescription}>{structure.main_set.description}</Text>
+          <View style={terminalStyles.structureBlock}>
+            <Text style={terminalStyles.structureTitle}>Main Set ({structure.main_set.duration} min)</Text>
+            <Text style={terminalStyles.structureDescription}>{structure.main_set.description}</Text>
           </View>
         )}
 
         {structure.cooldown && (
-          <View style={styles.structureBlock}>
-            <Text style={styles.structureTitle}>Cooldown ({structure.cooldown.duration} min)</Text>
-            <Text style={styles.structureDescription}>{structure.cooldown.description}</Text>
+          <View style={terminalStyles.structureBlock}>
+            <Text style={terminalStyles.structureTitle}>Cooldown ({structure.cooldown.duration} min)</Text>
+            <Text style={terminalStyles.structureDescription}>{structure.cooldown.description}</Text>
           </View>
         )}
       </View>
@@ -174,13 +174,13 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
   };
 
   const renderCompletionForm = () => (
-    <View style={styles.formContainer}>
-      <Text style={styles.formTitle}>Log Your Workout</Text>
+    <View style={terminalStyles.formContainer}>
+      <Text style={terminalStyles.formTitle}>Log Your Workout</Text>
 
-      <View style={styles.formField}>
-        <Text style={styles.formLabel}>Duration (minutes)</Text>
+      <View style={terminalStyles.formField}>
+        <Text style={terminalStyles.formLabel}>Duration (minutes)</Text>
         <TextInput
-          style={styles.formInput}
+          style={terminalStyles.formInput}
           placeholder={workout.duration_minutes?.toString() || "45"}
           keyboardType="numeric"
           value={completionData.actual_duration_minutes}
@@ -188,10 +188,10 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         />
       </View>
 
-      <View style={styles.formField}>
-        <Text style={styles.formLabel}>Distance (miles)</Text>
+      <View style={terminalStyles.formField}>
+        <Text style={terminalStyles.formLabel}>Distance (miles)</Text>
         <TextInput
-          style={styles.formInput}
+          style={terminalStyles.formInput}
           placeholder={workout.distance_miles?.toString() || "5.0"}
           keyboardType="decimal-pad"
           value={completionData.actual_distance_miles}
@@ -199,22 +199,22 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         />
       </View>
 
-      <View style={styles.formField}>
-        <Text style={styles.formLabel}>Perceived Effort (1-10)</Text>
-        <View style={styles.effortButtons}>
+      <View style={terminalStyles.formField}>
+        <Text style={terminalStyles.formLabel}>Perceived Effort (1-10)</Text>
+        <View style={terminalStyles.effortButtons}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
             <TouchableOpacity
               key={level}
               style={[
-                styles.effortButton,
-                completionData.perceived_effort === level.toString() && styles.effortButtonActive,
+                terminalStyles.effortButton,
+                completionData.perceived_effort === level.toString() && terminalStyles.effortButtonActive,
               ]}
               onPress={() => setCompletionData({ ...completionData, perceived_effort: level.toString() })}
             >
               <Text
                 style={[
-                  styles.effortButtonText,
-                  completionData.perceived_effort === level.toString() && styles.effortButtonTextActive,
+                  terminalStyles.effortButtonText,
+                  completionData.perceived_effort === level.toString() && terminalStyles.effortButtonTextActive,
                 ]}
               >
                 {level}
@@ -224,10 +224,10 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         </View>
       </View>
 
-      <View style={styles.formField}>
-        <Text style={styles.formLabel}>Notes (optional)</Text>
+      <View style={terminalStyles.formField}>
+        <Text style={terminalStyles.formLabel}>Notes (optional)</Text>
         <TextInput
-          style={[styles.formInput, styles.formInputMultiline]}
+          style={[terminalStyles.formInput, terminalStyles.formInputMultiline]}
           placeholder="How did it feel? Any observations?"
           multiline
           numberOfLines={3}
@@ -236,19 +236,19 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         />
       </View>
 
-      <View style={styles.formActions}>
+      <View style={terminalStyles.formActions}>
         <TouchableOpacity
-          style={styles.formCancelButton}
+          style={terminalStyles.formCancelButton}
           onPress={() => setShowCompleteForm(false)}
         >
-          <Text style={styles.formCancelButtonText}>Cancel</Text>
+          <Text style={terminalStyles.formCancelButtonText}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.formSubmitButton, submitting && styles.formSubmitButtonDisabled]}
+          style={[terminalStyles.formSubmitButton, submitting && terminalStyles.formSubmitButtonDisabled]}
           onPress={handleCompleteWorkout}
           disabled={submitting}
         >
-          <Text style={styles.formSubmitButtonText}>
+          <Text style={terminalStyles.formSubmitButtonText}>
             {submitting ? 'Saving...' : 'Complete Workout'}
           </Text>
         </TouchableOpacity>
@@ -257,13 +257,13 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
   );
 
   const renderSkipForm = () => (
-    <View style={styles.formContainer}>
-      <Text style={styles.formTitle}>Skip Workout</Text>
+    <View style={terminalStyles.formContainer}>
+      <Text style={terminalStyles.formTitle}>Skip Workout</Text>
 
-      <View style={styles.formField}>
-        <Text style={styles.formLabel}>Reason (optional)</Text>
+      <View style={terminalStyles.formField}>
+        <Text style={terminalStyles.formLabel}>Reason (optional)</Text>
         <TextInput
-          style={[styles.formInput, styles.formInputMultiline]}
+          style={[terminalStyles.formInput, terminalStyles.formInputMultiline]}
           placeholder="Why are you skipping this workout?"
           multiline
           numberOfLines={3}
@@ -272,19 +272,19 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         />
       </View>
 
-      <View style={styles.formActions}>
+      <View style={terminalStyles.formActions}>
         <TouchableOpacity
-          style={styles.formCancelButton}
+          style={terminalStyles.formCancelButton}
           onPress={() => setShowSkipForm(false)}
         >
-          <Text style={styles.formCancelButtonText}>Cancel</Text>
+          <Text style={terminalStyles.formCancelButtonText}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.formSubmitButton, styles.formSubmitButtonSkip, submitting && styles.formSubmitButtonDisabled]}
+          style={[terminalStyles.formSubmitButton, terminalStyles.formSubmitButtonSkip, submitting && terminalStyles.formSubmitButtonDisabled]}
           onPress={handleSkipWorkout}
           disabled={submitting}
         >
-          <Text style={styles.formSubmitButtonText}>
+          <Text style={terminalStyles.formSubmitButtonText}>
             {submitting ? 'Saving...' : 'Skip Workout'}
           </Text>
         </TouchableOpacity>
@@ -345,17 +345,17 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
 
             {/* Intensity */}
             {workout.intensity_description && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Intensity</Text>
-                <Text style={styles.sectionText}>{workout.intensity_description}</Text>
+              <View style={terminalStyles.section}>
+                <Text style={terminalStyles.sectionTitle}>Intensity</Text>
+                <Text style={terminalStyles.sectionText}>{workout.intensity_description}</Text>
               </View>
             )}
 
             {/* Description */}
             {workout.detailed_description && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Description</Text>
-                <Text style={styles.sectionText}>{workout.detailed_description}</Text>
+              <View style={terminalStyles.section}>
+                <Text style={terminalStyles.sectionTitle}>Description</Text>
+                <Text style={terminalStyles.sectionText}>{workout.detailed_description}</Text>
               </View>
             )}
 
@@ -364,52 +364,52 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
 
             {/* Coaching Notes */}
             {workout.coaching_notes && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Coaching Notes</Text>
-                <Text style={styles.sectionText}>{workout.coaching_notes}</Text>
+              <View style={terminalStyles.section}>
+                <Text style={terminalStyles.sectionTitle}>Coaching Notes</Text>
+                <Text style={terminalStyles.sectionText}>{workout.coaching_notes}</Text>
               </View>
             )}
 
             {/* Goals */}
             {workout.goals && workout.goals.length > 0 && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Workout Goals</Text>
+              <View style={terminalStyles.section}>
+                <Text style={terminalStyles.sectionTitle}>Workout Goals</Text>
                 {workout.goals.map((goal, index) => (
-                  <Text key={index} style={styles.goalItem}>• {goal}</Text>
+                  <Text key={index} style={terminalStyles.goalItem}>• {goal}</Text>
                 ))}
               </View>
             )}
 
             {/* Completion Status */}
             {isCompleted && workout.completion && (
-              <View style={[styles.section, styles.completionSection]}>
-                <Text style={styles.sectionTitle}>✓ Completed</Text>
+              <View style={[terminalStyles.section, terminalStyles.completionSection]}>
+                <Text style={terminalStyles.sectionTitle}>✓ Completed</Text>
                 {workout.completion.actual_duration_minutes && (
-                  <Text style={styles.completionText}>
+                  <Text style={terminalStyles.completionText}>
                     Duration: {workout.completion.actual_duration_minutes} min
                   </Text>
                 )}
                 {workout.completion.actual_distance_miles && (
-                  <Text style={styles.completionText}>
+                  <Text style={terminalStyles.completionText}>
                     Distance: {workout.completion.actual_distance_miles} mi
                   </Text>
                 )}
                 {workout.completion.perceived_effort && (
-                  <Text style={styles.completionText}>
+                  <Text style={terminalStyles.completionText}>
                     Effort: {workout.completion.perceived_effort}/10
                   </Text>
                 )}
                 {workout.completion.notes && (
-                  <Text style={styles.completionText}>Notes: {workout.completion.notes}</Text>
+                  <Text style={terminalStyles.completionText}>Notes: {workout.completion.notes}</Text>
                 )}
               </View>
             )}
 
             {isSkipped && workout.completion && (
-              <View style={[styles.section, styles.skippedSection]}>
-                <Text style={styles.sectionTitle}>⊘ Skipped</Text>
+              <View style={[terminalStyles.section, terminalStyles.skippedSection]}>
+                <Text style={terminalStyles.sectionTitle}>⊘ Skipped</Text>
                 {workout.completion.skip_reason && (
-                  <Text style={styles.completionText}>Reason: {workout.completion.skip_reason}</Text>
+                  <Text style={terminalStyles.completionText}>Reason: {workout.completion.skip_reason}</Text>
                 )}
               </View>
             )}
@@ -421,18 +421,18 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
 
           {/* Actions */}
           {!isCompleted && !isSkipped && !showCompleteForm && !showSkipForm && (
-            <View style={styles.actions}>
+            <View style={terminalStyles.actions}>
               <TouchableOpacity
-                style={[styles.actionButton, styles.skipButton]}
+                style={[terminalStyles.actionButton, terminalStyles.skipButton]}
                 onPress={() => setShowSkipForm(true)}
               >
-                <Text style={styles.actionButtonText}>Skip</Text>
+                <Text style={terminalStyles.actionButtonText}>Skip</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionButton, styles.completeButton]}
+                style={[terminalStyles.actionButton, terminalStyles.completeButton]}
                 onPress={() => setShowCompleteForm(true)}
               >
-                <Text style={[styles.actionButtonText, styles.completeButtonText]}>
+                <Text style={[terminalStyles.actionButtonText, terminalStyles.completeButtonText]}>
                   Complete Workout
                 </Text>
               </TouchableOpacity>
@@ -450,251 +450,6 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.95)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '90%',
-  },
-  header: {
-    padding: 24,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 18,
-    color: '#fff',
-    opacity: 0.9,
-    textTransform: 'capitalize',
-  },
-  quickStats: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  quickStat: {
-    alignItems: 'center',
-  },
-  quickStatValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#3B82F6',
-  },
-  quickStatLabel: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 4,
-  },
-  section: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
-    marginBottom: 12,
-  },
-  sectionText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    lineHeight: 22,
-  },
-  structureBlock: {
-    marginBottom: 16,
-  },
-  structureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3B82F6',
-    marginBottom: 6,
-  },
-  structureDescription: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    lineHeight: 20,
-  },
-  goalItem: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  completionSection: {
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderColor: 'rgba(76, 175, 80, 0.3)',
-    borderWidth: 1,
-  },
-  skippedSection: {
-    backgroundColor: 'rgba(244, 67, 54, 0.1)',
-    borderColor: 'rgba(244, 67, 54, 0.3)',
-    borderWidth: 1,
-  },
-  completionText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 4,
-  },
-  formContainer: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 1)',
-    marginBottom: 20,
-  },
-  formField: {
-    marginBottom: 16,
-  },
-  formLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 1)',
-    marginBottom: 8,
-  },
-  formInput: {
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    color: 'rgba(255, 255, 255, 1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  formInputMultiline: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
-  effortButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  effortButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  effortButtonActive: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#3B82F6',
-  },
-  effortButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 1)',
-  },
-  effortButtonTextActive: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  formActions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 20,
-  },
-  formCancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-  },
-  formCancelButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 1)',
-    fontWeight: '600',
-  },
-  formSubmitButton: {
-    flex: 2,
-    paddingVertical: 14,
-    borderRadius: 8,
-    backgroundColor: '#34C759',
-    alignItems: 'center',
-  },
-  formSubmitButtonSkip: {
-    backgroundColor: '#FF3B30',
-  },
-  formSubmitButtonDisabled: {
-    opacity: 0.5,
-  },
-  formSubmitButtonText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  actions: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    flexDirection: 'row',
-    gap: 12,
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  skipButton: {
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  completeButton: {
-    backgroundColor: '#34C759',
-  },
-  actionButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 1)',
-    fontWeight: '600',
-  },
-  completeButtonText: {
-    color: '#fff',
-  },
-  closeButton: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 16,
-    color: '#3B82F6',
-    fontWeight: '600',
-  },
-});
 
 const terminalStyles = StyleSheet.create({
   modalOverlay: {

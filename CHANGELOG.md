@@ -2,6 +2,29 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
+## [Unreleased] - 2026-01-19
+
+### Improved
+- **Terminal Design Consistency** - Complete terminal aesthetic across all training plan pages
+  - Updated Create Training Plan page with terminal design (monospace fonts, square borders, yellow accents)
+  - Updated Training Calendar page to full terminal styling
+  - Updated Workout Detail Modal with terminal colors and styling
+  - Updated all discipline colors to match terminal palette (swim: cyan, bike: orange, run: teal)
+  - Consistent dark backgrounds, monospace fonts, and uppercase text throughout
+
+- **Dashboard Layout Enhancement** - Improved consistency and visual balance
+  - Removed Goals Progress widget from dashboard
+  - Fixed section width inconsistencies - all widgets now align properly in 2-column grid
+  - Updated Quick Actions to match other dashboard sections (no longer spans full width)
+  - Fixed Performance Overview widget margin issue
+
+- **Demo User Training Data** - Auto-updating rolling window for current demo data
+  - Demo training data now generates dynamically: 4 weeks past + 8 weeks future
+  - Total of 12 weeks (~120 sessions) always relative to current date
+  - Never goes stale - simply re-run seed script to refresh dates
+  - Realistic triathlon training schedule (swim/run/bike sessions + brick workouts)
+  - Consistent weekly pattern: Mon-swim/run, Tue-bike, Wed-swim/run, Thu-bike, Fri-swim/run, Sat-long bike/run, Sun-rest
+
 ## [Unreleased] - 2025-12-26
 
 ### Added
