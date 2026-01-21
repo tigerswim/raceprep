@@ -2,6 +2,10 @@ node_modules/
 .git/objects/
 *.pack
 
+# Build output - NEVER commit these!
+dist/
+.expo/
+
 # Environment variables - NEVER commit these!
 .env
 .env.local
