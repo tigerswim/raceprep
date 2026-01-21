@@ -1,14 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { TrainingPlanSelectionScreen } from '../screens/Training/TrainingPlanSelectionScreen';
 import { AuthGuard } from '../components/AuthGuard';
-import { useAuth } from '../contexts/AuthContext';
 import type { TrainingPlanTemplate } from '../types/trainingPlans';
 
 export default function TrainingPlansScreen() {
   const router = useRouter();
-  const { user } = useAuth();
 
   const handleSelectPlan = async (template: TrainingPlanTemplate) => {
     // Navigate to a plan creation screen or directly to calendar

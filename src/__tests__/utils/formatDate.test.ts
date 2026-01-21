@@ -1,11 +1,13 @@
+// Using Jest instead of Vitest (this project uses Jest)
+
 // Example utility function for testing
 export const formatDate = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date
-  
+
   if (isNaN(dateObj.getTime())) {
     throw new Error('Invalid date provided')
   }
-  
+
   return dateObj.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -17,14 +19,12 @@ export const formatCurrency = (amount: number, currency = 'USD'): string => {
   if (typeof amount !== 'number' || isNaN(amount)) {
     throw new Error('Invalid amount provided')
   }
-  
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency
   }).format(amount)
 }
-
-import { describe, it, expect } from 'vitest';
 
 describe('formatDate', () => {
   it('formats a valid date correctly', () => {

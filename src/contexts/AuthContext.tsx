@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase, authHelpers, dbHelpers } from '../services/supabase';
+import { logger } from '../utils/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -30,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Get initial session with improved error handling
     const getInitialSession = async () => {
       try {
-        console.log('[AUTH] Initializing auth context...');
+        logger.debug('[AUTH] Initializing auth context...');
 
         // Add timeout protection for the getSession call
         const sessionTimeoutPromise = new Promise((_, reject) => {
@@ -43,14 +44,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!isMounted) return; // Component unmounted
 
         if (error) {
-          console.error('[AUTH] Session error:', error);
+          logger.error('[AUTH] Session error:', error);
           setUser(null);
         } else {
-          console.log('[AUTH] Session loaded:', session?.user ? 'User found' : 'No user');
+          logger.debug('[AUTH] Session loaded:', session?.user ? 'User found' : 'No user');
           setUser(session?.user ?? null);
         }
       } catch (error) {
-        console.error('[AUTH] Failed to get session:', error);
+        logger.error('[AUTH] Failed to get session:', error);
         if (isMounted) {
           setUser(null);
         }
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set a more reasonable timeout
     const timeoutId = setTimeout(() => {
       if (isMounted) {
-        console.warn('[AUTH] Session loading timeout - continuing without user');
+        logger.warn('[AUTH] Session loading timeout - continuing without user');
         setLoading(false);
         setUser(null);
       }
@@ -77,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[AUTH] Auth state changed:', event, session?.user ? 'User present' : 'No user');
+        logger.debug('[AUTH] Auth state changed:', event, session?.user ? 'User present' : 'No user');
 
         // Skip profile creation for now to avoid hanging
         // TODO: Re-enable profile creation once database issues are resolved
@@ -115,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         await dbHelpers.users.createProfile(profileData);
       } catch (error) {
-        console.error('[AUTH] Failed to create user profile:', error);
+        logger.error('[AUTH] Failed to create user profile:', error);
       }
     }
     

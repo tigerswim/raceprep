@@ -65,7 +65,7 @@ export default function PlanningScreen() {
       <AuthGuard>
         <div
           className="bg-terminal-bg relative overflow-auto"
-          style={{ minHeight: "100vh", minHeight: "100dvh" }}
+          style={{ minHeight: "100dvh" }}
         >
 
           <div className="relative z-10 p-6 pb-24">

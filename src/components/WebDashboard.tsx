@@ -431,7 +431,7 @@ export const WebDashboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-terminal-bg relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+    <div className="bg-terminal-bg relative overflow-auto" style={{ minHeight: '100dvh' }}>
       <div className="relative z-10 overflow-y-auto">
         <div className="p-6 pb-24">
           {/* Header */}

@@ -288,13 +288,13 @@ export default function StravaMatchReviewScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>No Matches Found</Text>
               <Text style={styles.emptyStateText}>
-                We couldn't find any Strava activities that match your recent training plan workouts.
+                We couldn&apos;t find any Strava activities that match your recent training plan workouts.
               </Text>
               <TouchableOpacity
-                style={styles.backButton}
+                style={styles.emptyStateButton}
                 onPress={() => router.back()}
               >
-                <Text style={styles.backButtonText}>Go Back</Text>
+                <Text style={styles.emptyStateButtonText}>Go Back</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -576,13 +576,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 24,
   },
-  backButton: {
+  emptyStateButton: {
     backgroundColor: '#3B82F6',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  backButtonText: {
+  emptyStateButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',

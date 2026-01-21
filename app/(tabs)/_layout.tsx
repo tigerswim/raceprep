@@ -13,8 +13,7 @@ export default function TabLayout() {
           Platform.OS === "web"
             ? {
                 flex: 1,
-                minHeight: "100vh",
-                minHeight: "100dvh", // Dynamic viewport height for iOS Safari
+                minHeight: "100dvh", // Dynamic viewport height for iOS Safari, falls back to 100vh
                 overflow: "auto",
               }
             : undefined,

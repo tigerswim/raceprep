@@ -48,8 +48,18 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   const [editedPlanName, setEditedPlanName] = useState('');
   const [planData, setPlanData] = useState<any>(null);
 
-  // Validate planId early
-  if (!planId || planId === 'undefined') {
+  // Check for invalid planId
+  const isInvalidPlan = !planId || planId === 'undefined';
+
+  useEffect(() => {
+    if (!isInvalidPlan) {
+      loadWeekWorkouts();
+      loadPlanDetails();
+    }
+  }, [planId, weekNumber, isInvalidPlan]);
+
+  // Return error state after all hooks
+  if (isInvalidPlan) {
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>Invalid training plan ID</Text>
@@ -59,11 +69,6 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
       </View>
     );
   }
-
-  useEffect(() => {
-    loadWeekWorkouts();
-    loadPlanDetails();
-  }, [planId, weekNumber]);
 
   const loadPlanDetails = async () => {
     try {

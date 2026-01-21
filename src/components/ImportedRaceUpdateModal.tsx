@@ -452,7 +452,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
                 {/* Distance Type Selection */}
                 <div>
                   <label className="block text-text-secondary text-xs font-medium mb-2 font-mono tracking-wider uppercase">
-                    DISTANCE I'M COMPETING IN *
+                    DISTANCE I&apos;M COMPETING IN *
                   </label>
                   <select
                     value={formData.distance_type}

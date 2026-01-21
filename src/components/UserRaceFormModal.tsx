@@ -219,7 +219,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
     try {
       new URL(string);
       return true;
-    } catch (_) {
+    } catch {
       return false;
     }
   };

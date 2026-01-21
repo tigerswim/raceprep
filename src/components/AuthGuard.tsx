@@ -14,7 +14,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
   // Show loading spinner while auth is loading
   if (loading) {
     return (
-      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+      <div className="bg-slate-900 relative overflow-auto flex items-center justify-center" style={{ minHeight: '100dvh' }}>
         <div className="text-white text-lg">Loading...</div>
       </div>
     );
@@ -25,7 +25,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
     return (
       <>
         {fallback || (
-          <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+          <div className="bg-slate-900 relative overflow-auto" style={{ minHeight: '100dvh' }}>
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-slate-900 to-purple-900/20"></div>

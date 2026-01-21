@@ -2,9 +2,7 @@ import React from 'react';
 import {
   TbSwimming,
   TbBike,
-  TbRun,
-  TbChartBar,
-  TbTrophy
+  TbRun
 } from 'react-icons/tb';
 
 interface RaceAnalysisModalProps {

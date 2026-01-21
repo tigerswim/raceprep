@@ -48,8 +48,7 @@ function ProfileScreenContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
 
-  // Terminal design is always enabled
-  const useTerminal = true;
+  // Terminal design is always enabled (constant, not a variable)
 
   const [userGoals, setUserGoals] = useState<any[]>([]);
   const [userSettings, setUserSettings] = useState<any>(null);
@@ -81,9 +80,6 @@ function ProfileScreenContent() {
     const completedRaces = raceResults.filter((r) => r.overall_time);
     const sprintResults = completedRaces.filter(
       (r) => r.races?.courses?.distance_type === "sprint",
-    );
-    const olympicResults = completedRaces.filter(
-      (r) => r.races?.courses?.distance_type === "olympic",
     );
 
     // Calculate best times
@@ -482,7 +478,7 @@ function ProfileScreenContent() {
     return (
       <div
         className="bg-terminal-bg relative overflow-auto flex items-center justify-center"
-        style={{ minHeight: "100vh", minHeight: "100dvh" }}
+        style={{ minHeight: "100dvh" }}
       >
         <div className="text-text-primary text-lg font-mono tracking-wider">LOADING...</div>
       </div>
@@ -495,7 +491,7 @@ function ProfileScreenContent() {
       <>
         <div
           className="bg-terminal-bg relative overflow-auto"
-          style={{ minHeight: "100vh", minHeight: "100dvh" }}
+          style={{ minHeight: "100dvh" }}
         >
           <div className="relative z-10 flex flex-col items-center justify-center h-full p-6">
             <div
@@ -532,7 +528,7 @@ function ProfileScreenContent() {
     <Provider store={store}>
       <div
         className="bg-terminal-bg relative overflow-auto"
-        style={{ minHeight: "100vh", minHeight: "100dvh" }}
+        style={{ minHeight: "100dvh" }}
       >
         <div className="relative z-10 p-6 pb-24">
           {/* Header */}

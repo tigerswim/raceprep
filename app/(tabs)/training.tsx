@@ -2372,10 +2372,6 @@ const TrainingScreenContent = React.memo(function TrainingScreenContent() {
           </h3>
           <div className="grid grid-cols-4 gap-3 mb-4">
             {analytics.monthlyVolume.map((weekData, index) => {
-              const maxHours = Math.max(
-                ...analytics.monthlyVolume.map((d) => d.hours),
-                1,
-              );
 
               // Calculate percentage of each discipline for stacked bar
               const swimPercent = weekData.hours > 0 ? (weekData.swimHours / weekData.hours) * 100 : 0;

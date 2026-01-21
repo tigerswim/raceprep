@@ -101,6 +101,8 @@ const getStateAbbreviation = (state: string): string => {
 };
 
 // Major city to zip code mapping for fallback searches
+// Note: Currently unused, but kept for potential future fallback logic
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CITY_ZIP_CODES: { [key: string]: string } = {
   // Major cities that might not work with city/state searches
   chattanooga: "37341",
@@ -1057,7 +1059,7 @@ function RacesScreenContent() {
         status: "interested",
       };
 
-      const { data: _, error } =
+      const { error } =
         await dbHelpers.userPlannedRaces.create(plannedRaceData);
 
       if (error) {
@@ -1405,7 +1407,7 @@ function RacesScreenContent() {
         user_id: user.id,
       };
 
-      const { data: _, error } =
+      const { error } =
         await dbHelpers.raceResults.add(raceResultWithUser);
 
       if (error) {
@@ -1689,7 +1691,7 @@ function RacesScreenContent() {
     <Provider store={store}>
       <div
         className="bg-terminal-bg relative overflow-auto"
-        style={{ minHeight: "100vh", minHeight: "100dvh" }}
+        style={{ minHeight: "100dvh" }}
       >
 
         <div className="relative z-10 p-6 pb-24 w-full max-w-full overflow-hidden">

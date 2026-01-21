@@ -5,7 +5,7 @@ interface ErrorBoundaryProps {
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
   resetOnPropsChange?: boolean;
-  resetKeys?: Array<string | number>;
+  resetKeys?: (string | number)[];
 }
 
 interface ErrorBoundaryState {
