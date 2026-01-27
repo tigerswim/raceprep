@@ -1618,7 +1618,7 @@ function RacesScreenContent() {
             <>
               {/* Update Race Details button */}
               <button
-                className="py-2 bg-[#00D4FF]/20 text-[#00D4FF] border-2 border-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                className="py-2 bg-[#00D4FF]/20 text-[#00D4FF] hover:bg-[#00D4FF]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
                 style={{ borderRadius: 0 }}
                 onClick={() => openUpdateModal(race)}
               >
@@ -1642,7 +1642,7 @@ function RacesScreenContent() {
 
               {/* Planning button for saved races */}
               <button
-                className="py-2 bg-[#FF6B35]/20 text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FF6B35]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                className="py-2 bg-[#FF6B35]/20 text-[#FF6B35] hover:bg-[#FF6B35]/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
                 style={{ borderRadius: 0 }}
                 onClick={() => {
                   // Store the race data in localStorage for the Planning tab to access
@@ -1661,7 +1661,7 @@ function RacesScreenContent() {
 
               {/* Remove button for saved races */}
               <button
-                className="py-2 bg-red-500/20 text-red-400 border-2 border-red-400 hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
+                className="py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-bold font-mono uppercase flex items-center justify-center gap-1"
                 style={{ borderRadius: 0 }}
                 onClick={() => unsaveRace(race.externalRaceId || race.id)}
                 disabled={savingRaces.includes(race.externalRaceId || race.id)}
