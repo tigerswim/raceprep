@@ -1,5 +1,6 @@
 // API Integration Services for Discover Tab
 import { dbHelpers } from './supabase';
+import { logger } from '../utils/logger';
 
 // API Configuration - Using Local Proxy Server
 const API_CONFIG = {
@@ -121,13 +122,13 @@ export class RaceAPIService {
       for (const race of sampleRaces) {
         const { error } = await dbHelpers.externalRaces.create(race);
         if (error && !error.message.includes('duplicate')) {
-          console.error('Error inserting race:', error);
+          logger.error('Error inserting race:', error);
         }
       }
 
       return { success: true, count: sampleRaces.length };
     } catch (error) {
-      console.error('Active.com API sync failed:', error);
+      logger.error('Active.com API sync failed:', error);
       throw error;
     }
   }
@@ -169,13 +170,13 @@ export class RaceAPIService {
       for (const race of sampleRaces) {
         const { error } = await dbHelpers.externalRaces.create(race);
         if (error && !error.message.includes('duplicate')) {
-          console.error('Error inserting race:', error);
+          logger.error('Error inserting race:', error);
         }
       }
 
       return { success: true, count: sampleRaces.length };
     } catch (error) {
-      console.error('RunSignUp API sync failed:', error);
+      logger.error('RunSignUp API sync failed:', error);
       throw error;
     }
   }
@@ -233,7 +234,7 @@ export class RunSignupAPIService {
       const data = await response.json();
       return this.transformRunSignupRaces(data.races || []);
     } catch (error) {
-      console.error('RunSignup API error:', error);
+      logger.error('RunSignup API error:', error);
       throw error;
     }
   }
@@ -259,7 +260,7 @@ export class RunSignupAPIService {
       const data = await response.json();
       return this.transformRunSignupRaceDetails(data.race);
     } catch (error) {
-      console.error('RunSignup race details error:', error);
+      logger.error('RunSignup race details error:', error);
       throw error;
     }
   }
@@ -349,7 +350,7 @@ export class RunSignupAPIService {
   // Sync triathlon races from RunSignup
   static async syncTriathlonRaces(maxResults = 50) {
     try {
-      console.log('Syncing triathlon races from RunSignup...');
+      logger.debug('Syncing triathlon races from RunSignup...');
       
       // Search for triathlon races
       const races = await this.searchTriathlonRaces({
@@ -374,10 +375,10 @@ export class RunSignupAPIService {
           const result = await dbHelpers.courses.create(race);
           if (result.data) {
             successCount++;
-            console.log(`Added RunSignup race: ${race.name}`);
+            logger.debug(`Added RunSignup race: ${race.name}`);
           }
         } catch (error) {
-          console.error(`Error adding race ${race.name}:`, error);
+          logger.error(`Error adding race ${race.name}:`, error);
         }
       }
 
@@ -389,7 +390,7 @@ export class RunSignupAPIService {
         source: 'RunSignup'
       };
     } catch (error) {
-      console.error('RunSignup sync error:', error);
+      logger.error('RunSignup sync error:', error);
       throw error;
     }
   }
@@ -444,7 +445,7 @@ export class StravaTrainingAPIService {
         initialProgress: syncData.progress
       };
     } catch (error) {
-      console.error('Strava sync with progress error:', error);
+      logger.error('Strava sync with progress error:', error);
       throw error;
     }
   }
@@ -463,7 +464,7 @@ export class StravaTrainingAPIService {
           }
         }
       } catch (error) {
-        console.error('Error polling sync progress:', error);
+        logger.error('Error polling sync progress:', error);
       }
     };
 
@@ -507,7 +508,7 @@ export class StravaTrainingAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava activities error:', error);
+      logger.error('Strava activities error:', error);
       throw error;
     }
   }
@@ -533,7 +534,7 @@ export class StravaTrainingAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava weekly analytics error:', error);
+      logger.error('Strava weekly analytics error:', error);
       throw error;
     }
   }
@@ -559,7 +560,7 @@ export class StravaTrainingAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava monthly analytics error:', error);
+      logger.error('Strava monthly analytics error:', error);
       throw error;
     }
   }
@@ -592,7 +593,7 @@ export class StravaTrainingAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava token refresh error:', error);
+      logger.error('Strava token refresh error:', error);
       throw error;
     }
   }
@@ -625,7 +626,7 @@ export class StravaTrainingAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava connect error:', error);
+      logger.error('Strava connect error:', error);
       throw error;
     }
   }
@@ -801,7 +802,7 @@ export class StravaSegmentsAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava OAuth error:', error);
+      logger.error('Strava OAuth error:', error);
       throw error;
     }
   }
@@ -830,7 +831,7 @@ export class StravaSegmentsAPIService {
       const data = await response.json();
       return data.segments || [];
     } catch (error) {
-      console.error('Strava segments error:', error);
+      logger.error('Strava segments error:', error);
       throw error;
     }
   }
@@ -855,7 +856,7 @@ export class StravaSegmentsAPIService {
 
       return await response.json();
     } catch (error) {
-      console.error('Strava segment details error:', error);
+      logger.error('Strava segment details error:', error);
       throw error;
     }
   }
@@ -919,7 +920,7 @@ export class StravaSegmentsAPIService {
   // Sync segments from popular triathlon locations
   static async syncTriathlonSegments(accessToken) {
     try {
-      console.log('Syncing segments from Strava...');
+      logger.debug('Syncing segments from Strava...');
       
       // Popular triathlon locations
       const locations = [
@@ -938,7 +939,7 @@ export class StravaSegmentsAPIService {
           }));
           allSegments.push(...transformedSegments);
         } catch (error) {
-          console.error(`Error fetching segments for ${location.name}:`, error);
+          logger.error(`Error fetching segments for ${location.name}:`, error);
         }
       }
 
@@ -957,10 +958,10 @@ export class StravaSegmentsAPIService {
           const result = await dbHelpers.courses.create(segment);
           if (result.data) {
             successCount++;
-            console.log(`Added Strava segment: ${segment.name}`);
+            logger.debug(`Added Strava segment: ${segment.name}`);
           }
         } catch (error) {
-          console.error(`Error adding segment ${segment.name}:`, error);
+          logger.error(`Error adding segment ${segment.name}:`, error);
         }
       }
 
@@ -972,7 +973,7 @@ export class StravaSegmentsAPIService {
         source: 'Strava Segments'
       };
     } catch (error) {
-      console.error('Strava segments sync error:', error);
+      logger.error('Strava segments sync error:', error);
       throw error;
     }
   }
@@ -995,7 +996,7 @@ export class GoogleMapsAPIService {
       const data = await response.json();
       return data.results[0]?.geometry?.location || null;
     } catch (error) {
-      console.error('Google Maps geocoding error:', error);
+      logger.error('Google Maps geocoding error:', error);
       throw error;
     }
   }
@@ -1015,7 +1016,7 @@ export class GoogleMapsAPIService {
       const data = await response.json();
       return data.results || [];
     } catch (error) {
-      console.error('Google Maps elevation error:', error);
+      logger.error('Google Maps elevation error:', error);
       throw error;
     }
   }
@@ -1077,7 +1078,7 @@ export class OpenWeatherMapAPIService {
         timestamp: new Date().toISOString()
       };
     } catch (error) {
-      console.error('OpenWeatherMap current weather error:', error);
+      logger.error('OpenWeatherMap current weather error:', error);
       throw error;
     }
   }
@@ -1106,7 +1107,7 @@ export class OpenWeatherMapAPIService {
         precipitation: item.rain?.['3h'] || item.snow?.['3h'] || 0
       }));
     } catch (error) {
-      console.error('OpenWeatherMap forecast error:', error);
+      logger.error('OpenWeatherMap forecast error:', error);
       throw error;
     }
   }
@@ -1133,7 +1134,7 @@ export class OpenWeatherMapAPIService {
         description: data.current.weather[0].description
       };
     } catch (error) {
-      console.error('OpenWeatherMap historical weather error:', error);
+      logger.error('OpenWeatherMap historical weather error:', error);
       throw error;
     }
   }
@@ -1185,13 +1186,13 @@ export class CourseAPIService {
   
   // Triathlon course database API integration
   static async syncTriathlonCourseData() {
-    console.log('syncTriathlonCourseData() started');
+    logger.debug('syncTriathlonCourseData() started');
     if (!rateLimiter.canMakeRequest('course_database', 500)) {
       throw new Error('Rate limit exceeded for Course Database API');
     }
 
     try {
-      console.log('Rate limit passed, starting sync...');
+      logger.debug('Rate limit passed, starting sync...');
       // Sample triathlon course data from various sources
       const sampleCourses = [
         {
@@ -1329,44 +1330,44 @@ export class CourseAPIService {
       ];
 
       // Get existing courses to check for duplicates
-      console.log('Getting existing courses...');
+      logger.debug('Getting existing courses...');
       const existingCoursesResult = await dbHelpers.courses.getAll();
-      console.log('Existing courses result:', existingCoursesResult);
+      logger.debug('Existing courses result:', existingCoursesResult);
       const existingCourses = existingCoursesResult.data || [];
-      console.log('Found', existingCourses.length, 'existing courses');
-      
+      logger.debug('Found', existingCourses.length, 'existing courses');
+
       let successCount = 0;
       let skippedCount = 0;
-      
+
       for (const course of sampleCourses) {
         try {
           // Check if course already exists by name and location
-          const isDuplicate = existingCourses.some(existing => 
+          const isDuplicate = existingCourses.some(existing =>
             existing.name.toLowerCase() === course.name.toLowerCase() &&
             existing.location.toLowerCase() === course.location.toLowerCase()
           );
-          
+
           if (isDuplicate) {
-            console.log(`Skipping duplicate course: ${course.name}`);
+            logger.debug(`Skipping duplicate course: ${course.name}`);
             skippedCount++;
             continue;
           }
-          
+
           const result = await dbHelpers.courses.create(course);
           if (result.data) {
             successCount++;
-            console.log(`Added new course: ${course.name}`);
+            logger.debug(`Added new course: ${course.name}`);
           } else if (result.error) {
-            console.error('Error inserting course:', result.error);
+            logger.error('Error inserting course:', result.error);
           }
         } catch (error) {
-          console.error('Error creating course:', error);
+          logger.error('Error creating course:', error);
         }
       }
 
       return { success: true, count: successCount, skipped: skippedCount, total: sampleCourses.length };
     } catch (error) {
-      console.error('Course Database API sync failed:', error);
+      logger.error('Course Database API sync failed:', error);
       throw error;
     }
   }
@@ -1409,82 +1410,82 @@ export class CourseAPIService {
       ];
 
       // Get existing courses to check for duplicates
-      console.log('Getting existing courses...');
+      logger.debug('Getting existing courses...');
       const existingCoursesResult = await dbHelpers.courses.getAll();
-      console.log('Existing courses result:', existingCoursesResult);
+      logger.debug('Existing courses result:', existingCoursesResult);
       const existingCourses = existingCoursesResult.data || [];
-      console.log('Found', existingCourses.length, 'existing courses');
-      
+      logger.debug('Found', existingCourses.length, 'existing courses');
+
       let successCount = 0;
       let skippedCount = 0;
-      
+
       for (const segment of sampleSegments) {
         try {
           // Check if course already exists by name and location
-          const isDuplicate = existingCourses.some(existing => 
+          const isDuplicate = existingCourses.some(existing =>
             existing.name.toLowerCase() === segment.name.toLowerCase() &&
             existing.location.toLowerCase() === segment.location.toLowerCase()
           );
-          
+
           if (isDuplicate) {
-            console.log(`Skipping duplicate segment: ${segment.name}`);
+            logger.debug(`Skipping duplicate segment: ${segment.name}`);
             skippedCount++;
             continue;
           }
-          
+
           const result = await dbHelpers.courses.create(segment);
           if (result.data) {
             successCount++;
-            console.log(`Added new segment: ${segment.name}`);
+            logger.debug(`Added new segment: ${segment.name}`);
           } else if (result.error) {
-            console.error('Error inserting segment course:', result.error);
+            logger.error('Error inserting segment course:', result.error);
           }
         } catch (error) {
-          console.error('Error creating segment course:', error);
+          logger.error('Error creating segment course:', error);
         }
       }
 
       return { success: true, count: successCount, skipped: skippedCount, total: sampleSegments.length };
     } catch (error) {
-      console.error('Strava Segments API sync failed:', error);
+      logger.error('Strava Segments API sync failed:', error);
       throw error;
     }
   }
 
   // Sync all course sources
   static async syncAllCourses() {
-    console.log('CourseAPIService.syncAllCourses() started');
+    logger.debug('CourseAPIService.syncAllCourses() started');
     const results = [];
-    
+
     // Priority 1: RunSignup API
     try {
-      console.log('Starting RunSignup sync...');
+      logger.debug('Starting RunSignup sync...');
       const runSignupResult = await RunSignupAPIService.syncTriathlonRaces(25);
-      console.log('RunSignup sync result:', runSignupResult);
+      logger.debug('RunSignup sync result:', runSignupResult);
       results.push(runSignupResult);
     } catch (error) {
-      console.error('RunSignup sync error:', error);
+      logger.error('RunSignup sync error:', error);
       results.push({ source: 'RunSignup', success: false, error: error.message });
     }
 
     // Priority 3: Strava Segments (requires OAuth token)
     try {
       // Note: Strava requires OAuth token - this would need to be handled in UI
-      console.log('Strava sync skipped - requires OAuth token');
+      logger.debug('Strava sync skipped - requires OAuth token');
       results.push({ source: 'Strava Segments', success: false, error: 'OAuth token required' });
     } catch (error) {
-      console.error('Strava sync error:', error);
+      logger.error('Strava sync error:', error);
       results.push({ source: 'Strava Segments', success: false, error: error.message });
     }
 
     // Fallback: Mock data
     try {
-      console.log('Starting syncTriathlonCourseData...');
+      logger.debug('Starting syncTriathlonCourseData...');
       const courseResult = await this.syncTriathlonCourseData();
-      console.log('syncTriathlonCourseData result:', courseResult);
+      logger.debug('syncTriathlonCourseData result:', courseResult);
       results.push({ source: 'Triathlon Database', ...courseResult });
     } catch (error) {
-      console.error('syncTriathlonCourseData error:', error);
+      logger.error('syncTriathlonCourseData error:', error);
       results.push({ source: 'Triathlon Database', success: false, error: error.message });
     }
 
@@ -1557,13 +1558,13 @@ export class TrainingEventsService {
       for (const event of sampleEvents) {
         const { error } = await dbHelpers.trainingEvents.create(event);
         if (error && !error.message.includes('duplicate')) {
-          console.error('Error inserting event:', error);
+          logger.error('Error inserting event:', error);
         }
       }
 
       return { success: true, count: sampleEvents.length };
     } catch (error) {
-      console.error('Meetup API sync failed:', error);
+      logger.error('Meetup API sync failed:', error);
       throw error;
     }
   }
@@ -1630,13 +1631,13 @@ export class GearProductsService {
       for (const product of sampleProducts) {
         const { error } = await dbHelpers.gearProducts.create(product);
         if (error && !error.message.includes('duplicate')) {
-          console.error('Error inserting product:', error);
+          logger.error('Error inserting product:', error);
         }
       }
 
       return { success: true, count: sampleProducts.length };
     } catch (error) {
-      console.error('Amazon Product API sync failed:', error);
+      logger.error('Amazon Product API sync failed:', error);
       throw error;
     }
   }
@@ -1694,7 +1695,7 @@ export class RSSFeedService {
         for (const article of sampleArticles) {
           const { error } = await dbHelpers.trainingArticles.create(article);
           if (error && !error.message.includes('duplicate')) {
-            console.error('Error inserting article:', error);
+            logger.error('Error inserting article:', error);
           }
         }
 
@@ -1726,7 +1727,7 @@ export class GeolocationService {
           });
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          logger.error('Geolocation error:', error);
           resolve(null);
         },
         {
@@ -1779,17 +1780,17 @@ export class TrainingDataSyncService {
   // Sync Strava training data with progress tracking
   static async syncStravaData(accessToken: string, onProgress?: (progress: any) => void) {
     try {
-      console.log('Starting Strava training data sync...');
+      logger.debug('Starting Strava training data sync...');
 
       const result = await StravaTrainingAPIService.syncActivitiesWithProgress(accessToken, {
         perPage: 200,
         onProgress
       });
 
-      console.log('Strava sync initiated:', result);
+      logger.debug('Strava sync initiated:', result);
       return result;
     } catch (error) {
-      console.error('Strava sync error:', error);
+      logger.error('Strava sync error:', error);
       throw error;
     }
   }
@@ -1811,7 +1812,7 @@ export class TrainingDataSyncService {
         lastUpdated: new Date().toISOString()
       };
     } catch (error) {
-      console.error('Training analytics error:', error);
+      logger.error('Training analytics error:', error);
       throw error;
     }
   }
@@ -1821,7 +1822,7 @@ export class TrainingDataSyncService {
     try {
       return await StravaTrainingAPIService.refreshToken(refreshToken);
     } catch (error) {
-      console.error('Token refresh error:', error);
+      logger.error('Token refresh error:', error);
       throw error;
     }
   }
@@ -1831,7 +1832,7 @@ export class TrainingDataSyncService {
 export class DiscoverSyncService {
   
   static async syncAllData() {
-    console.log('Starting Discover tab data sync...');
+    logger.debug('Starting Discover tab data sync...');
     
     const results = {
       races: [],
@@ -1882,7 +1883,7 @@ export class DiscoverSyncService {
       results.errors.push({ service: 'Course Database', error: error.message });
     }
 
-    console.log('Discover tab data sync completed:', results);
+    logger.debug('Discover tab data sync completed:', results);
     return results;
   }
 }
