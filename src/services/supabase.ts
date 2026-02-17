@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/supabase';
+import { logger } from '../utils/logger';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 // Debug environment variables in production
-console.log('[SUPABASE] Environment check:', {
+logger.debug('[SUPABASE] Environment check:', {
   hasUrl: !!supabaseUrl,
   hasKey: !!supabaseAnonKey,
   url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'undefined',
@@ -13,7 +14,7 @@ console.log('[SUPABASE] Environment check:', {
 });
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('[SUPABASE] Missing environment variables!', {
+  logger.error('[SUPABASE] Missing environment variables!', {
     EXPO_PUBLIC_SUPABASE_URL: supabaseUrl,
     EXPO_PUBLIC_SUPABASE_ANON_KEY: supabaseAnonKey ? '[PRESENT]' : '[MISSING]'
   });
@@ -825,7 +826,7 @@ export const dbHelpers = {
             return { progressPercentage: 0, currentValue: null, status: 'unknown_type' };
         }
       } catch (error) {
-        console.error('Error calculating goal progress:', error);
+        logger.error('Error calculating goal progress:', error);
         return { progressPercentage: 0, currentValue: null, status: 'error' };
       }
     },
@@ -842,7 +843,7 @@ export const dbHelpers = {
         .gte('created_at', startOfYear.toISOString());
 
       if (error) {
-        console.error('Error fetching race results:', error);
+        logger.error('Error fetching race results:', error);
         return { progressPercentage: 0, currentValue: 0, status: 'error' };
       }
 
@@ -1226,7 +1227,7 @@ export const dbHelpers = {
       if (!user) return { data: null, error: 'Not authenticated' };
 
       try {
-        console.log('[SUPABASE] Querying user_planned_races for user:', user.id);
+        logger.debug('[SUPABASE] Querying user_planned_races for user:', user.id);
 
         // Query with external_races JOIN to get full race data
         const { data, error } = await supabase
@@ -1238,11 +1239,11 @@ export const dbHelpers = {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
-        console.log('[SUPABASE] user_planned_races query result:', { data: data?.length || 0, error });
+        logger.debug('[SUPABASE] user_planned_races query result:', { data: data?.length || 0, error });
         
         // Handle 404 or table not found errors gracefully
         if (error) {
-          console.warn('[SUPABASE] Error in user_planned_races query:', error);
+          logger.warn('[SUPABASE] Error in user_planned_races query:', error);
           // Check for table not found errors (404, PGRST106, etc.)
           if (error.code === 'PGRST106' || error.code === 'PGRST205' ||
               error.message?.includes('404') || error.details?.includes('404') ||
@@ -1297,7 +1298,7 @@ export const dbHelpers = {
     // Update planned race
     update: async (plannedRaceId: string, updates: any) => {
       try {
-        console.log('[SUPABASE] Updating planned race:', plannedRaceId, 'with updates:', updates);
+        logger.debug('[SUPABASE] Updating planned race:', plannedRaceId, 'with updates:', updates);
 
         const { data, error } = await supabase
           .from('user_planned_races')
@@ -1309,15 +1310,15 @@ export const dbHelpers = {
           `)
           .single();
 
-        console.log('[SUPABASE] Update result:', { data, error });
+        logger.debug('[SUPABASE] Update result:', { data, error });
 
         if (error) {
-          console.error('[SUPABASE] Update error:', error);
+          logger.error('[SUPABASE] Update error:', error);
         }
 
         return { data, error };
       } catch (updateError: any) {
-        console.error('[SUPABASE] Update exception:', updateError);
+        logger.error('[SUPABASE] Update exception:', updateError);
         return { data: null, error: updateError.message || 'Update failed' };
       }
     },
@@ -1437,7 +1438,7 @@ export const dbHelpers = {
 
         return { data, error };
       } catch (fetchError: any) {
-        console.error('[SUPABASE] Enhanced sessions query error:', fetchError);
+        logger.error('[SUPABASE] Enhanced sessions query error:', fetchError);
         return { data: null, error: fetchError };
       }
     },
@@ -1830,14 +1831,14 @@ export const dbHelpers = {
           .lte('date', endOfWeek.toISOString().split('T')[0]);
 
         if (error) {
-          console.error('[SUPABASE] Weekly stats query error:', error);
+          logger.error('[SUPABASE] Weekly stats query error:', error);
           return { data: null, error };
         }
 
         const stats = dbHelpers.trainingSessions.calculateWeekStatistics(data || [], startOfWeek);
         return { data: stats, error: null };
       } catch (fetchError: any) {
-        console.error('[SUPABASE] Weekly stats exception:', fetchError);
+        logger.error('[SUPABASE] Weekly stats exception:', fetchError);
         return { data: null, error: fetchError };
       }
     },
@@ -1859,13 +1860,13 @@ export const dbHelpers = {
           .limit(validatedLimit);
 
         if (error) {
-          console.error('[SUPABASE] Recent sessions query error:', error);
+          logger.error('[SUPABASE] Recent sessions query error:', error);
           return { data: null, error };
         }
 
         return { data, error: null };
       } catch (fetchError: any) {
-        console.error('[SUPABASE] Recent sessions exception:', fetchError);
+        logger.error('[SUPABASE] Recent sessions exception:', fetchError);
         return { data: null, error: fetchError };
       }
     },
@@ -1915,13 +1916,13 @@ export const dbHelpers = {
           .select();
 
         if (error) {
-          console.error('[SUPABASE] Bulk upsert error:', error);
+          logger.error('[SUPABASE] Bulk upsert error:', error);
           return { data: null, error };
         }
 
         return { data, error: null };
       } catch (fetchError: any) {
-        console.error('[SUPABASE] Bulk upsert exception:', fetchError);
+        logger.error('[SUPABASE] Bulk upsert exception:', fetchError);
         return { data: null, error: fetchError };
       }
     },
@@ -2319,7 +2320,7 @@ export const dbHelpers = {
                                  raceData.run_distance !== undefined;
 
       if (hasCustomDistances) {
-        console.log('🎯 PRESERVING custom distances provided by user:', {
+        logger.debug('PRESERVING custom distances provided by user:', {
           swim: raceData.swim_distance,
           bike: raceData.bike_distance,
           run: raceData.run_distance
@@ -2429,7 +2430,7 @@ export const dbHelpers = {
 
         return { data: racesWithCountdown, error: null };
       } catch (error: any) {
-        console.error('Error fetching combined races:', error);
+        logger.error('Error fetching combined races:', error);
         return { data: null, error: error.message };
       }
     },
@@ -2555,7 +2556,7 @@ export const dbHelpers = {
         dbHelpers.cache.set(cacheKey, overview, 'dashboard_stats');
         return { data: overview, error: null };
       } catch (error) {
-        console.error('Error fetching dashboard overview:', error);
+        logger.error('Error fetching dashboard overview:', error);
         return { data: null, error: error.message };
       }
     },
@@ -2593,7 +2594,7 @@ export const dbHelpers = {
         dbHelpers.cache.set(cacheKey, analytics, 'training_stats');
         return { data: analytics, error: null };
       } catch (error) {
-        console.error('Error fetching training analytics:', error);
+        logger.error('Error fetching training analytics:', error);
         return { data: null, error: error.message };
       }
     },
@@ -2622,7 +2623,7 @@ export const dbHelpers = {
         dbHelpers.cache.set(cacheKey, goalData, 'goal_progress');
         return { data: goalData, error: null };
       } catch (error) {
-        console.error('Error fetching goal progress:', error);
+        logger.error('Error fetching goal progress:', error);
         return { data: null, error: error.message };
       }
     },
@@ -2636,13 +2637,13 @@ export const dbHelpers = {
         dbHelpers.cache.dashboardCache.delete(key);
       });
 
-      console.log(`Invalidated ${keysToDelete.length} cache entries matching: ${pattern}`);
+      logger.debug(`Invalidated ${keysToDelete.length} cache entries matching: ${pattern}`);
     },
 
     // Clear all cache
     clear: () => {
       dbHelpers.cache.dashboardCache.clear();
-      console.log('All cache entries cleared');
+      logger.debug('All cache entries cleared');
     },
 
     // Cache statistics
@@ -2705,7 +2706,7 @@ export const dbHelpers = {
       });
 
       if (keysToDelete.length > 0) {
-        console.log(`Cleaned up ${keysToDelete.length} expired cache entries`);
+        logger.debug(`Cleaned up ${keysToDelete.length} expired cache entries`);
       }
 
       return keysToDelete.length;
