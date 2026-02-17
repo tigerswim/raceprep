@@ -3,6 +3,7 @@
 
 import { dbHelpers, supabase } from '../supabase';
 import { withRetry, withTimeout, TimeoutHandler, RequestTracker, CircuitBreaker } from '../shared/errorHandling';
+import { logger } from '../../utils/logger';
 
 export interface StravaTokens {
   access_token: string;
@@ -130,7 +131,7 @@ export class EnhancedStravaApiService {
       return tokens;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[STRAVA_API] Error ensuring valid token:', error);
+      logger.error('[STRAVA_API] Error ensuring valid token:', error);
       throw error;
     }
   }
@@ -180,7 +181,7 @@ export class EnhancedStravaApiService {
       return newTokens;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[STRAVA_API] Token refresh failed:', error);
+      logger.error('[STRAVA_API] Token refresh failed:', error);
       throw error;
     }
   }
@@ -267,7 +268,7 @@ export class EnhancedStravaApiService {
 
           const { error } = await dbHelpers.trainingSessions.bulkUpsert(processedActivities);
           if (error) {
-            console.error('[STRAVA_SYNC] Bulk upsert error:', error);
+            logger.error('[STRAVA_SYNC] Bulk upsert error:', error);
             progress.errors.push({ general: 'Database save error: ' + error });
           }
         }
@@ -290,7 +291,7 @@ export class EnhancedStravaApiService {
         this.updateProgress(syncId, progress, options.onProgress);
 
         RequestTracker.end(trackingId, false, error);
-        console.error('[STRAVA_SYNC] Sync failed:', error);
+        logger.error('[STRAVA_SYNC] Sync failed:', error);
       }
     });
 
@@ -331,7 +332,7 @@ export class EnhancedStravaApiService {
       return enhancedAnalytics;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[STRAVA_ANALYTICS] Error getting analytics:', error);
+      logger.error('[STRAVA_ANALYTICS] Error getting analytics:', error);
       throw error;
     }
   }
@@ -386,7 +387,7 @@ export class EnhancedStravaApiService {
       return tokens;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[STRAVA_CONNECT] Connection failed:', error);
+      logger.error('[STRAVA_CONNECT] Connection failed:', error);
       throw error;
     }
   }
@@ -416,7 +417,7 @@ export class EnhancedStravaApiService {
       RequestTracker.end(trackingId, true);
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[STRAVA_DISCONNECT] Disconnection failed:', error);
+      logger.error('[STRAVA_DISCONNECT] Disconnection failed:', error);
       throw error;
     }
   }
@@ -493,7 +494,7 @@ export class EnhancedStravaApiService {
 
       // Safety limit to prevent infinite loops
       if (page > 100) {
-        console.warn('[STRAVA_API] Reached page limit of 100, stopping fetch');
+        logger.warn('[STRAVA_API] Reached page limit of 100, stopping fetch');
         break;
       }
     }

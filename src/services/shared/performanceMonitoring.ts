@@ -4,6 +4,7 @@
 import { RequestTracker } from './errorHandling';
 import { connectionPool } from './connectionPool';
 import { requestBatcher } from './requestBatching';
+import { logger } from '../../utils/logger';
 
 export interface PerformanceMetrics {
   timestamp: string;
@@ -133,7 +134,7 @@ export class PerformanceMonitor {
     if (this.isMonitoring) return;
 
     this.isMonitoring = true;
-    console.log('[PERFORMANCE_MONITOR] Starting performance monitoring...');
+    logger.debug('[PERFORMANCE_MONITOR] Starting performance monitoring...');
 
     this.monitoringInterval = setInterval(() => {
       this.collectMetrics();
@@ -156,7 +157,7 @@ export class PerformanceMonitor {
       this.monitoringInterval = undefined;
     }
 
-    console.log('[PERFORMANCE_MONITOR] Stopped performance monitoring');
+    logger.debug('[PERFORMANCE_MONITOR] Stopped performance monitoring');
   }
 
   // Collect current performance metrics
@@ -410,7 +411,7 @@ export class PerformanceMonitor {
     };
 
     this.alerts.push(alert);
-    console.warn(`[PERFORMANCE_ALERT] ${type.toUpperCase()}: ${message} (${value} > ${threshold})`);
+    logger.warn(`[PERFORMANCE_ALERT] ${type.toUpperCase()}: ${message} (${value} > ${threshold})`);
 
     // Keep only last 100 alerts
     if (this.alerts.length > 100) {
@@ -626,7 +627,7 @@ export class PerformanceMonitor {
   // Update performance thresholds
   updateThresholds(newThresholds: Partial<PerformanceThresholds>): void {
     this.thresholds = { ...this.thresholds, ...newThresholds };
-    console.log('[PERFORMANCE_MONITOR] Updated thresholds:', this.thresholds);
+    logger.debug('[PERFORMANCE_MONITOR] Updated thresholds:', this.thresholds);
   }
 
   // Export performance data

@@ -3,6 +3,7 @@
 
 import { dbHelpers, supabase } from '../supabase';
 import { withRetry, withTimeout, TimeoutHandler, RequestTracker } from '../shared/errorHandling';
+import { logger } from '../../utils/logger';
 
 export interface RaceWithCountdown {
   id: string;
@@ -174,7 +175,7 @@ export class EnhancedRaceDataService {
       return enhancedRaces;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_RACE_SERVICE] Error getting upcoming races:', error);
+      logger.error('[ENHANCED_RACE_SERVICE] Error getting upcoming races:', error);
       throw error;
     }
   }
@@ -263,7 +264,7 @@ export class EnhancedRaceDataService {
       return enhancedResults;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_RACE_SERVICE] Error searching races:', error);
+      logger.error('[ENHANCED_RACE_SERVICE] Error searching races:', error);
       throw error;
     }
   }
@@ -296,7 +297,7 @@ export class EnhancedRaceDataService {
       return analysis;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_RACE_SERVICE] Error getting preparation analysis:', error);
+      logger.error('[ENHANCED_RACE_SERVICE] Error getting preparation analysis:', error);
       throw error;
     }
   }
@@ -369,7 +370,7 @@ export class EnhancedRaceDataService {
       return enhancedRaces;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_RACE_SERVICE] Error getting races by distance type:', error);
+      logger.error('[ENHANCED_RACE_SERVICE] Error getting races by distance type:', error);
       throw error;
     }
   }

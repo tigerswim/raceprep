@@ -45,7 +45,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching overview:', error);
+      logger.error('[DashboardService] Error fetching overview:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -71,7 +71,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching upcoming races:', error);
+      logger.error('[DashboardService] Error fetching upcoming races:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -97,7 +97,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching training analytics:', error);
+      logger.error('[DashboardService] Error fetching training analytics:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -123,7 +123,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching goal progress:', error);
+      logger.error('[DashboardService] Error fetching goal progress:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -149,7 +149,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching advanced weekly stats:', error);
+      logger.error('[DashboardService] Error fetching advanced weekly stats:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -175,7 +175,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching HR zone analysis:', error);
+      logger.error('[DashboardService] Error fetching HR zone analysis:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -201,7 +201,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching consistency metrics:', error);
+      logger.error('[DashboardService] Error fetching consistency metrics:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -227,7 +227,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error fetching training load trends:', error);
+      logger.error('[DashboardService] Error fetching training load trends:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -257,7 +257,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error updating goal:', error);
+      logger.error('[DashboardService] Error updating goal:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -287,7 +287,7 @@ export class DashboardService {
         };
       });
     } catch (error) {
-      console.error('[DashboardService] Error creating goal:', error);
+      logger.error('[DashboardService] Error creating goal:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -312,7 +312,7 @@ export class DashboardService {
         error: null
       };
     } catch (error) {
-      console.error('[DashboardService] Error syncing training data:', error);
+      logger.error('[DashboardService] Error syncing training data:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -331,7 +331,7 @@ export class DashboardService {
         error: null
       };
     } catch (error) {
-      console.error('[DashboardService] Error getting cache stats:', error);
+      logger.error('[DashboardService] Error getting cache stats:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -366,7 +366,7 @@ export class DashboardService {
         error: null
       };
     } catch (error) {
-      console.error('[DashboardService] Error refreshing cache:', error);
+      logger.error('[DashboardService] Error refreshing cache:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -385,7 +385,7 @@ export class DashboardService {
         error: null
       };
     } catch (error) {
-      console.error('[DashboardService] Error cleaning cache:', error);
+      logger.error('[DashboardService] Error cleaning cache:', error);
       return {
         data: null,
         error: this.formatError(error)
@@ -414,7 +414,7 @@ export class DashboardService {
 
         if (attempt < this.retryAttempts) {
           const delay = this.retryDelay * Math.pow(2, attempt - 1); // Exponential backoff
-          console.warn(`[DashboardService] Attempt ${attempt} failed, retrying in ${delay}ms:`, error);
+          logger.warn(`[DashboardService] Attempt ${attempt} failed, retrying in ${delay}ms:`, error);
           await this.delay(delay);
         }
       }
@@ -508,7 +508,7 @@ export class DashboardService {
         error: null
       };
     } catch (error) {
-      console.error('[DashboardService] Health check failed:', error);
+      logger.error('[DashboardService] Health check failed:', error);
       return {
         data: {
           status: 'error',

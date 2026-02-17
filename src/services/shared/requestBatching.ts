@@ -3,6 +3,7 @@
 
 import { dbHelpers } from '../supabase';
 import { withRetry, withTimeout, TimeoutHandler, RequestTracker } from './errorHandling';
+import { logger } from '../../utils/logger';
 
 export interface BatchRequest<T = any> {
   id: string;
@@ -114,7 +115,7 @@ export class RequestBatcher {
     const cacheKey = this.getCacheKey(type, params);
     const cachedData = this.sharedCache.get(cacheKey);
     if (cachedData) {
-      console.log(`[BATCH_CACHE] Cache hit for ${type}:`, cacheKey);
+      logger.debug(`[BATCH_CACHE] Cache hit for ${type}:`, cacheKey);
       return cachedData;
     }
 
@@ -140,7 +141,7 @@ export class RequestBatcher {
       // Sort by priority (higher priority first)
       requests.sort((a, b) => b.priority - a.priority);
 
-      console.log(`[BATCH_QUEUE] Added ${type} request, queue size: ${requests.length}`);
+      logger.debug(`[BATCH_QUEUE] Added ${type} request, queue size: ${requests.length}`);
 
       // Process immediately if batch is full or high priority
       if (requests.length >= this.config.maxBatchSize || priority >= this.config.priorityThreshold) {
@@ -181,7 +182,7 @@ export class RequestBatcher {
       this.timeouts.delete(type);
     }
 
-    console.log(`[BATCH_PROCESSOR] Processing batch of ${requests.length} ${type} requests`);
+    logger.debug(`[BATCH_PROCESSOR] Processing batch of ${requests.length} ${type} requests`);
 
     const startTime = Date.now();
     const trackingId = RequestTracker.start(`BATCH_${type}`, undefined, {
@@ -193,7 +194,7 @@ export class RequestBatcher {
       // Process requests based on type
       await this.executeTypedBatch(type, requests);
     } catch (error) {
-      console.error(`[BATCH_PROCESSOR] Batch ${type} failed:`, error);
+      logger.error(`[BATCH_PROCESSOR] Batch ${type} failed:`, error);
       // Reject all requests in the batch
       requests.forEach(request => {
         request.reject(error);
@@ -201,7 +202,7 @@ export class RequestBatcher {
     } finally {
       RequestTracker.end(trackingId, true);
       const duration = Date.now() - startTime;
-      console.log(`[BATCH_PROCESSOR] Batch ${type} completed in ${duration}ms`);
+      logger.debug(`[BATCH_PROCESSOR] Batch ${type} completed in ${duration}ms`);
     }
   }
 
@@ -465,7 +466,7 @@ export class RequestBatcher {
     goalProgress: any;
     recentActivities: any[];
   }> {
-    console.log('[DASHBOARD_BATCH] Loading dashboard data...');
+    logger.debug('[DASHBOARD_BATCH] Loading dashboard data...');
 
     const startTime = Date.now();
 
@@ -486,7 +487,7 @@ export class RequestBatcher {
       ]);
 
       const duration = Date.now() - startTime;
-      console.log(`[DASHBOARD_BATCH] Dashboard data loaded in ${duration}ms`);
+      logger.debug(`[DASHBOARD_BATCH] Dashboard data loaded in ${duration}ms`);
 
       return {
         userProfile,
@@ -496,7 +497,7 @@ export class RequestBatcher {
         goalProgress
       };
     } catch (error) {
-      console.error('[DASHBOARD_BATCH] Failed to load dashboard data:', error);
+      logger.error('[DASHBOARD_BATCH] Failed to load dashboard data:', error);
       throw error;
     }
   }
@@ -504,7 +505,7 @@ export class RequestBatcher {
   // Clear cache for user-specific data
   invalidateUserCache(userId: string): void {
     this.sharedCache.invalidate(userId);
-    console.log(`[BATCH_CACHE] Invalidated cache for user ${userId}`);
+    logger.debug(`[BATCH_CACHE] Invalidated cache for user ${userId}`);
   }
 
   // Get cache statistics

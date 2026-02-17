@@ -1,5 +1,6 @@
 import { supabase, authHelpers, dbHelpers } from './supabase';
 import { User } from '../types';
+import { logger } from '../utils/logger';
 
 interface AuthResponse {
   user: User | null;
@@ -58,7 +59,7 @@ export class AuthService {
         const { error: profileError } = await dbHelpers.users.createProfile(profileData);
         
         if (profileError) {
-          console.error('Error creating user profile:', profileError);
+          logger.error('Error creating user profile:', profileError);
           // Note: User auth account was created, but profile creation failed
           // This should be handled gracefully in production
         }

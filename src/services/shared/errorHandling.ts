@@ -1,6 +1,8 @@
 // Enhanced Error Handling Utilities for RacePrep Backend
 // Standardizes error handling, timeout, and retry logic across all services
 
+import { logger } from '../../utils/logger';
+
 export interface ApiError {
   code: string;
   message: string;
@@ -202,7 +204,7 @@ export class RetryHandler {
         lastError = ErrorClassifier.classify(error);
 
         // Log attempt for debugging
-        console.warn(`[RETRY ${context || 'operation'}] Attempt ${attempt}/${retryConfig.maxAttempts} failed:`, {
+        logger.warn(`[RETRY ${context || 'operation'}] Attempt ${attempt}/${retryConfig.maxAttempts} failed:`, {
           code: lastError.code,
           message: lastError.message,
           retryable: lastError.retryable
@@ -232,7 +234,7 @@ export class RetryHandler {
           delay = Math.max(delay, lastError.retryAfter * 1000);
         }
 
-        console.log(`[RETRY ${context || 'operation'}] Waiting ${delay}ms before attempt ${attempt + 1}`);
+        logger.debug(`[RETRY ${context || 'operation'}] Waiting ${delay}ms before attempt ${attempt + 1}`);
         await this.delay(delay);
       }
     }
@@ -289,7 +291,7 @@ export class CircuitBreaker {
     if (this.state === 'OPEN') {
       if (Date.now() - this.lastFailureTime > this.timeout) {
         this.state = 'HALF_OPEN';
-        console.log(`[CIRCUIT_BREAKER ${context}] Transitioning to HALF_OPEN`);
+        logger.debug(`[CIRCUIT_BREAKER ${context}] Transitioning to HALF_OPEN`);
       } else {
         throw ErrorClassifier.classify({
           code: 'CIRCUIT_BREAKER_OPEN',
@@ -313,7 +315,7 @@ export class CircuitBreaker {
     this.failures = 0;
     if (this.state === 'HALF_OPEN') {
       this.state = 'CLOSED';
-      console.log(`[CIRCUIT_BREAKER ${context}] Transitioning to CLOSED`);
+      logger.debug(`[CIRCUIT_BREAKER ${context}] Transitioning to CLOSED`);
     }
   }
 
@@ -323,7 +325,7 @@ export class CircuitBreaker {
 
     if (this.failures >= this.threshold) {
       this.state = 'OPEN';
-      console.warn(`[CIRCUIT_BREAKER ${context}] Transitioning to OPEN after ${this.failures} failures`);
+      logger.warn(`[CIRCUIT_BREAKER ${context}] Transitioning to OPEN after ${this.failures} failures`);
     }
   }
 
@@ -397,7 +399,7 @@ export class RequestTracker {
 
     const duration = Date.now() - context.startTime;
 
-    console.log(`[REQUEST_TRACKER] ${context.operation} ${success ? 'completed' : 'failed'} in ${duration}ms`, {
+    logger.debug(`[REQUEST_TRACKER] ${context.operation} ${success ? 'completed' : 'failed'} in ${duration}ms`, {
       requestId,
       userId: context.userId,
       duration,

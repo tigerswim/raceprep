@@ -3,6 +3,7 @@
 
 import { dbHelpers, supabase } from '../supabase';
 import { withRetry, withTimeout, TimeoutHandler, RequestTracker } from '../shared/errorHandling';
+import { logger } from '../../utils/logger';
 
 export interface EnhancedGoal {
   id: string;
@@ -141,7 +142,7 @@ export class EnhancedGoalsService {
       return enhancedGoals.filter(goal => goal !== null) as EnhancedGoal[];
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error getting all goals:', error);
+      logger.error('[ENHANCED_GOALS] Error getting all goals:', error);
       throw error;
     }
   }
@@ -182,7 +183,7 @@ export class EnhancedGoalsService {
       return validGoals;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error getting goals with deadlines:', error);
+      logger.error('[ENHANCED_GOALS] Error getting goals with deadlines:', error);
       throw error;
     }
   }
@@ -203,7 +204,7 @@ export class EnhancedGoalsService {
       return analytics;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error getting goal analytics:', error);
+      logger.error('[ENHANCED_GOALS] Error getting goal analytics:', error);
       throw error;
     }
   }
@@ -240,7 +241,7 @@ export class EnhancedGoalsService {
       };
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error getting goal progress:', error);
+      logger.error('[ENHANCED_GOALS] Error getting goal progress:', error);
       throw error;
     }
   }
@@ -274,7 +275,7 @@ export class EnhancedGoalsService {
       return enhancedGoal;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error creating goal:', error);
+      logger.error('[ENHANCED_GOALS] Error creating goal:', error);
       throw error;
     }
   }
@@ -317,7 +318,7 @@ export class EnhancedGoalsService {
       };
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[ENHANCED_GOALS] Error updating goal progress:', error);
+      logger.error('[ENHANCED_GOALS] Error updating goal progress:', error);
       throw error;
     }
   }
@@ -373,7 +374,7 @@ export class EnhancedGoalsService {
         estimatedCompletionDate: this.calculateEstimatedCompletionDate(goal, basicProgress)
       };
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error enhancing goal:', error);
+      logger.error('[ENHANCED_GOALS] Error enhancing goal:', error);
       return null;
     }
   }
@@ -555,7 +556,7 @@ export class EnhancedGoalsService {
 
       return data || [];
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error getting milestones:', error);
+      logger.error('[ENHANCED_GOALS] Error getting milestones:', error);
       return [];
     }
   }
@@ -570,7 +571,7 @@ export class EnhancedGoalsService {
 
       return data || [];
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error getting achievements:', error);
+      logger.error('[ENHANCED_GOALS] Error getting achievements:', error);
       return [];
     }
   }
@@ -589,7 +590,7 @@ export class EnhancedGoalsService {
         percentage: record.percentage
       })) || [];
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error getting historical data:', error);
+      logger.error('[ENHANCED_GOALS] Error getting historical data:', error);
       return [];
     }
   }
@@ -603,7 +604,7 @@ export class EnhancedGoalsService {
 
       return data || [];
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error getting historical goal data:', error);
+      logger.error('[ENHANCED_GOALS] Error getting historical goal data:', error);
       return [];
     }
   }
@@ -751,7 +752,7 @@ export class EnhancedGoalsService {
     try {
       await supabase.from('goal_milestones').insert(milestones);
     } catch (error) {
-      console.error('[ENHANCED_GOALS] Error creating milestones:', error);
+      logger.error('[ENHANCED_GOALS] Error creating milestones:', error);
     }
   }
 

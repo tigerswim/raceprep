@@ -2,6 +2,7 @@
 // Manages database connections efficiently and optimizes query execution
 
 import { withRetry, withTimeout, TimeoutHandler, RequestTracker } from './errorHandling';
+import { logger } from '../../utils/logger';
 
 export interface ConnectionPoolConfig {
   maxConnections: number;
@@ -99,7 +100,7 @@ export class ConnectionPoolManager {
 
   // Initialize connection pool with minimum connections
   private initializePool(): void {
-    console.log('[CONNECTION_POOL] Initializing pool with config:', this.config);
+    logger.debug('[CONNECTION_POOL] Initializing pool with config:', this.config);
 
     // Create initial connections (simulated)
     for (let i = 0; i < this.config.minConnections; i++) {
@@ -107,7 +108,7 @@ export class ConnectionPoolManager {
       this.idleConnections.add(connectionId);
     }
 
-    console.log(`[CONNECTION_POOL] Initialized with ${this.config.minConnections} connections`);
+    logger.debug(`[CONNECTION_POOL] Initialized with ${this.config.minConnections} connections`);
   }
 
   // Acquire a connection from the pool
@@ -130,7 +131,7 @@ export class ConnectionPoolManager {
         const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         this.activeConnections.add(connectionId);
 
-        console.log(`[CONNECTION_POOL] Created new connection: ${connectionId}`);
+        logger.debug(`[CONNECTION_POOL] Created new connection: ${connectionId}`);
         RequestTracker.end(trackingId, true);
         return connectionId;
       }
@@ -202,7 +203,7 @@ export class ConnectionPoolManager {
         const cached = this.getCachedResult(sql, params);
         if (cached) {
           this.metrics.cacheHits++;
-          console.log(`[QUERY_CACHE] Cache hit for query: ${sql.substring(0, 50)}...`);
+          logger.debug(`[QUERY_CACHE] Cache hit for query: ${sql.substring(0, 50)}...`);
           RequestTracker.end(trackingId, true);
           return cached;
         }
@@ -233,7 +234,7 @@ export class ConnectionPoolManager {
 
         // Log slow queries
         if (executionTime > 1000) {
-          console.warn(`[SLOW_QUERY] Query took ${executionTime}ms: ${sql.substring(0, 100)}...`);
+          logger.warn(`[SLOW_QUERY] Query took ${executionTime}ms: ${sql.substring(0, 100)}...`);
         }
 
         RequestTracker.end(trackingId, true);
@@ -245,7 +246,7 @@ export class ConnectionPoolManager {
     } catch (error) {
       this.metrics.errors++;
       RequestTracker.end(trackingId, false, error);
-      console.error('[QUERY_EXECUTION] Query failed:', error);
+      logger.error('[QUERY_EXECUTION] Query failed:', error);
       throw error;
     }
   }
@@ -260,7 +261,7 @@ export class ConnectionPoolManager {
     const trackingId = RequestTracker.start('query_batch', undefined, { batchId, queryCount: queries.length });
 
     try {
-      console.log(`[QUERY_BATCH] Executing batch ${batchId} with ${queries.length} queries`);
+      logger.debug(`[QUERY_BATCH] Executing batch ${batchId} with ${queries.length} queries`);
 
       const startTime = Date.now();
 
@@ -278,13 +279,13 @@ export class ConnectionPoolManager {
       }
 
       const totalTime = Date.now() - startTime;
-      console.log(`[QUERY_BATCH] Batch ${batchId} completed in ${totalTime}ms`);
+      logger.debug(`[QUERY_BATCH] Batch ${batchId} completed in ${totalTime}ms`);
 
       RequestTracker.end(trackingId, true);
       return results;
     } catch (error) {
       RequestTracker.end(trackingId, false, error);
-      console.error('[QUERY_BATCH] Batch execution failed:', error);
+      logger.error('[QUERY_BATCH] Batch execution failed:', error);
       throw error;
     }
   }
@@ -543,7 +544,7 @@ export class ConnectionPoolManager {
     }
 
     if (cleaned > 0) {
-      console.log(`[CACHE_CLEANUP] Cleaned ${cleaned} expired cache entries`);
+      logger.debug(`[CACHE_CLEANUP] Cleaned ${cleaned} expired cache entries`);
     }
   }
 
@@ -553,7 +554,7 @@ export class ConnectionPoolManager {
 
   // Shutdown pool gracefully
   async shutdown(): Promise<void> {
-    console.log('[CONNECTION_POOL] Shutting down...');
+    logger.debug('[CONNECTION_POOL] Shutting down...');
 
     // Clear timeouts
     for (const timeout of this.batchTimeouts.values()) {
@@ -570,7 +571,7 @@ export class ConnectionPoolManager {
     this.idleConnections.clear();
     this.queryCache.clear();
 
-    console.log('[CONNECTION_POOL] Shutdown complete');
+    logger.debug('[CONNECTION_POOL] Shutdown complete');
   }
 }
 
