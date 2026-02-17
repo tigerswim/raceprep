@@ -134,7 +134,7 @@ export const trainingPlanService = {
    */
   getUserTrainingPlans: async (userId: string, status?: string) => {
     if (!userId) {
-      console.warn('[TRAINING_PLAN_SERVICE] getUserTrainingPlans called with undefined userId');
+      logger.warn('[TRAINING_PLAN_SERVICE] getUserTrainingPlans called with undefined userId');
       return { data: [], error: null };
     }
     try {
@@ -800,7 +800,7 @@ export const trainingPlanService = {
    */
   getActivePlan: async (userId: string) => {
     if (!userId) {
-      console.warn('[TRAINING_PLAN_SERVICE] getActivePlan called with undefined userId');
+      logger.warn('[TRAINING_PLAN_SERVICE] getActivePlan called with undefined userId');
       return null;
     }
 
