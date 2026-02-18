@@ -1,5 +1,74 @@
 # Technical Changelog - RacePrep
 
+## February 17, 2026
+
+### 🧹 Codebase Refactor — No Functionality or UI Changes
+
+#### Phase 1 & 2: Dead File Removal
+- **DELETED**: 6 orphan scratch/backup files
+  - `src/components/training/TrainingCalendar.tsx.backup`
+  - `src/components/training/WorkoutDetailModal.tsx.{button,editfix,modal}`
+  - `src/screens/Training/TrainingPlanSelectionScreen.tsx.backup`
+  - `src/services/trainingPlanService.ts.backup`
+- **DELETED**: 10 dead dashboard widget variants (never imported anywhere)
+  - `*.terminal.simple.tsx` and `*.terminal.backup.tsx` for all 5 widgets that had them
+- **DELETED**: 3 orphan conversion scripts from repo root (`convert-to-terminal.js`, `convert-training-terminal.js`, `convert_terminal.py`)
+
+#### Phase 3: Logging Compliance
+- **FIXED**: 313 `console.*` calls replaced with project `logger` utility across 31 files
+  - `console.log` → `logger.debug`, `console.warn` → `logger.warn`, `console.error` → `logger.error`
+  - Affects: all service files, dashboard widgets, modals, screens, app routes, data files
+  - Result: debug output is now silenced in production builds
+  - `src/utils/logger.ts` itself is unchanged
+
+#### Phase 4: Mega-File Splits (barrel re-exports — zero import path changes)
+
+**`src/services/supabase.ts`** (2,727 lines → 3-line barrel)
+Split into `src/services/supabase/` with 12 files:
+- `client.ts` — Supabase client instance
+- `auth.ts` — `authHelpers` (signUp, signIn, signOut, getCurrentUser, resetPassword)
+- `users.ts` — user profile helpers
+- `races.ts` — races, raceResults, userRaces helpers
+- `courses.ts` — course helpers
+- `goals.ts` — userGoals, userSettings, userPlannedRaces helpers
+- `training.ts` — trainingSessions helpers
+- `nutrition.ts` — nutritionPlans, packingLists helpers
+- `discover.ts` — gearProducts, trainingArticles, rssFeeds, externalRaces, trainingEvents helpers
+- `locations.ts` — userLocations helpers
+- `cache.ts` — cache helpers
+- `index.ts` — barrel assembling `supabase`, `authHelpers`, `dbHelpers` identically
+
+**`src/services/apiIntegrations.ts`** (2,039 lines → 17-line barrel)
+Split into `src/services/apiIntegrations/` with 9 files:
+- `rateLimiter.ts` — shared `RateLimiter` class and singleton instance
+- `raceApi.ts` — `RaceAPIService`, `RunSignupAPIService`
+- `stravaApi.ts` — `StravaTrainingAPIService`, `StravaSegmentsAPIService`
+- `mapsApi.ts` — `GoogleMapsAPIService`, `GeolocationService`
+- `weatherApi.ts` — `OpenWeatherMapAPIService`
+- `courseApi.ts` — `CourseAPIService`
+- `trainingApi.ts` — `TrainingEventsService`, `TrainingDataSyncService`, `TrainingPerformanceService`
+- `discoverApi.ts` — `GearProductsService`, `RSSFeedService`, `DiscoverSyncService`
+- `index.ts` — barrel re-exporting all 14 classes
+
+**`src/services/trainingPlanService.ts`** (1,099 lines → 2-line barrel)
+Split into `src/services/trainingPlan/` with 8 files:
+- `templates.ts` — `getTrainingPlanTemplates`, `getTrainingPlanTemplate`, `getTemplateWorkouts`
+- `userPlans.ts` — `getUserTrainingPlans`, `getUserTrainingPlan`, `createUserTrainingPlan`, `updateUserTrainingPlan`, `deleteUserTrainingPlan`, `getActivePlan`
+- `workouts.ts` — `getScheduledWorkouts`, `getUpcomingWorkouts`, `getTodaysWorkouts`
+- `completions.ts` — `completeWorkout`, `skipWorkout`, `updateWorkoutCompletion`, `deleteWorkoutCompletion`, `getWorkoutCompletions`
+- `analytics.ts` — `getTrainingPlanProgress`, `getWeeklySchedule`, `calculateAdherenceRate`
+- `dateUtils.ts` — `calculateWeekDates`, `isWorkoutOverdue`, `isToday`
+- `stravaMatch.ts` — `matchStravaToWorkout`, `findStravaMatches`, `calculateMatchScore`, `acceptStravaMatch`
+- `index.ts` — barrel assembling `trainingPlanService` object via spread
+
+#### Verification
+- TypeScript: 0 new errors
+- Tests: same pass/fail baseline (22/22 test cases pass; 4 pre-existing suite-level failures from `react-test-renderer` peer dep mismatch, unrelated)
+- Lint: 0 errors (104 pre-existing warnings unchanged)
+- All 18 consumer import paths for `supabase`, all 2 for `apiIntegrations`, all 7 for `trainingPlanService` continue to work via barrel re-exports
+
+---
+
 ## Recent Updates (January 2025)
 
 ### 🎨 Terminal Design & Dashboard Improvements (January 19, 2026)

@@ -2,6 +2,14 @@
 
 All notable changes to the RacePrep project will be documented in this file.
 
+## [Unreleased] - 2026-02-17
+
+### Changed
+- **Internal code cleanup** — No user-facing changes. Codebase refactored for long-term maintainability:
+  - Removed 16 dead/orphan files (backup, scratch, and unused widget variants)
+  - All debug logging now silenced in production (was leaking to browser console)
+  - Three large service files split into focused domain modules for easier navigation
+
 ## [Unreleased] - 2026-01-19
 
 ### Improved
