@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -45,7 +46,7 @@ interface TrainingStats {
  * Features retro training log aesthetic with monospace fonts and stacked bars.
  */
 export const PerformanceOverviewWidgetTerminal: React.FC = () => {
-  console.log('[PerformanceOverviewWidgetTerminal] Component rendering...');
+  logger.debug('[PerformanceOverviewWidgetTerminal] Component rendering...');
 
   const router = useRouter();
   const { user } = useAuth();
@@ -56,7 +57,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [stravaConnected, setStravaConnected] = useState(false);
 
-  console.log('[PerformanceOverviewWidgetTerminal] State:', { isLoading, hasStats: !!stats, hasUser: !!user });
+  logger.debug('[PerformanceOverviewWidgetTerminal] State:', { isLoading, hasStats: !!stats, hasUser: !!user });
 
   useEffect(() => {
     if (user) {
@@ -86,7 +87,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
 
       const { data: profile, error: profileError } = await dbHelpers.users.getCurrent();
       if (profileError) {
-        console.warn('Error loading user profile:', profileError);
+        logger.warn('Error loading user profile:', profileError);
       } else {
         setUserProfile(profile);
       }
@@ -101,7 +102,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
 
       await loadTrainingStats();
     } catch (error) {
-      console.error('Error loading user data:', error);
+      logger.error('Error loading user data:', error);
       setStats(null);
     } finally {
       setIsLoading(false);
@@ -121,7 +122,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
       );
 
       if (error) {
-        console.warn('Error loading training sessions:', error);
+        logger.warn('Error loading training sessions:', error);
         setStats(null);
         return;
       }
@@ -159,7 +160,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
         weekOverWeek
       });
     } catch (error) {
-      console.error('Error loading training stats:', error);
+      logger.error('Error loading training stats:', error);
       setStats(null);
     }
   };
@@ -342,7 +343,7 @@ export const PerformanceOverviewWidgetTerminal: React.FC = () => {
     total: day.totalTime
   }));
 
-  console.log('[PerformanceOverviewWidgetTerminal] Rendering SUCCESS state with data!');
+  logger.debug('[PerformanceOverviewWidgetTerminal] Rendering SUCCESS state with data!');
 
   // Terminal colors (inline since Tailwind classes don't work on web)
   const colors = {

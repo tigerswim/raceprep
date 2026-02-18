@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -74,25 +75,25 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
 
   const loadUserPlans = async () => {
     if (!user?.id) {
-      console.log('No user ID, skipping load user plans');
+      logger.debug('No user ID, skipping load user plans');
       setLoadingPlans(false);
       return;
     }
 
     try {
       setLoadingPlans(true);
-      console.log('Loading user plans for user:', user.id); // Debug log
+      logger.debug('Loading user plans for user:', user.id); // Debug log
       const result = await trainingPlanService.getUserTrainingPlans(user.id);
 
-      console.log('User plans result:', result); // Debug log
+      logger.debug('User plans result:', result); // Debug log
       if (!result.error && result.data) {
-        console.log('Setting user plans:', result.data); // Debug log
+        logger.debug('Setting user plans:', result.data); // Debug log
         setUserPlans(result.data);
       } else if (result.error) {
-        console.error('Error loading user plans:', result.error);
+        logger.error('Error loading user plans:', result.error);
       }
     } catch (err) {
-      console.error('Failed to load user plans:', err);
+      logger.error('Failed to load user plans:', err);
     } finally {
       setLoadingPlans(false);
     }
@@ -147,7 +148,7 @@ export const TrainingPlanSelectionScreen: React.FC<TrainingPlanSelectionScreenPr
         alert('Failed to delete training plan: ' + result.error.message);
       }
     } catch (err) {
-      console.error('Error deleting plan:', err);
+      logger.error('Error deleting plan:', err);
       alert('Failed to delete training plan');
     }
   };

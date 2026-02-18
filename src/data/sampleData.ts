@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 // Sample data for development and testing
 
 export const sampleRaces = [
@@ -112,7 +113,7 @@ export const insertSampleData = async (supabase: any) => {
       .select();
     
     if (raceError) {
-      console.error('Error inserting sample races:', raceError);
+      logger.error('Error inserting sample races:', raceError);
       return { success: false, error: raceError };
     }
 
@@ -123,13 +124,13 @@ export const insertSampleData = async (supabase: any) => {
       .select();
       
     if (resultError) {
-      console.error('Error inserting sample race results:', resultError);
+      logger.error('Error inserting sample race results:', resultError);
       return { success: false, error: resultError };
     }
 
     return { success: true, races: raceData, results: resultData };
   } catch (error) {
-    console.error('Error inserting sample data:', error);
+    logger.error('Error inserting sample data:', error);
     return { success: false, error };
   }
 };

@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import {
@@ -78,7 +79,7 @@ export const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
         setEditedPlanName(result.data.plan_name);
       }
     } catch (err) {
-      console.error('Failed to load plan details:', err);
+      logger.error('Failed to load plan details:', err);
     }
   };
 

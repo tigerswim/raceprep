@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -72,7 +73,7 @@ export const WeatherWidgetTerminal: React.FC = () => {
         trainingConditions: conditions
       });
     } catch (error) {
-      console.error('[Weather] Failed to fetch weather data:', error);
+      logger.error('[Weather] Failed to fetch weather data:', error);
       // Fallback to default weather
       setWeather({
         temperature: 72,
@@ -137,15 +138,15 @@ export const WeatherWidgetTerminal: React.FC = () => {
               setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
             }
           } catch (error) {
-            console.error('[Weather] Geocoding error:', error);
+            logger.error('[Weather] Geocoding error:', error);
             setLocation(`${latitude.toFixed(2)}°N, ${longitude.toFixed(2)}°W`);
           }
 
           setIsGeolocating(false);
-          console.log('[Weather] Location updated:', latitude, longitude);
+          logger.debug('[Weather] Location updated:', latitude, longitude);
         },
         (error) => {
-          console.error('[Weather] Geolocation error:', error);
+          logger.error('[Weather] Geolocation error:', error);
           setLocation('Austin, TX • Location unavailable');
           setIsGeolocating(false);
         }

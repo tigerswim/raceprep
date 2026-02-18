@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -63,7 +64,7 @@ export const PersonalBestsWidgetTerminal: React.FC = () => {
 
       setPersonalBests(bests);
     } catch (error) {
-      console.error('Error loading personal bests:', error);
+      logger.error('Error loading personal bests:', error);
       setPersonalBests([]);
     } finally {
       setIsLoading(false);

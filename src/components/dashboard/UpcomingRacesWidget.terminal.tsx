@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -61,7 +62,7 @@ export const UpcomingRacesWidgetTerminal: React.FC = () => {
 
       setUpcomingRaces(processedRaces);
     } catch (error) {
-      console.error('Error loading upcoming races:', error);
+      logger.error('Error loading upcoming races:', error);
       setUpcomingRaces([]);
     } finally {
       setIsLoading(false);

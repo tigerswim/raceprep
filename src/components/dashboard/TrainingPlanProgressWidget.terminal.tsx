@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -45,7 +46,7 @@ export const TrainingPlanProgressWidgetTerminal: React.FC = () => {
         setProgress(progressResult.data);
       }
     } catch (error) {
-      console.error('Error loading training plan progress:', error);
+      logger.error('Error loading training plan progress:', error);
       setActivePlanId(null);
       setProgress(null);
     } finally {

@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -65,7 +66,7 @@ export const TransitionAnalyticsWidgetTerminal: React.FC = () => {
         count: resultsWithTransitions.length
       });
     } catch (error) {
-      console.error('Error loading transition data:', error);
+      logger.error('Error loading transition data:', error);
       setStats(null);
     } finally {
       setIsLoading(false);

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -86,7 +87,7 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
           // Clear from localStorage
           localStorage.removeItem('selectedRaceForPlanning');
         } catch (error) {
-          console.error('Error parsing stored race data:', error);
+          logger.error('Error parsing stored race data:', error);
           localStorage.removeItem('selectedRaceForPlanning');
         }
       }
@@ -127,7 +128,7 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
       
       if (error && (error.code === 'PGRST205' || error.code === 'TABLE_NOT_FOUND')) {
         // Table doesn't exist, use mock data for now
-        console.warn('userPlannedRaces table not found, using mock data');
+        logger.warn('userPlannedRaces table not found, using mock data');
         const mockSavedRaces = [
           {
             id: 'saved-1',
@@ -161,9 +162,9 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
       if (error) {
         // Handle feature disabled gracefully (not a real error)
         if (error.code === 'FEATURE_DISABLED') {
-          console.log('Planned races feature is disabled:', error.message);
+          logger.debug('Planned races feature is disabled:', error.message);
         } else {
-          console.error('Error loading planned races:', error);
+          logger.error('Error loading planned races:', error);
         }
         return;
       }
@@ -191,9 +192,9 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
     } catch (error: any) {
       // Handle feature disabled gracefully (not a real error)
       if (error?.code === 'FEATURE_DISABLED') {
-        console.log('Planned races feature is disabled:', error.message);
+        logger.debug('Planned races feature is disabled:', error.message);
       } else {
-        console.error('Error loading planned races:', error);
+        logger.error('Error loading planned races:', error);
       }
     } finally {
       setIsLoading(false);
@@ -265,7 +266,7 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
         }
       }
     } catch (error) {
-      console.error('Error loading race plans:', error);
+      logger.error('Error loading race plans:', error);
       // Fall back to defaults
       const race = plannedRaces.find(r => r.id === raceId);
       if (race) {
@@ -445,9 +446,9 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
       if (nutritionError) {
         // Handle feature disabled gracefully (not a real error)
         if (nutritionError.code === 'FEATURE_DISABLED') {
-          console.log('Nutrition plans feature is disabled:', nutritionError.message);
+          logger.debug('Nutrition plans feature is disabled:', nutritionError.message);
         } else {
-          console.error('Error saving nutrition plan:', nutritionError);
+          logger.error('Error saving nutrition plan:', nutritionError);
         }
       }
       
@@ -466,9 +467,9 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
           if (packingError) {
             // Handle feature disabled gracefully (not a real error)
             if (packingError.code === 'FEATURE_DISABLED') {
-              console.log(`Packing lists feature is disabled for ${category}:`, packingError.message);
+              logger.debug(`Packing lists feature is disabled for ${category}:`, packingError.message);
             } else {
-              console.error(`Error saving packing list for ${category}:`, packingError);
+              logger.error(`Error saving packing list for ${category}:`, packingError);
             }
           }
         }
@@ -476,7 +477,7 @@ export const RaceSpecificPlanning: React.FC<RaceSpecificPlanningProps> = ({ acti
       
       alert('Your race plans have been saved!');
     } catch (error) {
-      console.error('Error saving plans:', error);
+      logger.error('Error saving plans:', error);
       alert('Error saving plans. Please try again.');
     }
   };

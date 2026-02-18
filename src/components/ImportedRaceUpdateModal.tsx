@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -41,7 +42,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           setUserSettings({ distance_units: 'imperial' });
         }
       } catch (error) {
-        console.warn('Failed to load user settings, using imperial default:', error);
+        logger.warn('Failed to load user settings, using imperial default:', error);
         setUserSettings({ distance_units: 'imperial' });
       }
     };
@@ -107,8 +108,8 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         notes: race.notes || ''
       };
 
-      console.log('🔍 ENHANCED MODAL DETECTION - VERSION 3.0');
-      console.log('DEBUG: Distance field detection:', {
+      logger.debug('🔍 ENHANCED MODAL DETECTION - VERSION 3.0');
+      logger.debug('DEBUG: Distance field detection:', {
         user_swim_distance: race.user_swim_distance,
         swim_distance: race.swim_distance,
         selected_swim: swimDist,
@@ -120,8 +121,8 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         selected_run: runDist,
         custom_distances_detected: !!(swimDist || bikeDist || runDist)
       });
-      console.log('DEBUG: Modal initialization - race data:', race);
-      console.log('DEBUG: Enhanced race detection details:', {
+      logger.debug('DEBUG: Modal initialization - race data:', race);
+      logger.debug('DEBUG: Enhanced race detection details:', {
         raceId: race.id,
         raceName: race.name,
         raceSource: race.source,
@@ -134,17 +135,17 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         finalDetectionResult: isUserCreatedRace,
         defaultDistanceType: defaultDistanceType
       });
-      console.log('DEBUG: Modal initialization - form data:', initialFormData);
+      logger.debug('DEBUG: Modal initialization - form data:', initialFormData);
 
       setFormData(initialFormData);
 
       // Set default distances based on race type, but only if no custom distances exist
       // CRITICAL FIX: Use the same field detection logic as above
       if (!swimDist && !bikeDist && !runDist) {
-        console.log('🔧 No custom distances found, applying defaults for type:', mappedDistanceType);
+        logger.debug('🔧 No custom distances found, applying defaults for type:', mappedDistanceType);
         updateDistancesForType(mappedDistanceType);
       } else {
-        console.log('🎯 Custom distances found, preserving them:', { swimDist, bikeDist, runDist });
+        logger.debug('🎯 Custom distances found, preserving them:', { swimDist, bikeDist, runDist });
       }
     }
   }, [race]);
@@ -212,13 +213,13 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   };
 
   const toggleCustomDistances = () => {
-    console.log('DEBUG: Toggle custom distances clicked, current state:', formData.custom_distances);
+    logger.debug('DEBUG: Toggle custom distances clicked, current state:', formData.custom_distances);
     setFormData(prev => {
       const newState = {
         ...prev,
         custom_distances: !prev.custom_distances
       };
-      console.log('DEBUG: Toggle custom distances new state:', newState.custom_distances);
+      logger.debug('DEBUG: Toggle custom distances new state:', newState.custom_distances);
       return newState;
     });
   };
@@ -248,7 +249,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('🚀 NEW MODAL SUBMIT FUNCTION LOADED - VERSION 2.0');
+    logger.debug('🚀 NEW MODAL SUBMIT FUNCTION LOADED - VERSION 2.0');
     e.preventDefault();
 
     if (!validateForm()) {
@@ -268,11 +269,11 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
       const isMarkedAsUserCreated = race.source === 'user_created';
       const isUserCreatedRace = isMarkedAsUserCreated || (!hasExternalId && !hasExternalUrl);
 
-      console.log('🚀 ENHANCED MODAL SUBMIT - VERSION 3.0');
-      console.log('DEBUG: Form submission started');
-      console.log('DEBUG: Form data being submitted:', formData);
-      console.log('DEBUG: Valid distance type:', validDistanceType);
-      console.log('DEBUG: Enhanced race type detection:', {
+      logger.debug('🚀 ENHANCED MODAL SUBMIT - VERSION 3.0');
+      logger.debug('DEBUG: Form submission started');
+      logger.debug('DEBUG: Form data being submitted:', formData);
+      logger.debug('DEBUG: Valid distance type:', validDistanceType);
+      logger.debug('DEBUG: Enhanced race type detection:', {
         raceId: race.id,
         raceName: race.name,
         source: race.source,
@@ -313,7 +314,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           if (!extendedResult.error) {
             result = extendedResult; // Use the extended result if successful
           } else {
-            console.warn('Extended fields update failed:', extendedResult.error);
+            logger.warn('Extended fields update failed:', extendedResult.error);
             // Keep the basic result since it succeeded
           }
         }
@@ -338,20 +339,20 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
           updateData.user_run_distance = null;
         }
 
-        console.log('🔧 DISTANCE UPDATE: Updating imported race with data:', updateData);
-        console.log('🔧 DISTANCE UPDATE: Race ID:', race.id);
-        console.log('🔧 DISTANCE UPDATE: validDistanceType:', validDistanceType);
+        logger.debug('🔧 DISTANCE UPDATE: Updating imported race with data:', updateData);
+        logger.debug('🔧 DISTANCE UPDATE: Race ID:', race.id);
+        logger.debug('🔧 DISTANCE UPDATE: validDistanceType:', validDistanceType);
         result = await dbHelpers.userPlannedRaces.update(race.id, updateData);
-        console.log('🔧 DISTANCE UPDATE: Update result:', result);
+        logger.debug('🔧 DISTANCE UPDATE: Update result:', result);
       }
 
-      console.log('Database update result:', result); // Debug log
+      logger.debug('Database update result:', result); // Debug log
 
       if (result.error) {
-        console.error('Database update error details:', result.error);
+        logger.error('Database update error details:', result.error);
 
         // Try a fallback status-only update if the full update failed
-        console.log('Attempting status-only fallback update...');
+        logger.debug('Attempting status-only fallback update...');
 
         let fallbackResult;
         if (isUserCreatedRace) {
@@ -363,35 +364,35 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
         if (fallbackResult.error) {
           throw new Error(typeof result.error === 'string' ? result.error : result.error.message || 'Failed to update race.');
         } else {
-          console.log('Status-only update succeeded');
+          logger.debug('Status-only update succeeded');
           alert('Race status updated successfully! Other settings may require database updates.');
-          console.log('Calling onUpdate to refresh UI...');
+          logger.debug('Calling onUpdate to refresh UI...');
 
           // Close modal immediately to show the change
           onClose();
 
           // Delay the onUpdate call to allow local state updates to settle
           setTimeout(() => {
-            console.log('🕐 Delayed onUpdate call for fallback update');
+            logger.debug('🕐 Delayed onUpdate call for fallback update');
             onUpdate();
           }, 500);
           return;
         }
       }
 
-      console.log('Update succeeded, calling onUpdate to refresh UI...');
-      console.log('Final result data before refresh:', result.data);
+      logger.debug('Update succeeded, calling onUpdate to refresh UI...');
+      logger.debug('Final result data before refresh:', result.data);
 
       // Close modal immediately to show the change
       onClose();
 
       // Delay the onUpdate call to allow local state updates to settle
       setTimeout(() => {
-        console.log('🕐 Delayed onUpdate call to preserve status changes');
+        logger.debug('🕐 Delayed onUpdate call to preserve status changes');
         onUpdate();
       }, 500);
     } catch (error: any) {
-      console.error('Error updating race:', error);
+      logger.error('Error updating race:', error);
       setErrors({ submit: error.message || 'Failed to update race. Please try again.' });
     } finally {
       setIsSubmitting(false);

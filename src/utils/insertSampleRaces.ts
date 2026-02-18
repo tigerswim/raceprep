@@ -1,4 +1,5 @@
 // Utility to insert sample races into the database
+import { logger } from './logger';
 import { supabase } from '../services/supabase';
 
 export const insertSampleRaces = async () => {
@@ -51,13 +52,13 @@ export const insertSampleRaces = async () => {
       .select();
     
     if (error) {
-      console.error('Error inserting sample races:', error);
+      logger.error('Error inserting sample races:', error);
       return { success: false, error };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Error inserting sample races:', error);
+    logger.error('Error inserting sample races:', error);
     return { success: false, error };
   }
 };

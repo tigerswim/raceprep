@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserRaceFormModal } from './UserRaceFormModal';
 import { dbHelpers } from '../services/supabase';
@@ -42,13 +43,13 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
     try {
       const { data, error } = await dbHelpers.userRaces.getAll();
       if (error) {
-        console.error('Error loading user races:', error);
+        logger.error('Error loading user races:', error);
         setUserRaces([]);
       } else {
         setUserRaces(data || []);
       }
     } catch (error) {
-      console.error('Error loading user races:', error);
+      logger.error('Error loading user races:', error);
       setUserRaces([]);
     } finally {
       setIsLoading(false);
@@ -133,7 +134,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
 
       alert(`Race "${newRace?.name}" created successfully!`);
     } catch (error: any) {
-      console.error('Error creating race:', error);
+      logger.error('Error creating race:', error);
       alert('Failed to create race. Please try again.');
     }
   };
@@ -156,7 +157,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
 
       alert(`Race "${data?.name}" updated successfully!`);
     } catch (error: any) {
-      console.error('Error updating race:', error);
+      logger.error('Error updating race:', error);
       alert('Failed to update race. Please try again.');
     }
   };
@@ -177,7 +178,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
 
       alert('Race deleted successfully!');
     } catch (error: any) {
-      console.error('Error deleting race:', error);
+      logger.error('Error deleting race:', error);
       alert('Failed to delete race. Please try again.');
     } finally {
       setActionLoading(null);

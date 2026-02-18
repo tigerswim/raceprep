@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { dbHelpers } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -47,7 +48,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
           setUserSettings({ distance_units: 'imperial' });
         }
       } catch (error) {
-        console.warn('Failed to load user settings, using imperial default:', error);
+        logger.warn('Failed to load user settings, using imperial default:', error);
         setUserSettings({ distance_units: 'imperial' });
       }
     };
@@ -249,7 +250,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
 
       await onSubmit(submitData);
     } catch (error: any) {
-      console.error('Error submitting race form:', error);
+      logger.error('Error submitting race form:', error);
       setErrors({ submit: error.message || 'An error occurred. Please try again.' });
     } finally {
       setIsSubmitting(false);

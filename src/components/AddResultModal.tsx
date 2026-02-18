@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState } from 'react';
 import { UserRaceFormModal } from './UserRaceFormModal';
 import { dbHelpers } from '../services/supabase';
@@ -180,7 +181,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
         alert(`Race "${newRace.name}" created successfully! It has been selected for your result.`);
       }
     } catch (error: any) {
-      console.error('Error creating race:', error);
+      logger.error('Error creating race:', error);
       alert('Failed to create race. Please try again.');
     } finally {
       setIsCreatingRace(false);

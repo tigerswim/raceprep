@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -90,10 +91,10 @@ export const WebDashboard: React.FC = () => {
   const [comparingRaces, setComparingRaces] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log('[DASHBOARD] Starting to load dashboard data...');
+    logger.debug('[DASHBOARD] Starting to load dashboard data...');
 
     if (!user) {
-      console.log('[DASHBOARD] No user, skipping data load');
+      logger.debug('[DASHBOARD] No user, skipping data load');
       setIsLoading(false);
       return;
     }
@@ -103,7 +104,7 @@ export const WebDashboard: React.FC = () => {
     // Add timeout protection for dashboard loading
     const timeoutId = setTimeout(() => {
       if (isMounted) {
-        console.warn('[DASHBOARD] Loading timeout - continuing with minimal data');
+        logger.warn('[DASHBOARD] Loading timeout - continuing with minimal data');
         setIsLoading(false);
         setError('Dashboard loading timeout - some features may be limited');
       }
@@ -116,7 +117,7 @@ export const WebDashboard: React.FC = () => {
           clearTimeout(timeoutId);
         }
       } catch (error) {
-        console.error('[DASHBOARD] Loading failed:', error);
+        logger.error('[DASHBOARD] Loading failed:', error);
         if (isMounted) {
           setError('Failed to load dashboard data');
           setIsLoading(false);
@@ -135,7 +136,7 @@ export const WebDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     try {
-      console.log('[DASHBOARD] Loading dashboard data...');
+      logger.debug('[DASHBOARD] Loading dashboard data...');
       // Don't set loading to true here if it's already handled by useEffect
       if (!isLoading) {
         setIsLoading(true);
@@ -146,7 +147,7 @@ export const WebDashboard: React.FC = () => {
 
       if (user) {
         try {
-          console.log('[DASHBOARD] Loading user planned races...');
+          logger.debug('[DASHBOARD] Loading user planned races...');
 
           // Add individual timeout for this specific query
           const timeoutPromise = new Promise((_, reject) => {
@@ -157,7 +158,7 @@ export const WebDashboard: React.FC = () => {
           const { data, error } = await Promise.race([dataPromise, timeoutPromise]) as any;
 
           if (error) {
-            console.warn('[DASHBOARD] Database error loading planned races:', error);
+            logger.warn('[DASHBOARD] Database error loading planned races:', error);
             // Use fallback data
             savedRaces = [
               {
@@ -176,7 +177,7 @@ export const WebDashboard: React.FC = () => {
               }
             ];
           } else if (data) {
-            console.log('[DASHBOARD] Successfully loaded planned races:', data.length);
+            logger.debug('[DASHBOARD] Successfully loaded planned races:', data.length);
             savedRaces = data.map((race: any) => ({
               id: race.id,
               name: race.external_races?.name || race.race_name || 'Unknown Race',
@@ -186,7 +187,7 @@ export const WebDashboard: React.FC = () => {
             }));
           }
         } catch (dbError: any) {
-          console.warn('[DASHBOARD] Error or timeout loading saved races:', dbError.message);
+          logger.warn('[DASHBOARD] Error or timeout loading saved races:', dbError.message);
           // Use fallback data
           savedRaces = [
             {
@@ -207,7 +208,7 @@ export const WebDashboard: React.FC = () => {
         }
       }
 
-      console.log('[DASHBOARD] Loading races and race results...');
+      logger.debug('[DASHBOARD] Loading races and race results...');
 
       // Load race results with timeout protection
       const raceResultsTimeoutPromise = new Promise((_, reject) => {
@@ -220,10 +221,10 @@ export const WebDashboard: React.FC = () => {
         : { data: [], error: null };
 
       if (raceResultsResult.error) {
-        console.warn('[DASHBOARD] Error loading race results:', raceResultsResult.error);
+        logger.warn('[DASHBOARD] Error loading race results:', raceResultsResult.error);
       }
 
-      console.log('[DASHBOARD] Setting dashboard data...');
+      logger.debug('[DASHBOARD] Setting dashboard data...');
 
       // Set courses to saved races instead of generic courses
       setCourses(savedRaces);
@@ -239,11 +240,11 @@ export const WebDashboard: React.FC = () => {
 
       setError(null);
     } catch (err) {
-      console.error('[DASHBOARD] Error in loadDashboardData:', err);
+      logger.error('[DASHBOARD] Error in loadDashboardData:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred while loading dashboard';
       setError(errorMessage);
     } finally {
-      console.log('[DASHBOARD] Finished loading dashboard data');
+      logger.debug('[DASHBOARD] Finished loading dashboard data');
       setIsLoading(false);
     }
   };
@@ -383,7 +384,7 @@ export const WebDashboard: React.FC = () => {
       const { data, error } = await dbHelpers.raceResults.add(raceResultWithUser);
 
       if (error) {
-        console.error('Error adding race result:', error);
+        logger.error('Error adding race result:', error);
         alert('Failed to save race result. Please try again.');
         return;
       }
@@ -394,7 +395,7 @@ export const WebDashboard: React.FC = () => {
       // Reload dashboard data to show updated information
       loadDashboardData();
     } catch (error) {
-      console.error('Error adding race result:', error);
+      logger.error('Error adding race result:', error);
       alert('Failed to save race result. Please try again.');
     }
   };

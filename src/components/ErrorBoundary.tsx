@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { Component, ReactNode } from 'react';
 
 interface ErrorBoundaryProps {
@@ -51,7 +52,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Log error for debugging
-    console.error('[ErrorBoundary] Caught an error:', error, errorInfo);
+    logger.error('[ErrorBoundary] Caught an error:', error, errorInfo);
   }
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
@@ -237,7 +238,7 @@ export const StravaErrorBoundary: React.FC<{ children: ReactNode }> = ({ childre
       </div>
     }
     onError={(error, errorInfo) => {
-      console.error('[StravaErrorBoundary] Strava integration error:', error, errorInfo);
+      logger.error('[StravaErrorBoundary] Strava integration error:', error, errorInfo);
       // TODO: Consider sending error reports to analytics service
     }}
     resetOnPropsChange={true}

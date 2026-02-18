@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -61,7 +62,7 @@ export const GoalsProgressWidgetTerminal: React.FC = () => {
       setGoals(processedGoals);
       setSummary(calculateSummary(processedGoals));
     } catch (error) {
-      console.error('Error loading goals:', error);
+      logger.error('Error loading goals:', error);
       setGoals([]);
       setSummary(null);
     } finally {

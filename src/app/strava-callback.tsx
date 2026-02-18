@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useEffect, useState, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { router } from 'expo-router';
@@ -17,20 +18,20 @@ function StravaCallbackContent() {
     const handleStravaCallback = async () => {
       // Prevent duplicate execution
       if (hasRun.current) {
-        console.log('[STRAVA_CALLBACK] Already processing, skipping...');
+        logger.debug('[STRAVA_CALLBACK] Already processing, skipping...');
         return;
       }
       hasRun.current = true;
 
       // Additional safety check - if we're already showing an error, don't run again
       if (status === 'error') {
-        console.log('[STRAVA_CALLBACK] Already in error state, skipping...');
+        logger.debug('[STRAVA_CALLBACK] Already in error state, skipping...');
         return;
       }
 
       // Debug the auth state
-      console.log('[STRAVA_CALLBACK] Starting callback, user:', user);
-      console.log('[STRAVA_CALLBACK] URL:', window.location.href);
+      logger.debug('[STRAVA_CALLBACK] Starting callback, user:', user);
+      logger.debug('[STRAVA_CALLBACK] URL:', window.location.href);
 
       try {
         // Get authorization code from URL parameters
@@ -53,7 +54,7 @@ function StravaCallbackContent() {
         // Check for stored session data first before attempting Supabase call
         const storedUserId = sessionStorage.getItem('strava_auth_user_id');
         const storedTimestamp = sessionStorage.getItem('strava_auth_timestamp');
-        console.log('[STRAVA_CALLBACK] Pre-check stored user ID:', storedUserId);
+        logger.debug('[STRAVA_CALLBACK] Pre-check stored user ID:', storedUserId);
 
         let session = null;
         let sessionError = null;
@@ -64,14 +65,14 @@ function StravaCallbackContent() {
           const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
 
           if (timestamp > fiveMinutesAgo) {
-            console.log('[STRAVA_CALLBACK] Using stored session data immediately');
+            logger.debug('[STRAVA_CALLBACK] Using stored session data immediately');
             session = { user: { id: storedUserId } } as any;
           }
         }
 
         // Only try Supabase if we don't have valid stored data
         if (!session) {
-          console.log('[STRAVA_CALLBACK] No valid stored data, trying Supabase with short timeout...');
+          logger.debug('[STRAVA_CALLBACK] No valid stored data, trying Supabase with short timeout...');
 
           try {
             // Create a much shorter timeout promise (2 seconds)
@@ -88,32 +89,32 @@ function StravaCallbackContent() {
           session = result.data?.session;
           sessionError = result.error;
 
-            console.log('[STRAVA_CALLBACK] Supabase session check:', session?.user ? 'User found' : 'No user', sessionError);
+            logger.debug('[STRAVA_CALLBACK] Supabase session check:', session?.user ? 'User found' : 'No user', sessionError);
           } catch (timeoutError) {
-            console.error('[STRAVA_CALLBACK] Supabase session fetch timed out:', timeoutError);
+            logger.error('[STRAVA_CALLBACK] Supabase session fetch timed out:', timeoutError);
             // Session will remain null, will be handled below
           }
         }
 
         // If we still don't have a session, redirect to login
         if (!session?.user) {
-          console.log('[STRAVA_CALLBACK] No valid session found, redirecting to login');
+          logger.debug('[STRAVA_CALLBACK] No valid session found, redirecting to login');
           setStatus('error');
           setMessage('Please log in to RacePrep first, then try connecting Strava again.');
           setTimeout(() => {
-            console.log('[STRAVA_CALLBACK] Redirecting to login...');
+            logger.debug('[STRAVA_CALLBACK] Redirecting to login...');
             window.location.href = '/';
           }, 3000);
           return;
         }
 
         const currentUser = session.user;
-        console.log('[STRAVA_CALLBACK] Using user:', currentUser?.id);
+        logger.debug('[STRAVA_CALLBACK] Using user:', currentUser?.id);
 
         // Exchange authorization code for access token
-        console.log('[STRAVA_CALLBACK] Exchanging code for token...', { code: code.substring(0, 10) + '...' });
+        logger.debug('[STRAVA_CALLBACK] Exchanging code for token...', { code: code.substring(0, 10) + '...' });
         const tokenResponse = await connectStrava({ code }).unwrap();
-        console.log('[STRAVA_CALLBACK] Token exchange successful:', {
+        logger.debug('[STRAVA_CALLBACK] Token exchange successful:', {
           hasAccessToken: !!tokenResponse.access_token,
           hasRefreshToken: !!tokenResponse.refresh_token,
           athleteId: tokenResponse.athlete?.id
@@ -126,7 +127,7 @@ function StravaCallbackContent() {
         }
 
         // Store Strava credentials in user profile with timeout and retry
-        console.log('[STRAVA_CALLBACK] Updating user profile with Strava credentials...');
+        logger.debug('[STRAVA_CALLBACK] Updating user profile with Strava credentials...');
 
         const updateData = {
           strava_access_token: tokenResponse.access_token,
@@ -141,7 +142,7 @@ function StravaCallbackContent() {
 
         while (!profileUpdateSuccess && attempts < maxAttempts) {
           attempts++;
-          console.log(`[STRAVA_CALLBACK] Profile update attempt ${attempts}/${maxAttempts}...`);
+          logger.debug(`[STRAVA_CALLBACK] Profile update attempt ${attempts}/${maxAttempts}...`);
 
           try {
             const profileUpdatePromise = dbHelpers.users.updateProfile(currentUser.id, updateData);
@@ -151,9 +152,9 @@ function StravaCallbackContent() {
 
             await Promise.race([profileUpdatePromise, timeoutPromise]);
             profileUpdateSuccess = true;
-            console.log('[STRAVA_CALLBACK] Profile updated successfully');
+            logger.debug('[STRAVA_CALLBACK] Profile updated successfully');
           } catch (error) {
-            console.error(`[STRAVA_CALLBACK] Profile update attempt ${attempts} failed:`, error);
+            logger.error(`[STRAVA_CALLBACK] Profile update attempt ${attempts} failed:`, error);
             if (attempts === maxAttempts) {
               throw error; // Re-throw after final attempt
             }
@@ -163,10 +164,10 @@ function StravaCallbackContent() {
         }
 
         // Get initial activities
-        console.log('[STRAVA_CALLBACK] Fetching activities with token:', tokenResponse.access_token?.substring(0, 10) + '...');
+        logger.debug('[STRAVA_CALLBACK] Fetching activities with token:', tokenResponse.access_token?.substring(0, 10) + '...');
         const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
         const activitiesUrl = `${apiBaseUrl}/strava/activities?access_token=${tokenResponse.access_token}&per_page=50`;
-        console.log('[STRAVA_CALLBACK] Activities URL:', activitiesUrl);
+        logger.debug('[STRAVA_CALLBACK] Activities URL:', activitiesUrl);
 
         const activitiesResponse = await Promise.race([
           fetch(activitiesUrl),
@@ -174,7 +175,7 @@ function StravaCallbackContent() {
             setTimeout(() => reject(new Error('Activities fetch timeout')), 10000)
           )
         ]) as Response;
-        console.log('[STRAVA_CALLBACK] Activities response status:', activitiesResponse.status);
+        logger.debug('[STRAVA_CALLBACK] Activities response status:', activitiesResponse.status);
 
         const activitiesJsonPromise = activitiesResponse.json();
         const activitiesTimeoutPromise = new Promise((_, reject) =>
@@ -182,7 +183,7 @@ function StravaCallbackContent() {
         );
 
         const activities = await Promise.race([activitiesJsonPromise, activitiesTimeoutPromise]);
-        console.log('[STRAVA_CALLBACK] Activities response:', activities);
+        logger.debug('[STRAVA_CALLBACK] Activities response:', activities);
 
         if (!activitiesResponse.ok) {
           throw new Error(`Failed to fetch activities: ${activities.error || activitiesResponse.status}`);
@@ -190,7 +191,7 @@ function StravaCallbackContent() {
 
         // Transform and store activities in database
         if (activities && activities.length > 0) {
-          console.log('[STRAVA_CALLBACK] Processing', activities.length, 'activities from Strava');
+          logger.debug('[STRAVA_CALLBACK] Processing', activities.length, 'activities from Strava');
 
           // Transform Strava activity format to match training_sessions table
           const transformedActivities = activities
@@ -198,7 +199,7 @@ function StravaCallbackContent() {
             .map((activity: any) => {
               // Debug: Log the entire activity object for first few activities
               if (activities.indexOf(activity) < 3) {
-                console.log('[STRAVA_CALLBACK] Activity debug:', {
+                logger.debug('[STRAVA_CALLBACK] Activity debug:', {
                   id: activity.id,
                   name: activity.name,
                   type: activity.type,
@@ -214,23 +215,23 @@ function StravaCallbackContent() {
               const stravaType = activity.type || activity.sport_type || '';
               const typeStr = stravaType.toLowerCase();
 
-              console.log(`[STRAVA_CALLBACK] Processing activity ${activity.id}: stravaType="${stravaType}", typeStr="${typeStr}"`);
+              logger.debug(`[STRAVA_CALLBACK] Processing activity ${activity.id}: stravaType="${stravaType}", typeStr="${typeStr}"`);
 
               // Map Strava activity types to our database schema (swim/bike/run only)
               // Note: Server already converts 'Ride' -> 'bike', 'Run' -> 'run', 'Swim' -> 'swim'
               let mappedType;
               if (typeStr === 'swim') {
-                console.log('[STRAVA_CALLBACK] Mapped to: swim');
+                logger.debug('[STRAVA_CALLBACK] Mapped to: swim');
                 mappedType = 'swim';
               } else if (typeStr === 'bike' || typeStr === 'ride' || typeStr === 'virtualride' || typeStr === 'ebikeride' || typeStr === 'mountainbikeride') {
-                console.log('[STRAVA_CALLBACK] Mapped to: bike');
+                logger.debug('[STRAVA_CALLBACK] Mapped to: bike');
                 mappedType = 'bike';
               } else if (typeStr === 'run' || typeStr === 'virtualrun') {
-                console.log('[STRAVA_CALLBACK] Mapped to: run');
+                logger.debug('[STRAVA_CALLBACK] Mapped to: run');
                 mappedType = 'run';
               } else {
                 // For any other activity types not supported in our schema, skip them
-                console.log('[STRAVA_CALLBACK] Unmapped Strava activity type:', stravaType, '- skipping');
+                logger.debug('[STRAVA_CALLBACK] Unmapped Strava activity type:', stravaType, '- skipping');
                 return null;
               }
 
@@ -256,7 +257,7 @@ function StravaCallbackContent() {
                 kudos_count: activity.kudos_count || 0 // social engagement
               };
 
-              console.log(`[STRAVA_CALLBACK] Transformed activity ${activity.id}:`, {
+              logger.debug(`[STRAVA_CALLBACK] Transformed activity ${activity.id}:`, {
                 id: transformed.strava_activity_id,
                 type: transformed.type,
                 name: transformed.name,
@@ -269,18 +270,18 @@ function StravaCallbackContent() {
             })
             .filter((activity: any) => activity !== null); // Remove null entries for unsupported types
 
-          console.log('[STRAVA_CALLBACK] Final transformed activities count:', transformedActivities.length);
+          logger.debug('[STRAVA_CALLBACK] Final transformed activities count:', transformedActivities.length);
 
           if (transformedActivities.length === 0) {
-            console.warn('[STRAVA_CALLBACK] No activities were transformed successfully - all may have been filtered out');
+            logger.warn('[STRAVA_CALLBACK] No activities were transformed successfully - all may have been filtered out');
             setStatus('success');
             setMessage('Strava connected but no compatible activities found (swim/bike/run only).');
             return;
           }
 
           try {
-            console.log('[STRAVA_CALLBACK] Attempting to insert', transformedActivities.length, 'activities to database');
-            console.log('[STRAVA_CALLBACK] Sample activities:', transformedActivities.slice(0, 2)); // Log first 2 for debugging
+            logger.debug('[STRAVA_CALLBACK] Attempting to insert', transformedActivities.length, 'activities to database');
+            logger.debug('[STRAVA_CALLBACK] Sample activities:', transformedActivities.slice(0, 2)); // Log first 2 for debugging
 
             const bulkUpsertPromise = dbHelpers.trainingSessions.bulkUpsert(transformedActivities);
             const insertTimeoutPromise = new Promise((_, reject) =>
@@ -288,21 +289,21 @@ function StravaCallbackContent() {
             );
 
             const result = await Promise.race([bulkUpsertPromise, insertTimeoutPromise]);
-            console.log('[STRAVA_CALLBACK] Database insert successful:', result);
+            logger.debug('[STRAVA_CALLBACK] Database insert successful:', result);
 
             // Verify data was actually inserted
             const verifyResult = await dbHelpers.trainingSessions.getAll();
-            console.log('[STRAVA_CALLBACK] Verification - total sessions in DB:', verifyResult.data?.length || 0);
+            logger.debug('[STRAVA_CALLBACK] Verification - total sessions in DB:', verifyResult.data?.length || 0);
 
             if (verifyResult.data && verifyResult.data.length > 0) {
-              console.log('[STRAVA_CALLBACK] Sample inserted data:', verifyResult.data.slice(0, 2));
+              logger.debug('[STRAVA_CALLBACK] Sample inserted data:', verifyResult.data.slice(0, 2));
             } else {
-              console.warn('[STRAVA_CALLBACK] Warning: No data found in database after insert');
+              logger.warn('[STRAVA_CALLBACK] Warning: No data found in database after insert');
             }
 
           } catch (insertError) {
-            console.error('[STRAVA_CALLBACK] Database insert error:', insertError);
-            console.error('[STRAVA_CALLBACK] Error details:', {
+            logger.error('[STRAVA_CALLBACK] Database insert error:', insertError);
+            logger.error('[STRAVA_CALLBACK] Error details:', {
               message: insertError.message,
               code: insertError.code,
               details: insertError.details,
@@ -311,27 +312,27 @@ function StravaCallbackContent() {
             throw insertError; // Re-throw to maintain existing error handling
           }
         } else {
-          console.warn('[STRAVA_CALLBACK] No activities received from Strava API');
+          logger.warn('[STRAVA_CALLBACK] No activities received from Strava API');
         }
 
-        console.log('[STRAVA_CALLBACK] Setting success status...');
+        logger.debug('[STRAVA_CALLBACK] Setting success status...');
         setStatus('success');
         setMessage(`Successfully connected Strava! Imported ${activities?.length || 0} activities.`);
 
         // Clean up stored auth values
-        console.log('[STRAVA_CALLBACK] Cleaning up stored auth values...');
+        logger.debug('[STRAVA_CALLBACK] Cleaning up stored auth values...');
         sessionStorage.removeItem('strava_auth_user_id');
         sessionStorage.removeItem('strava_auth_timestamp');
 
         // Redirect to training page after 3 seconds
-        console.log('[STRAVA_CALLBACK] Setting up redirect to training page...');
+        logger.debug('[STRAVA_CALLBACK] Setting up redirect to training page...');
         setTimeout(() => {
-          console.log('[STRAVA_CALLBACK] Redirecting to training page...');
+          logger.debug('[STRAVA_CALLBACK] Redirecting to training page...');
           router.replace('/(tabs)/training');
         }, 3000);
 
       } catch (error) {
-        console.error('Strava callback error:', error);
+        logger.error('Strava callback error:', error);
         setStatus('error');
         setMessage(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
