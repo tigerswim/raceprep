@@ -65,7 +65,24 @@ module.exports = {
       },
       backdropBlur: {
         'xs': '2px',
-      }
+      },
+      transitionTimingFunction: {
+        'terminal': 'cubic-bezier(0.23, 1, 0.32, 1)',
+      },
+      keyframes: {
+        'modal-enter': {
+          '0%': { opacity: '0', transform: 'scale(0.97)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'overlay-enter': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'modal-enter': 'modal-enter 150ms cubic-bezier(0.23, 1, 0.32, 1) forwards',
+        'overlay-enter': 'overlay-enter 150ms ease-out forwards',
+      },
     },
   },
   plugins: [],
