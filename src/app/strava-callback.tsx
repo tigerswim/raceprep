@@ -400,7 +400,7 @@ function StravaCallbackContent() {
                     <>
                       <button
                         onClick={() => router.replace('/(tabs)/')}
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium [@media(hover:hover)]:hover:shadow-lg transition-shadow duration-150 active:scale-95"
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium [@media(hover:hover)]:hover:shadow-lg transition-shadow duration-150 active:scale-[0.97]"
                       >
                         Go to Login
                       </button>
@@ -410,13 +410,13 @@ function StravaCallbackContent() {
                     <>
                       <button
                         onClick={() => router.replace('/(tabs)/training')}
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium [@media(hover:hover)]:hover:shadow-lg transition-shadow duration-150 active:scale-95"
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium [@media(hover:hover)]:hover:shadow-lg transition-shadow duration-150 active:scale-[0.97]"
                       >
                         Go to Training
                       </button>
                       <button
                         onClick={() => window.location.reload()}
-                        className="w-full bg-white/10 text-white px-6 py-2 rounded-xl font-medium [@media(hover:hover)]:hover:bg-white/20 transition-colors duration-150 active:scale-95"
+                        className="w-full bg-white/10 text-white px-6 py-2 rounded-xl font-medium [@media(hover:hover)]:hover:bg-white/20 transition-colors duration-150 active:scale-[0.97]"
                       >
                         Try Again
                       </button>
