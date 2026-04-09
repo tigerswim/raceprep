@@ -206,9 +206,9 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -238,7 +238,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                 <select
                   value={formData.race_id}
                   onChange={(e) => handleRaceChange(e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   required
                 >
@@ -259,7 +259,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                   type="date"
                   value={formData.result_date}
                   onChange={(e) => setFormData({ ...formData, result_date: e.target.value })}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   required
                 />
@@ -274,7 +274,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                     type="number"
                     value={formData.overall_place}
                     onChange={(e) => setFormData({ ...formData, overall_place: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="e.g. 42"
                   />
@@ -287,7 +287,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                     type="number"
                     value={formData.age_group_place}
                     onChange={(e) => setFormData({ ...formData, age_group_place: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="e.g. 8"
                   />
@@ -319,7 +319,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.swim_time}
                         onChange={(e) => handleTimeChange('swim_time', e.target.value)}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="12:30 or 1:12:30"
                       />
@@ -332,7 +332,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.swim_pace}
                         onChange={(e) => setFormData({ ...formData, swim_pace: e.target.value })}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="1:40"
                       />
@@ -352,7 +352,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                     type="text"
                     value={formData.t1_time}
                     onChange={(e) => handleTimeChange('t1_time', e.target.value)}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="2:15"
                   />
@@ -388,7 +388,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.avg_speed}
                         onChange={(e) => setFormData({ ...formData, avg_speed: e.target.value })}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="22.5"
                       />
@@ -431,7 +431,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.run_time}
                         onChange={(e) => handleTimeChange('run_time', e.target.value)}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="23:45 or 1:23:45"
                       />
@@ -444,7 +444,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.run_pace}
                         onChange={(e) => setFormData({ ...formData, run_pace: e.target.value })}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="7:30"
                       />
@@ -510,7 +510,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                   <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 resize-vertical font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="Add any notes about this race - how you felt, weather conditions, strategy, etc."
                     rows={3}
@@ -523,7 +523,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 CANCEL
@@ -532,7 +532,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
               <button
                 type="submit"
                 disabled={!formData.race_id || !formData.result_date}
-                className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors duration-150 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 UPDATE RACE RESULT
