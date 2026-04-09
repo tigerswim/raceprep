@@ -271,9 +271,9 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -304,7 +304,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="E.G., ATLANTA SPRINT TRIATHLON 2025"
                   required
@@ -321,7 +321,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                     type="date"
                     value={formData.date}
                     onChange={(e) => handleInputChange('date', e.target.value)}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     required
                   />
@@ -336,7 +336,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                     type="text"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="E.G., ATLANTA, GA"
                     required
@@ -352,7 +352,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                 <select
                   value={formData.distance_type}
                   onChange={(e) => handleDistanceTypeChange(e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   required
                 >
@@ -391,7 +391,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.swim_distance}
                       onChange={(e) => handleInputChange('swim_distance', e.target.value)}
-                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                       style={{ borderRadius: 0 }}
                       placeholder="750"
                       disabled={formData.distance_type !== 'custom'}
@@ -416,7 +416,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.bike_distance}
                       onChange={(e) => handleInputChange('bike_distance', e.target.value)}
-                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                       style={{ borderRadius: 0 }}
                       placeholder="20"
                       disabled={formData.distance_type !== 'custom'}
@@ -441,7 +441,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                       step="0.1"
                       value={formData.run_distance}
                       onChange={(e) => handleInputChange('run_distance', e.target.value)}
-                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                      className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                       style={{ borderRadius: 0 }}
                       placeholder="5"
                       disabled={formData.distance_type !== 'custom'}
@@ -489,7 +489,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 resize-vertical font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="OPTIONAL DESCRIPTION ABOUT THE RACE, COURSE DETAILS, ETC."
                   rows={3}
@@ -509,7 +509,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                   type="url"
                   value={formData.website_url}
                   onChange={(e) => handleInputChange('website_url', e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="HTTPS://EXAMPLE.COM/RACE-INFO"
                 />
@@ -533,7 +533,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 font-mono tracking-wider"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] disabled:opacity-50 font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 CANCEL
@@ -542,7 +542,7 @@ export const UserRaceFormModal: React.FC<UserRaceFormModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-mono tracking-wider"
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors duration-150 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 {isSubmitting ? (
