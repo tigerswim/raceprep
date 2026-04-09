@@ -546,7 +546,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
                         step="0.1"
                         value={formData.swim_distance}
                         onChange={(e) => handleInputChange('swim_distance', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-150"
                         placeholder="750"
                       />
                       <p className="text-blue-400/70 text-xs">{getDistanceUnits().swim}</p>
@@ -564,7 +564,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
                         step="0.1"
                         value={formData.bike_distance}
                         onChange={(e) => handleInputChange('bike_distance', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors duration-150"
                         placeholder="20"
                       />
                       <p className="text-orange-400/70 text-xs">{getDistanceUnits().bike}</p>
@@ -582,7 +582,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
                         step="0.1"
                         value={formData.run_distance}
                         onChange={(e) => handleInputChange('run_distance', e.target.value)}
-                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-150"
                         placeholder="5"
                       />
                       <p className="text-green-400/70 text-xs">{getDistanceUnits().run}</p>
@@ -601,7 +601,7 @@ export const ImportedRaceUpdateModal: React.FC<ImportedRaceUpdateModalProps> = (
               <textarea
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-150 resize-vertical"
                 placeholder="Goals, training notes, or other personal reminders..."
                 rows={3}
                 maxLength={500}
