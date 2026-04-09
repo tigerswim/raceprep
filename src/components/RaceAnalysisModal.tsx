@@ -211,9 +211,9 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
   const ageGroupComparison = getAgeGroupComparison();
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-4xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-4xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -223,7 +223,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
             </h2>
             <button
               onClick={onClose}
-              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono transition-colors duration-150 active:scale-[0.97]"
             >
               ×
             </button>
@@ -264,35 +264,35 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
               </h3>
               <div className="relative w-full h-16 bg-white/10 rounded-xl overflow-hidden flex">
                 <div
-                  className="bg-blue-500 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
+                  className="bg-blue-500 flex items-center justify-center text-white text-xs font-semibold transition-[width] duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110"
                   style={{ width: `${splitPercentages.swim}%` }}
                   title={`Swim: ${formatTime(result.swim_time)} (${splitPercentages.swim}%)`}
                 >
                   {parseFloat(splitPercentages.swim) > 10 && '🏊‍♂️'}
                 </div>
                 <div
-                  className="bg-gray-600 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
+                  className="bg-gray-600 flex items-center justify-center text-white text-xs font-semibold transition-[width] duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110"
                   style={{ width: `${splitPercentages.t1}%` }}
                   title={`T1: ${formatTime(result.t1_time)} (${splitPercentages.t1}%)`}
                 >
                   {parseFloat(splitPercentages.t1) > 2 && 'T1'}
                 </div>
                 <div
-                  className="bg-orange-500 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
+                  className="bg-orange-500 flex items-center justify-center text-white text-xs font-semibold transition-[width] duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110"
                   style={{ width: `${splitPercentages.bike}%` }}
                   title={`Bike: ${formatTime(result.bike_time)} (${splitPercentages.bike}%)`}
                 >
                   {parseFloat(splitPercentages.bike) > 10 && '🚴‍♂️'}
                 </div>
                 <div
-                  className="bg-gray-600 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
+                  className="bg-gray-600 flex items-center justify-center text-white text-xs font-semibold transition-[width] duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110"
                   style={{ width: `${splitPercentages.t2}%` }}
                   title={`T2: ${formatTime(result.t2_time)} (${splitPercentages.t2}%)`}
                 >
                   {parseFloat(splitPercentages.t2) > 2 && 'T2'}
                 </div>
                 <div
-                  className="bg-green-500 flex items-center justify-center text-white text-xs font-semibold transition-all duration-1000 hover:brightness-110"
+                  className="bg-green-500 flex items-center justify-center text-white text-xs font-semibold transition-[width] duration-[800ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:brightness-110"
                   style={{ width: `${splitPercentages.run}%` }}
                   title={`Run: ${formatTime(result.run_time)} (${splitPercentages.run}%)`}
                 >
@@ -326,7 +326,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div 
-                      className="bg-blue-500 h-3 rounded-full transition-all duration-1000" 
+                      className="bg-blue-500 h-3 rounded-full transition-colors duration-150" 
                       style={{ width: `${splitPercentages.swim}%` }}
                     ></div>
                   </div>
@@ -358,7 +358,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div
-                      className={`h-3 rounded-full transition-all duration-1000 ${
+                      className={`h-3 rounded-full transition-colors duration-150 ${
                         parseFloat(splitPercentages.t1) > 3 ? 'bg-yellow-500' : 'bg-gray-500'
                       }`}
                       style={{ width: `${splitPercentages.t1}%` }}
@@ -376,7 +376,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div 
-                      className="bg-orange-500 h-3 rounded-full transition-all duration-1000" 
+                      className="bg-orange-500 h-3 rounded-full transition-colors duration-150" 
                       style={{ width: `${splitPercentages.bike}%` }}
                     ></div>
                   </div>
@@ -408,7 +408,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div
-                      className={`h-3 rounded-full transition-all duration-1000 ${
+                      className={`h-3 rounded-full transition-colors duration-150 ${
                         parseFloat(splitPercentages.t2) > 2 ? 'bg-yellow-500' : 'bg-gray-500'
                       }`}
                       style={{ width: `${splitPercentages.t2}%` }}
@@ -426,7 +426,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div 
-                      className="bg-green-500 h-3 rounded-full transition-all duration-1000" 
+                      className="bg-green-500 h-3 rounded-full transition-colors duration-150" 
                       style={{ width: `${splitPercentages.run}%` }}
                     ></div>
                   </div>
@@ -495,7 +495,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all duration-1000 ${
+                      className={`h-2 rounded-full transition-colors duration-150 ${
                         ageGroupComparison.overall.percentile >= 75 ? 'bg-green-500' :
                         ageGroupComparison.overall.percentile >= 50 ? 'bg-blue-500' :
                         ageGroupComparison.overall.percentile >= 25 ? 'bg-yellow-500' :
@@ -626,7 +626,7 @@ export const RaceAnalysisModal: React.FC<RaceAnalysisModalProps> = ({ onClose, r
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="bg-terminal-panel text-text-primary border-2 border-accent-yellow px-6 py-3 font-medium hover:bg-accent-yellow/10 transition-colors font-mono tracking-wider"
+              className="bg-terminal-panel text-text-primary border-2 border-accent-yellow px-6 py-3 font-medium hover:bg-accent-yellow/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CLOSE ANALYSIS
