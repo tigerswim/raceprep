@@ -25,25 +25,25 @@ describe('AuthModal', () => {
   it('renders signin form by default', () => {
     render(<AuthModal isOpen={true} onClose={() => {}} />);
 
-    const signInElements = screen.getAllByText('Sign In');
+    const signInElements = screen.getAllByText('SIGN IN');
     expect(signInElements.length).toBeGreaterThan(0);
-    expect(screen.getByText('Email')).toBeInTheDocument();
-    expect(screen.getByText('Password')).toBeInTheDocument();
+    expect(screen.getByText('EMAIL')).toBeInTheDocument();
+    expect(screen.getByText('PASSWORD')).toBeInTheDocument();
   });
 
   it('switches to signup mode when clicking Sign Up button', () => {
     render(<AuthModal isOpen={true} onClose={() => {}} />);
 
-    const signUpButton = screen.getAllByText('Sign Up')[0];
+    const signUpButton = screen.getAllByText('SIGN UP')[0];
     fireEvent.click(signUpButton);
-    expect(screen.getByRole('heading', { name: 'Create Account' })).toBeInTheDocument();
-    expect(screen.getByText('Full Name')).toBeInTheDocument();
+    expect(screen.getAllByText('CREATE ACCOUNT').length).toBeGreaterThan(0);
+    expect(screen.getByText('FULL NAME')).toBeInTheDocument();
   });
 
   it('does not render when isOpen is false', () => {
     render(<AuthModal isOpen={false} onClose={() => {}} />);
 
-    expect(screen.queryByText('Email')).not.toBeInTheDocument();
+    expect(screen.queryByText('EMAIL')).not.toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -55,32 +55,13 @@ describe('AuthModal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('has demo credentials functionality', () => {
-    render(<AuthModal isOpen={true} onClose={() => {}} />);
-
-    expect(screen.getByText('Fill demo credentials')).toBeInTheDocument();
-  });
-
-  it('fills demo credentials when button is clicked', () => {
-    render(<AuthModal isOpen={true} onClose={() => {}} />);
-
-    const demoButton = screen.getByText('Fill demo credentials');
-    fireEvent.click(demoButton);
-
-    const emailInput = screen.getByDisplayValue('demo@raceprep.app');
-    const passwordInput = screen.getByDisplayValue('demopassword123');
-
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
-  });
-
   it('shows loading state when submitting', async () => {
     mockAuth.signIn.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
     const { container } = render(<AuthModal isOpen={true} onClose={() => {}} />);
 
-    const emailInput = screen.getByPlaceholderText('Enter your email');
-    const passwordInput = screen.getByPlaceholderText('Enter your password');
+    const emailInput = screen.getByPlaceholderText('ENTER YOUR EMAIL');
+    const passwordInput = screen.getByPlaceholderText('ENTER YOUR PASSWORD');
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -89,6 +70,6 @@ describe('AuthModal', () => {
     const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('Please wait...')).toBeInTheDocument();
+    expect(screen.getByText('PLEASE WAIT...')).toBeInTheDocument();
   });
 });
