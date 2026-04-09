@@ -51,9 +51,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   const colors = getVariantColors();
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className={`bg-terminal-panel border-2 ${colors.border} p-6 w-full max-w-md`}
+        className={`bg-terminal-panel border-2 ${colors.border} p-6 w-full max-w-md animate-modal-enter`}
         style={{ borderRadius: 0 }}
       >
         <h3 className="text-lg font-bold text-text-primary mb-4 font-mono tracking-wider">
@@ -72,14 +72,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+            className="flex-1 bg-terminal-panel text-text-secondary border-2 border-terminal-border py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
             style={{ borderRadius: 0 }}
           >
             {cancelLabel.toUpperCase()}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 ${colors.button} py-3 font-medium transition-colors font-mono tracking-wider`}
+            className={`flex-1 ${colors.button} py-3 font-medium transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider`}
             style={{ borderRadius: 0 }}
           >
             {confirmLabel.toUpperCase()}
