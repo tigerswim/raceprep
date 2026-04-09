@@ -375,7 +375,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                         type="text"
                         value={formData.bike_time}
                         onChange={(e) => handleTimeChange('bike_time', e.target.value)}
-                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                        className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                         style={{ borderRadius: 0 }}
                         placeholder="42:30 or 1:10:00"
                       />
@@ -408,7 +408,7 @@ export const EditResultModal: React.FC<EditResultModalProps> = ({ onClose, onSub
                     type="text"
                     value={formData.t2_time}
                     onChange={(e) => handleTimeChange('t2_time', e.target.value)}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="1:45"
                   />

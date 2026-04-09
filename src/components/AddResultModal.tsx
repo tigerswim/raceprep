@@ -252,7 +252,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => setActiveTab('select')}
-              className={`flex-1 py-3 px-4 text-xs font-medium transition-all font-mono tracking-wider ${
+              className={`flex-1 py-3 px-4 text-xs font-medium transition-colors duration-150 font-mono tracking-wider ${
                 activeTab === 'select'
                   ? 'bg-accent-yellow text-terminal-bg'
                   : 'bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary hover:text-text-primary'
@@ -263,7 +263,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
             </button>
             <button
               onClick={() => setActiveTab('create')}
-              className={`flex-1 py-3 px-4 text-xs font-medium transition-all font-mono tracking-wider ${
+              className={`flex-1 py-3 px-4 text-xs font-medium transition-colors duration-150 font-mono tracking-wider ${
                 activeTab === 'create'
                   ? 'bg-accent-yellow text-terminal-bg'
                   : 'bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary hover:text-text-primary'
