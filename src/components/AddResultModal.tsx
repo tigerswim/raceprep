@@ -669,7 +669,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                 <button
                   onClick={() => setShowCreateRaceModal(true)}
                   disabled={isCreatingRace}
-                  className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 flex items-center gap-2 mx-auto font-mono tracking-wider"
+                  className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors duration-150 active:scale-[0.97] disabled:opacity-50 flex items-center gap-2 mx-auto font-mono tracking-wider"
                   style={{ borderRadius: 0 }}
                 >
                   {isCreatingRace ? (
@@ -701,7 +701,7 @@ export const AddResultModal: React.FC<AddResultModalProps> = ({ onClose, onSubmi
                   </p>
                   <button
                     onClick={() => setActiveTab('select')}
-                    className="mt-3 bg-terminal-panel border-2 border-discipline-run text-discipline-run px-4 py-2 text-xs font-medium transition-colors hover:bg-discipline-run/10 font-mono tracking-wider"
+                    className="mt-3 bg-terminal-panel border-2 border-discipline-run text-discipline-run px-4 py-2 text-xs font-medium transition-colors duration-150 active:scale-[0.97] hover:bg-discipline-run/10 font-mono tracking-wider"
                     style={{ borderRadius: 0 }}
                   >
                     CONTINUE TO ADD RESULT
