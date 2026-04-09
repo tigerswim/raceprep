@@ -54,9 +54,9 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-3xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-3xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -75,7 +75,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
             </div>
             <button
               onClick={onClose}
-              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono transition-colors duration-150 active:scale-[0.97]"
             >
               ×
             </button>
@@ -145,7 +145,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
                   type="number"
                   value={userTimes.swimTime}
                   onChange={(e) => setUserTimes({...userTimes, swimTime: e.target.value})}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="20"
                 />
@@ -158,7 +158,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
                   type="number"
                   value={userTimes.bikeTime}
                   onChange={(e) => setUserTimes({...userTimes, bikeTime: e.target.value})}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="70"
                 />
@@ -171,7 +171,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
                   type="number"
                   value={userTimes.runTime}
                   onChange={(e) => setUserTimes({...userTimes, runTime: e.target.value})}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="45"
                 />
@@ -184,7 +184,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
                   type="number"
                   value={userTimes.t1Time}
                   onChange={(e) => setUserTimes({...userTimes, t1Time: e.target.value})}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                 />
               </div>
@@ -196,7 +196,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
                   type="number"
                   value={userTimes.t2Time}
                   onChange={(e) => setUserTimes({...userTimes, t2Time: e.target.value})}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-3 py-2 text-text-primary text-xs focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                 />
               </div>
@@ -207,7 +207,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
           <div className="flex justify-center mb-6">
             <button
               onClick={calculatePrediction}
-              className="bg-accent-yellow text-terminal-bg px-8 py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider"
+              className="bg-accent-yellow text-terminal-bg px-8 py-3 font-medium hover:bg-accent-yellow/90 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CALCULATE PREDICTION
@@ -285,7 +285,7 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
           <div className="flex justify-between">
             <button
               onClick={onClose}
-              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CLOSE
@@ -293,13 +293,13 @@ export const RacePredictionModal: React.FC<RacePredictionModalProps> = ({ course
             {prediction && (
               <div className="flex gap-3">
                 <button
-                  className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-6 py-3 font-medium hover:bg-discipline-swim/10 transition-colors font-mono tracking-wider"
+                  className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-6 py-3 font-medium hover:bg-discipline-swim/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                   style={{ borderRadius: 0 }}
                 >
                   SAVE PREDICTION
                 </button>
                 <button
-                  className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors font-mono tracking-wider"
+                  className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                   style={{ borderRadius: 0 }}
                 >
                   CREATE TRAINING PLAN

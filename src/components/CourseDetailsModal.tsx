@@ -15,8 +15,8 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({ course, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-terminal-panel border-2 border-terminal-border max-w-4xl w-full max-h-[90vh] overflow-auto" style={{ borderRadius: 0 }}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
+      <div className="bg-terminal-panel border-2 border-terminal-border max-w-4xl w-full max-h-[90vh] overflow-auto animate-modal-enter" style={{ borderRadius: 0 }}>
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
@@ -52,7 +52,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({ course, 
             </div>
             <button
               onClick={onClose}
-              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono transition-colors duration-150 active:scale-[0.97]"
             >
               ×
             </button>
@@ -185,7 +185,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({ course, 
           <div className="flex justify-between">
             <button
               onClick={onClose}
-              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CLOSE
@@ -194,7 +194,7 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({ course, 
               {course.website_url && (
                 <button
                   onClick={() => window.open(course.website_url, '_blank')}
-                  className="bg-terminal-panel border-2 border-text-secondary text-text-secondary px-6 py-3 font-medium hover:bg-text-secondary/10 transition-colors flex items-center gap-2 font-mono tracking-wider"
+                  className="bg-terminal-panel border-2 border-text-secondary text-text-secondary px-6 py-3 font-medium hover:bg-text-secondary/10 transition-colors duration-150 active:scale-[0.97] flex items-center gap-2 font-mono tracking-wider"
                   style={{ borderRadius: 0 }}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,13 +204,13 @@ export const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({ course, 
                 </button>
               )}
               <button
-                className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-6 py-3 font-medium hover:bg-discipline-swim/10 transition-colors font-mono tracking-wider"
+                className="bg-terminal-panel border-2 border-discipline-swim text-discipline-swim px-6 py-3 font-medium hover:bg-discipline-swim/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 RACE PREDICTION
               </button>
               <button
-                className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors font-mono tracking-wider"
+                className="bg-terminal-panel border-2 border-discipline-run text-discipline-run px-6 py-3 font-medium hover:bg-discipline-run/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 ADD TO PLAN

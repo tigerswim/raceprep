@@ -58,9 +58,9 @@ export const RaceComparisonModal: React.FC<RaceComparisonModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-6xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-6xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -70,7 +70,7 @@ export const RaceComparisonModal: React.FC<RaceComparisonModalProps> = ({
             </h2>
             <button
               onClick={onClose}
-              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono transition-colors duration-150 active:scale-[0.97]"
             >
               ×
             </button>
@@ -97,7 +97,7 @@ export const RaceComparisonModal: React.FC<RaceComparisonModalProps> = ({
                   </div>
                   <button
                     onClick={() => removeRace(race.id)}
-                    className="text-red-400 hover:text-red-300 text-xs font-mono tracking-wider uppercase"
+                    className="text-red-400 hover:text-red-300 text-xs font-mono tracking-wider uppercase transition-colors duration-150 active:scale-[0.97]"
                   >
                     REMOVE
                   </button>
@@ -351,14 +351,14 @@ export const RaceComparisonModal: React.FC<RaceComparisonModalProps> = ({
           <div className="flex justify-between mt-6">
             <button
               onClick={() => setComparingRaces([])}
-              className="bg-terminal-panel border-2 border-red-400 text-red-400 px-4 py-2 font-medium hover:bg-red-400/10 transition-colors font-mono tracking-wider"
+              className="bg-terminal-panel border-2 border-red-400 text-red-400 px-4 py-2 font-medium hover:bg-red-400/10 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CLEAR ALL
             </button>
             <button
               onClick={onClose}
-              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+              className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
               style={{ borderRadius: 0 }}
             >
               CLOSE COMPARISON
