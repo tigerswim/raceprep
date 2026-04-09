@@ -69,9 +69,9 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
       <div
-        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto"
+        className="bg-terminal-panel border-2 border-terminal-border max-w-2xl w-full max-h-[90vh] overflow-auto animate-modal-enter"
         style={{ borderRadius: 0 }}
       >
         <div className="p-6">
@@ -102,7 +102,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="E.G. LAKE LANIER OLYMPIC COURSE"
                   required
@@ -117,7 +117,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="E.G. LAKE LANIER, GA"
                   required
@@ -132,7 +132,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                   <select
                     value={formData.distance_type}
                     onChange={(e) => setFormData({ ...formData, distance_type: e.target.value as any })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     required
                   >
@@ -150,7 +150,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                   <select
                     value={formData.swim_type || ''}
                     onChange={(e) => setFormData({ ...formData, swim_type: e.target.value as any || null })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                   >
                     <option value="">SELECT TYPE</option>
@@ -178,7 +178,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                     type="number"
                     value={formData.bike_elevation_gain}
                     onChange={(e) => setFormData({ ...formData, bike_elevation_gain: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="1200"
                   />
@@ -192,7 +192,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                     type="number"
                     value={formData.run_elevation_gain}
                     onChange={(e) => setFormData({ ...formData, run_elevation_gain: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="300"
                   />
@@ -206,7 +206,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                     type="number"
                     value={formData.overall_elevation}
                     onChange={(e) => setFormData({ ...formData, overall_elevation: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="1500"
                   />
@@ -224,7 +224,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                     max="10"
                     value={formData.difficulty_score}
                     onChange={(e) => setFormData({ ...formData, difficulty_score: e.target.value })}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="7"
                   />
@@ -243,7 +243,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                         wetsuit_legal: value === '' ? null : value === 'true'
                       });
                     }}
-                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                   >
                     <option value="">UNKNOWN</option>
@@ -269,7 +269,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                     type="text"
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
-                    className="flex-1 bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                    className="flex-1 bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                     style={{ borderRadius: 0 }}
                     placeholder="E.G. ROLLING HILLS, TECHNICAL"
                   />
@@ -322,7 +322,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow resize-vertical font-mono"
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 resize-vertical font-mono"
                 style={{ borderRadius: 0 }}
                 placeholder="DESCRIBE THE COURSE LAYOUT, KEY CHALLENGES, AND NOTABLE CHARACTERISTICS..."
                 rows={4}
@@ -338,7 +338,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
                 type="url"
                 value={formData.website_url}
                 onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                 style={{ borderRadius: 0 }}
                 placeholder="HTTPS://WWW.EXAMPLE.COM/COURSE-INFO"
               />
@@ -351,7 +351,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors font-mono tracking-wider"
+                className="bg-terminal-panel text-text-secondary border-2 border-terminal-border px-6 py-3 font-medium hover:border-text-secondary hover:text-text-primary transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 CANCEL
@@ -360,7 +360,7 @@ export const AddCourseModal: React.FC<AddCourseModalProps> = ({ onClose, onSubmi
               <button
                 type="submit"
                 disabled={!formData.name || !formData.location}
-                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
+                className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors duration-150 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed font-mono tracking-wider"
                 style={{ borderRadius: 0 }}
               >
                 ADD COURSE
