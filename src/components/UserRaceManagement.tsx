@@ -247,7 +247,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 flex items-center gap-2 border-2"
+          className="px-6 py-3 font-mono font-bold tracking-wider transition-colors duration-150 active:scale-[0.97] flex items-center gap-2 border-2"
           style={{
             backgroundColor: terminalColors.yellow,
             color: terminalColors.bg,
@@ -394,7 +394,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 font-mono font-bold tracking-wider transition-all duration-300 border-2"
+                className="px-6 py-3 font-mono font-bold tracking-wider transition-colors duration-150 active:scale-[0.97] border-2"
                 style={{
                   backgroundColor: terminalColors.yellow,
                   color: terminalColors.bg,
@@ -437,7 +437,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
           {filteredRaces.map((race) => (
             <div
               key={race.id}
-              className="p-6 border-2 hover:border-opacity-80 transition-all duration-300"
+              className="p-6 border-2 [@media(hover:hover)]:hover:border-opacity-80 transition-colors duration-150"
               style={{
                 backgroundColor: terminalColors.panel,
                 borderColor: isUpcoming(race.date) ? terminalColors.yellow : terminalColors.border,
@@ -537,7 +537,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
               <div className="flex gap-2">
                 <button
                   onClick={() => startEdit(race)}
-                  className="flex-1 py-2 transition-colors text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
+                  className="flex-1 py-2 transition-colors duration-150 active:scale-[0.97] text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
                   style={{
                     backgroundColor: `${terminalColors.swim}33`,
                     color: terminalColors.swim,
@@ -553,7 +553,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
 
                 <button
                   onClick={() => setShowDeleteConfirm(race.id)}
-                  className="flex-1 py-2 transition-colors text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
+                  className="flex-1 py-2 transition-colors duration-150 active:scale-[0.97] text-sm font-bold flex items-center justify-center gap-1 font-mono border-2"
                   style={{
                     backgroundColor: `${terminalColors.bike}33`,
                     color: terminalColors.bike,
@@ -563,7 +563,7 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
                   disabled={actionLoading === race.id}
                 >
                   {actionLoading === race.id ? (
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin duration-700" />
                   ) : (
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -615,18 +615,18 @@ export const UserRaceManagement: React.FC<UserRaceManagementProps> = ({ onRaceUp
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowDeleteConfirm(null)}
-                    className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg transition-colors font-medium"
+                    className="flex-1 bg-white/10 [@media(hover:hover)]:hover:bg-white/20 text-white py-2 rounded-lg transition-colors duration-150 active:scale-[0.97] font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleDeleteRace(showDeleteConfirm)}
                     disabled={actionLoading === showDeleteConfirm}
-                    className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2 rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 bg-red-500/20 [@media(hover:hover)]:hover:bg-red-500/30 text-red-400 py-2 rounded-lg transition-colors duration-150 active:scale-[0.97] font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {actionLoading === showDeleteConfirm ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin duration-700" />
                         Deleting...
                       </>
                     ) : (

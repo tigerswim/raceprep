@@ -78,7 +78,7 @@ export const LandingPage: React.FC = () => {
             {/* CTA Button */}
             <button
               onClick={() => setShowAuthModal(true)}
-              className="px-8 py-4 font-bold text-sm tracking-wider transition-all hover:opacity-90 active:scale-[0.98]"
+              className="px-8 py-4 font-bold text-sm tracking-wider transition-colors duration-150 [@media(hover:hover)]:hover:opacity-90 active:scale-[0.97]"
               style={{
                 backgroundColor: '#FFD866',
                 color: '#0A0E14',

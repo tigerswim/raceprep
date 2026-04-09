@@ -422,7 +422,7 @@ export const WebDashboard: React.FC = () => {
           </div>
           <button
             onClick={loadDashboardData}
-            className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors font-mono tracking-wider uppercase"
+            className="bg-accent-yellow text-terminal-bg px-6 py-3 font-medium [@media(hover:hover)]:hover:opacity-90 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider uppercase"
           >
             RETRY
           </button>
@@ -450,7 +450,7 @@ export const WebDashboard: React.FC = () => {
             </div>
             <button
               onClick={() => router.push('/(tabs)/profile')}
-              className="w-10 h-10 bg-terminal-panel border-2 border-terminal-border flex items-center justify-center hover:border-accent-yellow transition-colors"
+              className="w-10 h-10 bg-terminal-panel border-2 border-terminal-border flex items-center justify-center [@media(hover:hover)]:hover:border-accent-yellow transition-colors duration-150 active:scale-[0.97]"
             >
               <svg className="w-5 h-5 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -485,7 +485,7 @@ export const WebDashboard: React.FC = () => {
                         setShowAnalysisModal(true);
                       }
                     }}
-                    className="bg-accent-yellow text-terminal-bg px-4 py-3 font-mono text-xs font-bold tracking-wider hover:bg-accent-yellow/90 transition-colors"
+                    className="bg-accent-yellow text-terminal-bg px-4 py-3 font-mono text-xs font-bold tracking-wider [@media(hover:hover)]:hover:opacity-90 transition-colors duration-150 active:scale-[0.97]"
                   >
                     ANALYZE →
                   </button>
@@ -532,7 +532,7 @@ export const WebDashboard: React.FC = () => {
                 {/* Add Race Result */}
                 <button
                   onClick={() => setShowAddResultModal(true)}
-                  className="bg-[#22c55e] text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider hover:opacity-90 transition-opacity text-center"
+                  className="bg-[#22c55e] text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider [@media(hover:hover)]:hover:opacity-90 transition-colors duration-150 active:scale-[0.97] text-center"
                 >
                   <div className="mb-2">[+] ADD RESULT</div>
                   <div className="text-[9px] opacity-80">LOG RACE TIMES</div>
@@ -549,8 +549,8 @@ export const WebDashboard: React.FC = () => {
                   }}
                   disabled={userRaceResults.length < 2}
                   className={`${
-                    userRaceResults.length < 2 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#a855f7] hover:opacity-90'
-                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-opacity text-center`}
+                    userRaceResults.length < 2 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#a855f7] [@media(hover:hover)]:hover:opacity-90 active:scale-[0.97]'
+                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-colors duration-150 text-center`}
                 >
                   <div className="mb-2">[VS] COMPARE</div>
                   <div className="text-[9px] opacity-80">
@@ -568,8 +568,8 @@ export const WebDashboard: React.FC = () => {
                   }}
                   disabled={courses.length === 0}
                   className={`${
-                    courses.length === 0 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#14b8a6] hover:opacity-90'
-                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-opacity text-center`}
+                    courses.length === 0 ? 'bg-terminal-border opacity-50 cursor-not-allowed' : 'bg-[#14b8a6] [@media(hover:hover)]:hover:opacity-90 active:scale-[0.97]'
+                  } text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider transition-colors duration-150 text-center`}
                 >
                   <div className="mb-2">[?] PREDICT</div>
                   <div className="text-[9px] opacity-80">
@@ -580,7 +580,7 @@ export const WebDashboard: React.FC = () => {
                 {/* Training */}
                 <button
                   onClick={() => router.push('/(tabs)/training')}
-                  className="bg-accent-yellow text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider hover:opacity-90 transition-opacity text-center"
+                  className="bg-accent-yellow text-terminal-bg px-4 py-4 font-mono text-xs font-bold tracking-wider [@media(hover:hover)]:hover:opacity-90 transition-colors duration-150 active:scale-[0.97] text-center"
                 >
                   <div className="mb-2">[&gt;] TRAINING</div>
                   <div className="text-[9px] opacity-80">LOG WORKOUTS</div>
