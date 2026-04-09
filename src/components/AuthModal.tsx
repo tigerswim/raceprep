@@ -60,8 +60,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-terminal-panel border-2 border-terminal-border max-w-md w-full" style={{ borderRadius: 0 }}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-overlay-enter">
+      <div className="bg-terminal-panel border-2 border-terminal-border max-w-md w-full animate-modal-enter" style={{ borderRadius: 0 }}>
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-text-primary font-mono tracking-wider">
@@ -69,7 +69,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             </h2>
             <button
               onClick={onClose}
-              className="text-text-secondary hover:text-text-primary text-2xl font-mono"
+              className="text-text-secondary hover:text-text-primary text-2xl font-mono transition-colors duration-100 active:scale-[0.97]"
             >
               ×
             </button>
@@ -79,7 +79,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             <div className="flex gap-2">
               <button
                 onClick={() => setMode('signin')}
-                className={`flex-1 py-2 px-4 text-xs font-medium transition-all font-mono tracking-wider ${
+                className={`flex-1 py-2 px-4 text-xs font-medium transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider ${
                   mode === 'signin'
                     ? 'bg-accent-yellow text-terminal-bg'
                     : 'bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary hover:text-text-primary'
@@ -90,7 +90,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               </button>
               <button
                 onClick={() => setMode('signup')}
-                className={`flex-1 py-2 px-4 text-xs font-medium transition-all font-mono tracking-wider ${
+                className={`flex-1 py-2 px-4 text-xs font-medium transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider ${
                   mode === 'signup'
                     ? 'bg-accent-yellow text-terminal-bg'
                     : 'bg-terminal-panel text-text-secondary border-2 border-terminal-border hover:border-text-secondary hover:text-text-primary'
@@ -120,7 +120,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                  className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                   style={{ borderRadius: 0 }}
                   placeholder="ENTER YOUR FULL NAME"
                   required={mode === 'signup'}
@@ -136,7 +136,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                 style={{ borderRadius: 0 }}
                 placeholder="ENTER YOUR EMAIL"
                 required
@@ -151,7 +151,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow font-mono"
+                className="w-full bg-terminal-panel border-2 border-terminal-border px-4 py-3 text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-yellow transition-colors duration-150 font-mono"
                 style={{ borderRadius: 0 }}
                 placeholder="ENTER YOUR PASSWORD"
                 required
@@ -163,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-all font-mono tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-accent-yellow text-terminal-bg px-6 py-3 font-medium hover:bg-accent-yellow/90 transition-colors duration-150 active:scale-[0.97] font-mono tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ borderRadius: 0 }}
               >
                 {loading ? 'PLEASE WAIT...' : (mode === 'signin' ? 'SIGN IN' : 'CREATE ACCOUNT')}
