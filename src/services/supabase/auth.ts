@@ -1,5 +1,12 @@
 import { supabase } from './client';
 
+const getEmailRedirectTo = (): string | undefined => {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  return undefined;
+};
+
 export const authHelpers = {
   // Sign up with email and password
   signUp: async (email: string, password: string, userData?: any) => {
@@ -8,6 +15,19 @@ export const authHelpers = {
       password,
       options: {
         data: userData, // Additional user metadata
+        emailRedirectTo: getEmailRedirectTo(),
+      },
+    });
+    return { data, error };
+  },
+
+  // Resend the signup confirmation email
+  resendConfirmation: async (email: string) => {
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: getEmailRedirectTo(),
       },
     });
     return { data, error };

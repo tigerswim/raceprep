@@ -9,6 +9,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ data: any; error: any }>;
   signOut: () => Promise<{ error: any }>;
+  resendConfirmation: (email: string) => Promise<{ data: any; error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -95,19 +96,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  // NOTE: signIn and signUp intentionally do NOT flip the context-level
+  // `loading` flag. That flag gates the root `Index` route — toggling it
+  // during an in-flight form unmounts the page (and the AuthModal) mid-submit,
+  // which destroys any post-submit UI like the "check your email" view.
+  // Forms manage their own local submit/loading state; the global flag is
+  // reserved for initial session restoration and onAuthStateChange.
   const signIn = async (email: string, password: string) => {
-    setLoading(true);
-    const result = await authHelpers.signIn(email, password);
-    setLoading(false);
-    return result;
+    return authHelpers.signIn(email, password);
   };
 
   const signUp = async (email: string, password: string, userData?: any) => {
-    setLoading(true);
     const result = await authHelpers.signUp(email, password, userData);
-    
-    // If signup successful, create user profile
-    if (result.data?.user && !result.error) {
+
+    // If signup completed AND a session was issued (email confirmation disabled),
+    // create the user profile now. When confirmation is required, defer profile
+    // creation until first sign-in — the RLS insert would fail without a session.
+    if (result.data?.user && result.data?.session && !result.error) {
       try {
         const profileData = {
           id: result.data.user.id,
@@ -119,9 +124,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logger.error('[AUTH] Failed to create user profile:', error);
       }
     }
-    
-    setLoading(false);
+
     return result;
+  };
+
+  const resendConfirmation = async (email: string) => {
+    return authHelpers.resendConfirmation(email);
   };
 
   const signOut = async () => {
@@ -137,6 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signOut,
+    resendConfirmation,
   };
 
   return (

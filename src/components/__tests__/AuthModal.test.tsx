@@ -1,5 +1,5 @@
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import React, { act } from 'react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AuthModal } from '../AuthModal';
 
@@ -10,10 +10,17 @@ const mockAuth = {
   signIn: jest.fn(),
   signUp: jest.fn(),
   signOut: jest.fn(),
+  resendConfirmation: jest.fn(),
 };
+
+const mockRouterReplace = jest.fn();
 
 jest.mock('../../contexts/AuthContext', () => ({
   useAuth: () => mockAuth,
+}));
+
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ replace: mockRouterReplace }),
 }));
 
 describe('AuthModal', () => {
@@ -53,6 +60,80 @@ describe('AuthModal', () => {
     const closeButton = screen.getByText('×');
     fireEvent.click(closeButton);
     expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the "check your email" view when signUp returns no session', async () => {
+    mockAuth.signUp.mockResolvedValueOnce({
+      data: { user: { id: 'new-user' }, session: null },
+      error: null,
+    });
+
+    const onClose = jest.fn();
+    const { container } = render(<AuthModal isOpen={true} onClose={onClose} initialMode="signup" />);
+
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR FULL NAME'), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR EMAIL'), { target: { value: 'new@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR PASSWORD'), { target: { value: 'password123' } });
+
+    await act(async () => {
+      fireEvent.click(container.querySelector('button[type="submit"]') as HTMLButtonElement);
+    });
+
+    expect(await screen.findByText('CHECK YOUR EMAIL')).toBeInTheDocument();
+    expect(screen.getByText('new@example.com')).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(mockRouterReplace).not.toHaveBeenCalled();
+  });
+
+  it('redirects to dashboard when signUp returns a session', async () => {
+    mockAuth.signUp.mockResolvedValueOnce({
+      data: { user: { id: 'new-user' }, session: { access_token: 'token' } },
+      error: null,
+    });
+
+    const onClose = jest.fn();
+    const { container } = render(<AuthModal isOpen={true} onClose={onClose} initialMode="signup" />);
+
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR FULL NAME'), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR EMAIL'), { target: { value: 'auto@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR PASSWORD'), { target: { value: 'password123' } });
+
+    await act(async () => {
+      fireEvent.click(container.querySelector('button[type="submit"]') as HTMLButtonElement);
+    });
+
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(mockRouterReplace).toHaveBeenCalledWith('/');
+    expect(screen.queryByText('CHECK YOUR EMAIL')).not.toBeInTheDocument();
+  });
+
+  it('resends the confirmation email and disables the button during cooldown', async () => {
+    mockAuth.signUp.mockResolvedValueOnce({
+      data: { user: { id: 'new-user' }, session: null },
+      error: null,
+    });
+    mockAuth.resendConfirmation.mockResolvedValueOnce({ data: {}, error: null });
+
+    const { container } = render(<AuthModal isOpen={true} onClose={() => {}} initialMode="signup" />);
+
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR FULL NAME'), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR EMAIL'), { target: { value: 'resend@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('ENTER YOUR PASSWORD'), { target: { value: 'password123' } });
+
+    await act(async () => {
+      fireEvent.click(container.querySelector('button[type="submit"]') as HTMLButtonElement);
+    });
+
+    const resendBtn = await screen.findByText('RESEND EMAIL');
+
+    await act(async () => {
+      fireEvent.click(resendBtn);
+    });
+
+    expect(mockAuth.resendConfirmation).toHaveBeenCalledWith('resend@example.com');
+    await waitFor(() => expect(screen.getByText(/RESEND IN \d+s/)).toBeInTheDocument());
+    const cooldownBtn = screen.getByText(/RESEND IN \d+s/).closest('button') as HTMLButtonElement;
+    expect(cooldownBtn).toBeDisabled();
   });
 
   it('shows loading state when submitting', async () => {
